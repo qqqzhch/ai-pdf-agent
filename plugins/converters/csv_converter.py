@@ -637,11 +637,21 @@ class ToCsvConverter(BasePlugin):
 
         return True
 
+    def execute(self, **kwargs) -> Any:
+        """执行插件核心功能"""
+        pdf_path = kwargs.get("pdf_path")
+        if not pdf_path:
+            return {
+                "success": False,
+                "error": "pdf_path is required"
+            }
+        return self.convert(pdf_path, **kwargs)
+
     def get_help(self) -> str:
         """获取插件帮助信息"""
         return f"""
-{name} v{self.version}
-{description}
+{self.name} v{self.version}
+{self.description}
 
 使用方法:
     from plugins.converters.csv_converter import ToCsvConverter
@@ -674,12 +684,12 @@ class ToCsvConverter(BasePlugin):
     )
 
     if result["success"]:
-        print(f"Converted {result['total_tables']} tables")
-        print(f"Generated files: {result['files']}")
+        print(f"Converted {{result['total_tables']}} tables")
+        print(f"Generated files: {{result['files']}}")
         if result['content']:
-            print(f"CSV content: {result['content'][:100]}...")
+            print(f"CSV content: {{result['content'][:100]}}...")
     else:
-        print(f"Error: {result['error']}")
+        print(f"Error: {{result['error']}}")
 
 支持的参数:
     - page: int - 指定页码（1-based）
