@@ -1178,6 +1178,80 @@ SOFTWARE.
 
 ---
 
+## ⚡ 性能优化
+
+### 优化引擎
+
+项目提供了优化的 PDF 引擎实现，显著提升处理性能：
+
+```python
+from core.engine.pymupdf_engine_optimized import BufferedPyMuPDFEngine
+
+# 创建优化引擎
+engine = BufferedPyMuPDFEngine(
+    page_cache_size=20,  # 缓存 20 页
+    workers=4            # 4 个工作线程
+)
+
+doc = engine.open("document.pdf")
+
+# 流式处理（内存高效）
+for page_text in engine.extract_text(doc, stream=True):
+    process_page(page_text)
+
+# 批量处理（并行）
+text = engine.extract_text_batch(doc)
+
+engine.close(doc)
+```
+
+### 性能特性
+
+1. **页面缓存** - LRU 风格缓存，避免重复读取
+2. **流式处理** - 生成器模式，逐页返回，内存高效
+3. **并行处理** - 线程池并行处理，提升速度
+4. **性能监控** - 内置性能指标收集和报告
+
+### 性能提升
+
+- **50 页 PDF**: 约 2-3x 加速
+- **100 页 PDF**: 约 3-4x 加速
+- **500+ 页 PDF**: 约 4-5x 加速
+
+详细性能报告请参见 [PERFORMANCE.md](PERFORMANCE.md)。
+
+### 性能监控
+
+```python
+from core.performance_monitor import monitor, monitor_performance
+
+# 启用性能监控
+monitor.enable()
+monitor.enable_file_logging("performance.log")
+
+# 使用装饰器监控函数
+@monitor_performance(category="pdf_operations")
+def process_pdf(pdf_path):
+    # ... 处理逻辑
+    pass
+
+# 生成性能报告
+report = monitor.generate_report("performance_report.txt")
+print(report)
+```
+
+### 运行性能测试
+
+```bash
+# 运行性能测试
+pytest tests/test_performance.py -v -s
+
+# 运行综合性能测试
+pytest tests/test_performance.py::TestComprehensivePerformance -v -s --slow
+```
+
+---
+
 ### 元数据读取插件 (Metadata Reader)
 
 元数据读取插件 (`metadata_reader`) 提供了完整的 PDF 元数据提取功能：

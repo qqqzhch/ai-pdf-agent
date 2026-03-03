@@ -74,7 +74,19 @@ class BasePlugin(ABC):
     
     def check_dependencies(self) -> Tuple[bool, List[str]]:
         """检查依赖是否满足"""
-        import pkg_resources
+        try:
+            import pkg_resources
+        except ImportError:
+            # 如果 pkg_resources 不可用，使用 importlib 代替
+            import importlib
+            missing = []
+            for dep in self.dependencies:
+                try:
+                    importlib.import_module(dep)
+                except ImportError:
+                    missing.append(dep)
+            return (len(missing) == 0, missing)
+        
         missing = []
         for dep in self.dependencies:
             try:

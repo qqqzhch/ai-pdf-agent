@@ -153,16 +153,18 @@ class TestConfigCoverage:
         config = Config()
         config.set('pdf_engine', 'invalid_engine')
 
-        # 验证应该返回 True（只警告，不失败）
-        assert config.validate() is True
+        # 验证应该返回 False，但错误应该被记录
+        assert config.validate() is False
+        assert len(config.get_validation_errors()) > 0
 
     def test_config_validation_invalid_format(self):
         """测试验证无效的输出格式"""
         config = Config()
         config.set('output_format', 'invalid_format')
 
-        # 验证应该返回 True（只警告，不失败）
-        assert config.validate() is True
+        # 验证应该返回 False，但错误应该被记录
+        assert config.validate() is False
+        assert len(config.get_validation_errors()) > 0
 
     def test_config_repr(self):
         """测试配置的字符串表示"""

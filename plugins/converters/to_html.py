@@ -114,10 +114,10 @@ class ToHtmlPlugin(BaseConverterPlugin):
 
             # 获取页数
             page_count = self.pdf_engine.get_page_count(doc)
-            result["pages"] = page_count
 
             # 确定要转换的页面
             pages_to_convert = self._determine_pages_to_convert(kwargs, page_count)
+            result["pages"] = len(pages_to_convert)
 
             # 构建 HTML
             html_content = self._build_html_document(

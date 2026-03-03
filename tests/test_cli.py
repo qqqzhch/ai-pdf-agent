@@ -16,6 +16,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from cli.main import cli, CLIContext
+from cli.config import Config
 from core.plugin_system import PluginType
 
 
@@ -31,7 +32,7 @@ class TestCLIContext:
         assert ctx.quiet is False
         assert ctx.json_output is False
         assert ctx.config_path is None
-        assert isinstance(ctx.config, dict)
+        assert isinstance(ctx.config, Config)
         assert ctx.plugin_manager is not None
 
     def test_context_verbose_mode(self):

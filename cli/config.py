@@ -156,9 +156,13 @@ class Config:
         # 加载默认配置
         self._load_default_config()
 
-        # 加载配置文件
+        # # 加载配置文件
         if config_path is not None:
-            self.load_from_file(config_path)
+            try:
+                self.load_from_file(config_path)
+            except (FileNotFoundError, json.JSONDecodeError, ImportError, ValueError):
+                logger.warning(f"Failed to load config file {config_path}, using defaults")
+                # 继续使用默认配置
 
         # 加载环境变量
         self._load_from_env()
@@ -349,7 +353,7 @@ class Config:
                 if format == 'yaml':
                     if not YAML_AVAILABLE:
                         logger.error("PyYAML not installed, cannot save YAML config")
-                        raise ImportError("PyYAML is required to save YAML config files")
+                        return False
                     yaml.dump(self._config, f, default_flow_style=False, allow_unicode=True)
                 else:
                     json.dump(self._config, f, indent=2, ensure_ascii=False)
@@ -359,7 +363,7 @@ class Config:
 
         except Exception as e:
             logger.error(f"Error saving config to {output_path}: {e}")
-            raise
+            return False
 
     def validate(self, raise_on_error: bool = False) -> bool:
         """验证配置
