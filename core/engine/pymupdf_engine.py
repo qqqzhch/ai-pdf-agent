@@ -65,7 +65,7 @@ class PyMuPDFEngine(BasePDFEngine):
             
             for img_index, img in enumerate(page.get_images()):
                 xref = img[0]
-                base_image = = doc.extract_image(xref)
+                base_image = doc.extract_image(xref)
                 image_data = base_image["image"]
                 
                 images.append({
@@ -84,6 +84,14 @@ class PyMuPDFEngine(BasePDFEngine):
         """获取元数据"""
         metadata = doc.metadata
         
+        # Handle pdf_version attribute which may not exist in all versions
+        pdf_version = ""
+        try:
+            pdf_version = str(doc.pdf_version)
+        except AttributeError:
+            # Fallback: try to get from metadata
+            pdf_version = metadata.get("format", "")
+        
         return {
             "title": metadata.get("title", ""),
             "author": metadata.get("author", ""),
@@ -95,7 +103,7 @@ class PyMuPDFEngine(BasePDFEngine):
             "modified": metadata.get("modDate", ""),
             "page_count": doc.page_count,
             "is_encrypted": doc.is_encrypted,
-            "pdf_version": str(doc.pdf_version),
+            "pdf_version": pdf_version,
         }
     
     def get_structure(self, doc: fitz.Document) -> Dict:

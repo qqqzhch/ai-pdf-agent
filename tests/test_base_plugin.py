@@ -7,7 +7,7 @@ from core.plugin_system.plugin_type import PluginType
 
 class MockPlugin(BasePlugin):
     """Mock 插件用于测试"""
-    name =ser"mock"
+    name = "mock"
     version = "1.0.0"
     description = "Mock plugin for testing"
     plugin_type = PluginType.READER
