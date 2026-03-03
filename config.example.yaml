@@ -1,0 +1,37 @@
+# AI PDF Agent Configuration File
+
+# PDF Engine: pymupdf, pdfplumber, pypdf
+pdf_engine: pymupdf
+
+# Output Format: markdown, html, json, text, csv
+output_format: markdown
+
+# Include Images
+include_images: true
+
+# Include Tables
+include_tables: true
+
+# Image Format: png, jpeg, jpg, webp
+image_format: png
+
+# Image DPI (72-600)
+image_dpi: 150
+
+# Output Encoding
+output_encoding: utf-8
+
+# Chunk Size (100-10000)
+chunk_size: 1000
+
+# Overlap (0-1000)
+overlap: 100
+
+# Log Level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level: INFO
+
+# Log File Path (null for stdout)
+log_file: null
+
+# Log Format: minimal, simple, standard, detailed, full
+log_format: standard

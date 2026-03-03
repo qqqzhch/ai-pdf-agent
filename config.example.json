@@ -1,0 +1,14 @@
+{
+  "pdf_engine": "pymupdf",
+  "output_format": "markdown",
+  "include_images": true,
+  "include_tables": true,
+  "image_format": "png",
+  "image_dpi": 150,
+  "output_encoding": "utf-8",
+  "chunk_size": 1000,
+  "overlap": 100,
+  "log_level": "INFO",
+  "log_file": null,
+  "log_format": "standard"
+}
