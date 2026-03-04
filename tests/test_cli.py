@@ -446,7 +446,7 @@ class TestCLIIntegration:
 @pytest.fixture
 def cli_runner():
     """CLI runner fixture"""
-    runner = CliRunner(mix_stderr=False)
+    runner = CliRunner()
     return runner
 
 
