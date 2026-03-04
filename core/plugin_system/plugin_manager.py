@@ -51,7 +51,8 @@ class PluginManager:
             if not os.path.exists(plugin_dir):
                 continue
             
-            for py_file in Path(plugin_dir).glob("*.py"):
+            # 递归搜索所有子目录中的 Python 文件
+            for py_file in Path(plugin_dir).rglob("*.py"):
                 if py_file.name.startswith("_"):
                     continue
                 discovered.append(str(py_file))
