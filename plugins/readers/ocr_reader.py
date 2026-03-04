@@ -381,7 +381,18 @@ class OCRReaderPlugin(BaseReaderPlugin):
             self.language = language
             self.confidence_threshold = confidence_threshold
 
-            # 初始化或切换 OCR 引擎
+            # 提取图片
+            images = self._extract_images_from_pdf(pdf_path)
+            result["image_count"] = len(images)
+
+            # 如果没有图片，直接返回成功（不需要初始化 OCR 引擎）
+            if not images:
+                logger.info(f"No images found in {pdf_path}")
+                result["success"] = True
+                result["engine"] = engine
+                return result
+
+            # 初始化或切换 OCR 引擎（只在有图片时才初始化）
             try:
                 self._set_engine(engine)
             except Exception as e:
@@ -389,15 +400,6 @@ class OCRReaderPlugin(BaseReaderPlugin):
                 return result
 
             result["engine"] = engine
-
-            # 提取图片
-            images = self._extract_images_from_pdf(pdf_path)
-            result["image_count"] = len(images)
-
-            if not images:
-                logger.info(f"No images found in {pdf_path}")
-                result["success"] = True
-                return result
 
             # 过滤图片（根据页面参数）
             page_filter = None
