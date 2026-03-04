@@ -25,18 +25,35 @@ class PyMuPDFEngine(BasePDFEngine):
         return doc.page_count
     
     def extract_text(self, doc: fitz.Document, page_range: Tuple[int, int] = None) -> str:
-        """提取文本"""
+        """提取文本 - 优化版本（策略 A：减少跨语言调用）"""
         if page_range:
             start, end = page_range
             pages = doc.pages(start, end)
         else:
             pages = doc.pages()
         
-        text = ""
+        # ✅ 策略 A：批量获取所有页面文本块，减少跨语言调用
+        text_blocks = []
         for page in pages:
-            text += page.get_text()
+            # 使用 PyMuPDF 的批量文本提取 API
+            text_blocks.extend(page.get_text("blocks"))
         
-        return text
+        # ✅ 在 Python 层面一次性处理所有文本块
+        return self._process_blocks_batch(text_blocks)
+    
+    def _process_blocks_batch(self, blocks) -> str:
+        """批量处理文本块，减少循环开销
+        
+        Args:
+            blocks: PyMuPDF 返回的文本块列表
+            
+        Returns:
+            str: 合并后的文本
+        """
+        # 使用列表推导式，性能更高
+        # block 格式: (x0, y0, x1, y1, text, block_no, block_type)
+        # 我们只需要 text (index 4)
+        return "\n".join(block[4] for block in blocks if len(block) >= 5 and block[4])
     
     def extract_tables(self, doc: fitz.Document, page_range: Tuple[int, int] = None) -> List[List[List[str]]]:
         """提取表格"""
