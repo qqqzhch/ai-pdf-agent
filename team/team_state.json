@@ -2,33 +2,256 @@
   "version": "2.0",
   "status": "completed",
   "tasks": {
-    "total": 3,
-    "pending": 1,
+    "total": 30,
+    "pending": 30,
     "in_progress": 0,
-    "completed": 2,
+    "completed": 0,
     "failed": 0
   },
   "task_list": [
     {
-      "id": "TASK-1",
+      "id": "DOC-1",
       "title": "完善 README.md",
-      "description": "完善安装说明、使用示例、FAQ",
+      "description": "完善 README.md，包括：\n- 清晰的安装说明（pip install ai-pdf-agent）\n- 详细的使用示例（读取、转换功能）\n- 常见问题解答（FAQ）\n- 支持的 PDF 特性说明\n- 依赖版本要求",
+      "priority": 0,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "DOC-2",
+      "title": "编写 EXAMPLES.md",
+      "description": "编写 EXAMPLES.md，包含：\n- 基础示例：读取 PDF 文本、表格、图片\n- 进阶示例：批量处理、自定义插件\n- 转换示例：PDF to Markdown/HTML/JSON\n- 错误处理示例：异常捕获、重试机制\n- 性能优化示例：缓存、并行处理",
       "priority": 1,
-      "dependencies": []
+      "dependencies": [
+        "DOC-1"
+      ],
+      "timeout": 3600
     },
     {
-      "id": "TASK-2",
-      "title": "添加边界条件测试",
-      "description": "增加边界条件测试用例",
-      "priority": 0,
-      "dependencies": []
+      "id": "DOC-3",
+      "title": "添加性能基准测试文档",
+      "description": "创建 PERFORMANCE.md，包含：\n- 各功能模块性能基准数据\n- 不同 PDF 文件大小的处理时间\n- 内存使用情况\n- 性能优化建议\n- 与其他库的性能对比",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
     },
     {
-      "id": "TASK-4",
-      "title": "优化性能",
-      "description": "缓存大文件处理优化",
+      "id": "DOC-4",
+      "title": "创建故障排除指南",
+      "description": "创建 TROUBLESHOOTING.md，包含：\n- 常见错误及解决方案\n- 依赖安装问题\n- 权限问题\n- 编码问题\n- 大文件处理问题",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "TEST-1",
+      "title": "增加边界条件测试",
+      "description": "增加边界条件测试：\n- 空文件测试\n- 大文件测试（>100MB）\n- 损坏的 PDF 文件测试\n- 密码保护的 PDF 测试\n- 特殊字符和编码测试\n- 极端参数值测试",
       "priority": 0,
-      "dependencies": []
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "TEST-2",
+      "title": "添加更多真实 PDF 文件测试",
+      "description": "添加真实 PDF 文件测试：\n- 从测试数据目录读取不同类型的 PDF\n- 技术文档、论文、图书\n- 包含复杂表格的 PDF\n- 包含大量图片的 PDF\n- 混合内容的 PDF\n- 验证提取结果的准确性",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "TEST-3",
+      "title": "性能测试回归检查",
+      "description": "实现性能测试回归检查：\n- 记录性能基准数据\n- 每次运行性能测试并与基准对比\n- 性能下降超过 10% 时报警\n- 生成性能趋势报告\n- 集成到 CI/CD 流程",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "TEST-4",
+      "title": "集成测试覆盖更多场景",
+      "description": "扩展集成测试覆盖：\n- 端到端测试（读取 -> 转换 -> 输出）\n- 多格式转换测试\n- 插件系统集成测试\n- CLI 命令测试\n- 错误恢复测试\n- 并发处理测试",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "QUAL-1",
+      "title": "运行代码检查工具",
+      "description": "配置并运行代码检查工具：\n- pylint：代码质量检查\n- black：代码格式化\n- isort：import 排序\n- mypy：类型检查（可选）\n- 配置 pre-commit hooks\n- 添加 .github/workflows/lint.yml",
+      "priority": 0,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "QUAL-2",
+      "title": "添加类型注解",
+      "description": "为核心模块添加类型注解：\n- 添加 typing import\n- 函数参数和返回值类型注解\n- 类属性类型注解\n- 使用 mypy 检查\n- 修复类型错误",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "QUAL-3",
+      "title": "重构复杂函数",
+      "description": "重构复杂函数：\n- 识别复杂度 > 10 的函数\n- 拆分为更小的函数\n- 提取重复逻辑\n- 提高代码可读性\n- 保持功能不变",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "QUAL-4",
+      "title": "减少代码重复",
+      "description": "减少代码重复：\n- 识别重复代码块\n- 提取公共函数/类\n- 创建工具模块\n- 统一错误处理逻辑\n- 统一日志格式",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "PERF-1",
+      "title": "缓存机制优化",
+      "description": "优化缓存机制：\n- 实现文件内容缓存\n- 添加缓存失效策略\n- 支持自定义缓存大小\n- 缓存命中率统计\n- 添加缓存调试信息",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "PERF-2",
+      "title": "内存使用优化",
+      "description": "优化内存使用：\n- 使用生成器替代列表\n- 及时释放大对象\n- 使用内存分析工具\n- 优化数据结构\n- 减少内存复制",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "PERF-3",
+      "title": "大文件处理优化",
+      "description": "优化大文件处理：\n- 流式读取大文件\n- 分页处理机制\n- 进度显示\n- 内存占用控制\n- 支持断点续传",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "PERF-4",
+      "title": "并行处理优化",
+      "description": "优化并行处理：\n- 使用 concurrent.futures\n- 任务队列管理\n- 线程池大小配置\n- 避免全局锁竞争\n- 并行度自适应",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "ERR-1",
+      "title": "更友好的错误提示",
+      "description": "改进错误提示：\n- 自定义异常类\n- 错误码分类\n- 友好的错误消息\n- 建议解决方案\n- 多语言支持（可选）",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "ERR-2",
+      "title": "添加更多异常捕获",
+      "description": "添加更全面的异常捕获：\n- 文件操作异常\n- 网络请求异常\n- JSON 解析异常\n- PDF 解析异常\n- 插件加载异常",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "ERR-3",
+      "title": "错误日志改进",
+      "description": "改进错误日志：\n- 结构化日志格式（JSON）\n- 日志级别配置\n- 错误堆栈记录\n- 上下文信息记录\n- 日志文件轮转",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "ERR-4",
+      "title": "用户引导改进",
+      "description": "改进用户引导：\n- 详细的错误说明\n- 快速修复建议\n- 相关文档链接\n- 命令行自动补全\n- 交互式帮助",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "DEP-1",
+      "title": "更新依赖包到最新版本",
+      "description": "更新依赖包：\n- 运行 pip list --outdated\n- 测试新版本兼容性\n- 更新 requirements.txt\n- 更新 pyproject.toml\n- 更新锁文件",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "DEP-2",
+      "title": "移除未使用的依赖",
+      "description": "移除未使用的依赖：\n- 使用 pipdeptree 分析依赖\n- 移除冗余依赖\n- 优化依赖树\n- 减少安装包大小\n- 更新文档",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "DEP-3",
+      "title": "添加开发依赖",
+      "description": "添加开发依赖：\n- pytest（测试）\n- black（格式化）\n- pylint（检查）\n- mypy（类型检查）\n- pre-commit（git hooks）\n- 添加到 [tool.poetry.dev-dependencies]",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "DEP-4",
+      "title": "锁定依赖版本",
+      "description": "锁定依赖版本：\n- 使用 poetry.lock\n- 使用 requirements.lock\n- 记录 Python 版本\n- 记录操作系统版本\n- 添加兼容性说明",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "CICD-1",
+      "title": "添加更多测试矩阵",
+      "description": "添加测试矩阵：\n- 不同 Python 版本（3.10, 3.11, 3.12）\n- 不同操作系统（Ubuntu, macOS, Windows）\n- 使用 GitHub Actions matrix\n- 并行运行测试\n- 收集测试结果",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "CICD-2",
+      "title": "自动化部署流程",
+      "description": "实现自动化部署：\n- 版本号自动生成（语义化版本）\n- 构建 wheel 包\n- 发布到 PyPI\n- 生成 GitHub Release\n- 自动更新 CHANGELOG",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "CICD-3",
+      "title": "版本发布自动化",
+      "description": "版本发布自动化：\n- 使用 semantic-release\n- 自动更新版本号\n- 自动生成 Release Notes\n- 自动打 tag\n- 自动推送 PyPI",
+      "priority": 3,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "CICD-4",
+      "title": "代码覆盖率报告",
+      "description": "代码覆盖率报告：\n- 使用 pytest-cov\n- 生成 HTML 报告\n- 上传到 Codecov\n- 设置覆盖率阈值\n- PR 时检查覆盖率变化",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "CLEAN-1",
+      "title": "删除临时脚本文件",
+      "description": "删除临时脚本文件：\n- add_test_tasks.py\n- create_task_queue_cron.py\n- create_task_queue_cron_v2.py\n- create_zhang_cron.py\n- cto_init_team.py\n- cto_simple.py\n- init_team.py\n- recover_team.py\n- update_task_001.py\n- zhang_architect_optimized.py\n- test_results.md\n- FINAL_ARCHITECTURE.md\n- PROBLEM_EXPLANATION.md\n- TEAMTEAM_STATUS.json\n- TEAM_ARCHITECTURE.md\n- TEAM_CONFIG.json\n- TEAM_LOG.md\n- TEAM_STATUS.json\n- USAGE.md\n- task_queue.py\n- team_config.py\n- prompts/ 目录",
+      "priority": 0,
+      "dependencies": [],
+      "timeout": 1800
+    },
+    {
+      "id": "CLEAN-2",
+      "title": "整理项目结构",
+      "description": "整理项目结构：\n- 规范化目录命名\n- 移动文档到 docs/ 目录\n- 移动示例到 examples/ 目录\n- 移动测试到 tests/ 目录\n- 添加 .gitignore\n- 添加 .dockerignore",
+      "priority": 1,
+      "dependencies": [
+        "CLEAN-1"
+      ],
+      "timeout": 3600
     }
   ],
   "active_agents": [],
@@ -36,25 +259,270 @@
     "groups": [
       [
         {
-          "id": "TASK-2",
-          "title": "添加边界条件测试",
-          "description": "增加边界条件测试用例",
-          "priority": 0,
-          "dependencies": []
-        },
-        {
-          "id": "TASK-4",
-          "title": "优化性能",
-          "description": "缓存大文件处理优化",
-          "priority": 0,
-          "dependencies": []
-        },
-        {
-          "id": "TASK-1",
+          "id": "DOC-1",
           "title": "完善 README.md",
-          "description": "完善安装说明、使用示例、FAQ",
+          "description": "完善 README.md，包括：\n- 清晰的安装说明（pip install ai-pdf-agent）\n- 详细的使用示例（读取、转换功能）\n- 常见问题解答（FAQ）\n- 支持的 PDF 特性说明\n- 依赖版本要求",
+          "priority": 0,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "TEST-1",
+          "title": "增加边界条件测试",
+          "description": "增加边界条件测试：\n- 空文件测试\n- 大文件测试（>100MB）\n- 损坏的 PDF 文件测试\n- 密码保护的 PDF 测试\n- 特殊字符和编码测试\n- 极端参数值测试",
+          "priority": 0,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "QUAL-1",
+          "title": "运行代码检查工具",
+          "description": "配置并运行代码检查工具：\n- pylint：代码质量检查\n- black：代码格式化\n- isort：import 排序\n- mypy：类型检查（可选）\n- 配置 pre-commit hooks\n- 添加 .github/workflows/lint.yml",
+          "priority": 0,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "CLEAN-1",
+          "title": "删除临时脚本文件",
+          "description": "删除临时脚本文件：\n- add_test_tasks.py\n- create_task_queue_cron.py\n- create_task_queue_cron_v2.py\n- create_zhang_cron.py\n- cto_init_team.py\n- cto_simple.py\n- init_team.py\n- recover_team.py\n- update_task_001.py\n- zhang_architect_optimized.py\n- test_results.md\n- FINAL_ARCHITECTURE.md\n- PROBLEM_EXPLANATION.md\n- TEAMTEAM_STATUS.json\n- TEAM_ARCHITECTURE.md\n- TEAM_CONFIG.json\n- TEAM_LOG.md\n- TEAM_STATUS.json\n- USAGE.md\n- task_queue.py\n- team_config.py\n- prompts/ 目录",
+          "priority": 0,
+          "dependencies": [],
+          "timeout": 1800
+        },
+        {
+          "id": "DOC-4",
+          "title": "创建故障排除指南",
+          "description": "创建 TROUBLESHOOTING.md，包含：\n- 常见错误及解决方案\n- 依赖安装问题\n- 权限问题\n- 编码问题\n- 大文件处理问题",
           "priority": 1,
-          "dependencies": []
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "TEST-2",
+          "title": "添加更多真实 PDF 文件测试",
+          "description": "添加真实 PDF 文件测试：\n- 从测试数据目录读取不同类型的 PDF\n- 技术文档、论文、图书\n- 包含复杂表格的 PDF\n- 包含大量图片的 PDF\n- 混合内容的 PDF\n- 验证提取结果的准确性",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "TEST-4",
+          "title": "集成测试覆盖更多场景",
+          "description": "扩展集成测试覆盖：\n- 端到端测试（读取 -> 转换 -> 输出）\n- 多格式转换测试\n- 插件系统集成测试\n- CLI 命令测试\n- 错误恢复测试\n- 并发处理测试",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "QUAL-4",
+          "title": "减少代码重复",
+          "description": "减少代码重复：\n- 识别重复代码块\n- 提取公共函数/类\n- 创建工具模块\n- 统一错误处理逻辑\n- 统一日志格式",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "PERF-1",
+          "title": "缓存机制优化",
+          "description": "优化缓存机制：\n- 实现文件内容缓存\n- 添加缓存失效策略\n- 支持自定义缓存大小\n- 缓存命中率统计\n- 添加缓存调试信息",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "PERF-3",
+          "title": "大文件处理优化",
+          "description": "优化大文件处理：\n- 流式读取大文件\n- 分页处理机制\n- 进度显示\n- 内存占用控制\n- 支持断点续传",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "ERR-1",
+          "title": "更友好的错误提示",
+          "description": "改进错误提示：\n- 自定义异常类\n- 错误码分类\n- 友好的错误消息\n- 建议解决方案\n- 多语言支持（可选）",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "ERR-2",
+          "title": "添加更多异常捕获",
+          "description": "添加更全面的异常捕获：\n- 文件操作异常\n- 网络请求异常\n- JSON 解析异常\n- PDF 解析异常\n- 插件加载异常",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "ERR-3",
+          "title": "错误日志改进",
+          "description": "改进错误日志：\n- 结构化日志格式（JSON）\n- 日志级别配置\n- 错误堆栈记录\n- 上下文信息记录\n- 日志文件轮转",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "DEP-3",
+          "title": "添加开发依赖",
+          "description": "添加开发依赖：\n- pytest（测试）\n- black（格式化）\n- pylint（检查）\n- mypy（类型检查）\n- pre-commit（git hooks）\n- 添加到 [tool.poetry.dev-dependencies]",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "DEP-4",
+          "title": "锁定依赖版本",
+          "description": "锁定依赖版本：\n- 使用 poetry.lock\n- 使用 requirements.lock\n- 记录 Python 版本\n- 记录操作系统版本\n- 添加兼容性说明",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "CICD-4",
+          "title": "代码覆盖率报告",
+          "description": "代码覆盖率报告：\n- 使用 pytest-cov\n- 生成 HTML 报告\n- 上传到 Codecov\n- 设置覆盖率阈值\n- PR 时检查覆盖率变化",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "DOC-3",
+          "title": "添加性能基准测试文档",
+          "description": "创建 PERFORMANCE.md，包含：\n- 各功能模块性能基准数据\n- 不同 PDF 文件大小的处理时间\n- 内存使用情况\n- 性能优化建议\n- 与其他库的性能对比",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "TEST-3",
+          "title": "性能测试回归检查",
+          "description": "实现性能测试回归检查：\n- 记录性能基准数据\n- 每次运行性能测试并与基准对比\n- 性能下降超过 10% 时报警\n- 生成性能趋势报告\n- 集成到 CI/CD 流程",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "QUAL-2",
+          "title": "添加类型注解",
+          "description": "为核心模块添加类型注解：\n- 添加 typing import\n- 函数参数和返回值类型注解\n- 类属性类型注解\n- 使用 mypy 检查\n- 修复类型错误",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "QUAL-3",
+          "title": "重构复杂函数",
+          "description": "重构复杂函数：\n- 识别复杂度 > 10 的函数\n- 拆分为更小的函数\n- 提取重复逻辑\n- 提高代码可读性\n- 保持功能不变",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "PERF-2",
+          "title": "内存使用优化",
+          "description": "优化内存使用：\n- 使用生成器替代列表\n- 及时释放大对象\n- 使用内存分析工具\n- 优化数据结构\n- 减少内存复制",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "PERF-4",
+          "title": "并行处理优化",
+          "description": "优化并行处理：\n- 使用 concurrent.futures\n- 任务队列管理\n- 线程池大小配置\n- 避免全局锁竞争\n- 并行度自适应",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "ERR-4",
+          "title": "用户引导改进",
+          "description": "改进用户引导：\n- 详细的错误说明\n- 快速修复建议\n- 相关文档链接\n- 命令行自动补全\n- 交互式帮助",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "DEP-1",
+          "title": "更新依赖包到最新版本",
+          "description": "更新依赖包：\n- 运行 pip list --outdated\n- 测试新版本兼容性\n- 更新 requirements.txt\n- 更新 pyproject.toml\n- 更新锁文件",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "DEP-2",
+          "title": "移除未使用的依赖",
+          "description": "移除未使用的依赖：\n- 使用 pipdeptree 分析依赖\n- 移除冗余依赖\n- 优化依赖树\n- 减少安装包大小\n- 更新文档",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "CICD-1",
+          "title": "添加更多测试矩阵",
+          "description": "添加测试矩阵：\n- 不同 Python 版本（3.10, 3.11, 3.12）\n- 不同操作系统（Ubuntu, macOS, Windows）\n- 使用 GitHub Actions matrix\n- 并行运行测试\n- 收集测试结果",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        },
+        {
+          "id": "CICD-2",
+          "title": "自动化部署流程",
+          "description": "实现自动化部署：\n- 版本号自动生成（语义化版本）\n- 构建 wheel 包\n- 发布到 PyPI\n- 生成 GitHub Release\n- 自动更新 CHANGELOG",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "CICD-3",
+          "title": "版本发布自动化",
+          "description": "版本发布自动化：\n- 使用 semantic-release\n- 自动更新版本号\n- 自动生成 Release Notes\n- 自动打 tag\n- 自动推送 PyPI",
+          "priority": 3,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "DOC-2",
+          "title": "编写 EXAMPLES.md",
+          "description": "编写 EXAMPLES.md，包含：\n- 基础示例：读取 PDF 文本、表格、图片\n- 进阶示例：批量处理、自定义插件\n- 转换示例：PDF to Markdown/HTML/JSON\n- 错误处理示例：异常捕获、重试机制\n- 性能优化示例：缓存、并行处理",
+          "priority": 1,
+          "dependencies": [
+            "DOC-1"
+          ],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "CLEAN-2",
+          "title": "整理项目结构",
+          "description": "整理项目结构：\n- 规范化目录命名\n- 移动文档到 docs/ 目录\n- 移动示例到 examples/ 目录\n- 移动测试到 tests/ 目录\n- 添加 .gitignore\n- 添加 .dockerignore",
+          "priority": 1,
+          "dependencies": [
+            "CLEAN-1"
+          ],
+          "timeout": 3600
         }
       ]
     ],
@@ -65,5 +533,5 @@
     "end_time": 1772666030.4844775,
     "total_duration_ms": 2001.4543533325195
   },
-  "last_update": 1772666030.4898252
+  "last_update": 1772666263.6108656
 }
