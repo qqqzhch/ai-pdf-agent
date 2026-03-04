@@ -26,11 +26,23 @@ class PluginManager:
     def __init__(self, plugin_dirs: List[str] = None):
         if self._initialized:
             return
-        
+
+        # 计算项目根目录（相对于 core.plugin_system 包）
+        # core/plugin_system/plugin_manager.py -> core/plugin_system -> core -> project_root
+        package_dir = os.path.dirname(__file__)
+        project_root = os.path.abspath(os.path.join(package_dir, "..", ".."))
+        local_plugins_dir = os.path.join(project_root, "plugins")
+        builtin_plugins_dir = os.path.join(project_root, "builtin_plugins")
+
+        logger.debug(f"PluginManager: package_dir={package_dir}")
+        logger.debug(f"PluginManager: project_root={project_root}")
+        logger.debug(f"PluginManager: local_plugins_dir={local_plugins_dir}")
+        logger.debug(f"PluginManager: builtin_plugins_dir={builtin_plugins_dir}")
+
         self.plugin_dirs = plugin_dirs or [
-            "./plugins",
+            local_plugins_dir,        # ✅ 使用绝对路径
             "~/.ai-pdf/plugins",
-            os.path.join(os.path.dirname(__file__), "..", "builtin_plugins")
+            builtin_plugins_dir
         ]
         self.plugins: Dict[str, BasePlugin] = {}
         self.plugin_configs: Dict[str, Dict] = {}
@@ -44,19 +56,29 @@ class PluginManager:
         """发现所有可用插件"""
         if hasattr(self, '_plugin_cache') and not force_refresh:
             return self._plugin_cache
-        
+
+        logger.debug(f"PluginManager.discover_plugins: Searching in {len(self.plugin_dirs)} directories")
+
         discovered = []
         for plugin_dir in self.plugin_dirs:
             plugin_dir = os.path.expanduser(plugin_dir)
+            logger.debug(f"  Checking plugin directory: {plugin_dir}")
+
             if not os.path.exists(plugin_dir):
+                logger.debug(f"    Directory does not exist, skipping")
                 continue
-            
+
+            logger.debug(f"    Directory exists, searching for *.py files")
+
             # 递归搜索所有子目录中的 Python 文件
             for py_file in Path(plugin_dir).rglob("*.py"):
                 if py_file.name.startswith("_"):
                     continue
                 discovered.append(str(py_file))
-        
+
+            logger.debug(f"    Found {len([d for d in discovered if plugin_dir in d])} files in this directory")
+
+        logger.debug(f"PluginManager.discover_plugins: Total {len(discovered)} plugin files discovered")
         self._plugin_cache = discovered
         return discovered
     
