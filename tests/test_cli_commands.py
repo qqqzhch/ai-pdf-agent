@@ -29,7 +29,7 @@ from cli.main import cli
 @pytest.fixture
 def cli_runner():
     """CLI runner fixture"""
-    runner = CliRunner(mix_stderr=True)  # Capture stderr in stdout for testing
+    runner = CliRunner(mix_stderr=False)  # Capture stderr in stdout for testing
     return runner
 
 
