@@ -1,367 +1,215 @@
-"""优化的 PyMuPDF 引擎实现 - 支持缓冲和流式处理"""
+"""优化版 PyMuPDF 引擎实现 - 阶段 1"""
 
 import fitz  # PyMuPDF
-import io
-from typing import Dict, List, Tuple, Any, Generator, Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import logging
-import threading
+from typing import Dict, List, Tuple, Any
+import time
+from contextlib import contextmanager
 
 from .base import BasePDFEngine
 
-logger = logging.getLogger(__name__)
 
-
-class BufferedPyMuPDFEngine(BasePDFEngine):
-    """缓冲和流式处理的 PyMuPDF 引擎实现"""
+class OptimizedPyMuPDFEngine(BasePDFEngine):
+    """优化版 PyMuPDF 引擎实现 - 阶段 1（策略 A：减少跨语言调用）
     
-    name = "pymupdf_buffered"
-    version = "2.0.0"
+    优化策略：
+    1. 批量获取页面文本块，减少 Python-C 跨界调用
+    2. 在 Python 层面一次性处理所有文本块
+    3. 使用列表推导式，减少循环开销
     
-    # 页面缓存大小（页数）
-    DEFAULT_PAGE_CACHE_SIZE = 10
-    # 默认线程池大小
-    DEFAULT_WORKERS = 4
+    预期提升：10-30%（对于大文档）
+    """
     
-    def __init__(
-        self, 
-        page_cache_size: int = DEFAULT_PAGE_CACHE_SIZE,
-        workers: int = DEFAULT_WORKERS
-    ):
-        """
-        初始化优化的引擎
-        
-        Args:
-            page_cache_size: 页面缓存大小
-            workers: 并行处理的线程数
-        """
-        self.page_cache_size = page_cache_size
-        self.workers = workers
-        self._page_cache: Dict[int, Dict] = {}
-        self._cache_lock = threading.Lock()
-        self._executor = ThreadPoolExecutor(max_workers=workers)
-        
+    name = "pymupdf_optimized"
+    version = "1.24.0-optimized"
+    
+    @contextmanager
+    def _timer(self, operation_name: str):
+        """性能计时上下文管理器"""
+        start = time.perf_counter()
+        try:
+            yield
+        finally:
+            elapsed = (time.perf_counter() - start) * 1000  # 转换为毫秒
+            if hasattr(self, '_performance_stats'):
+                self._performance_stats[operation_name] = elapsed
+    
     def open(self, pdf_path: str) -> fitz.Document:
-        """打开 PDF 文件并预加载元数据"""
-        doc = fitz.open(pdf_path)
-        logger.debug(f"Opened PDF: {pdf_path} ({doc.page_count} pages)")
-        return doc
+        """打开 PDF 文件"""
+        with self._timer("open"):
+            doc = fitz.open(pdf_path)
+            return doc
     
     def close(self, doc: fitz.Document) -> None:
-        """关闭 PDF 文件并清理缓存"""
-        self._page_cache.clear()
-        doc.close()
-        logger.debug("PDF document closed and cache cleared")
+        """关闭 PDF 文件"""
+        with self._timer("close"):
+            doc.close()
     
     def get_page_count(self, doc: fitz.Document) -> int:
         """获取页数"""
-        return doc.page_count
+        with self._timer("get_page_count"):
+            return doc.page_count
     
-    def _cache_page(self, doc: fitz.Document, page_num: int) -> Dict:
-        """
-        缓存页面内容
+    def extract_text(self, doc: fitz.Document, page_range: Tuple[int, int] = None) -> str:
+        """提取文本 - 优化版本（策略 A：减少跨语言调用）
+        
+        优化说明：
+        1. 使用 page.get_text("blocks") 批量 API，减少 Python-C 跨界调用
+        2. 在 Python 层面一次性处理所有文本块
+        3. 使用列表推导式，减少循环开销
         
         Args:
-            doc: PDF 文档
-            page_num: 页码（0-based）
+            doc: PyMuPDF 文档对象
+            page_range: 可选的页面范围 (start, end)
             
         Returns:
-            页面内容字典
+            str: 提取的文本
         """
-        with self._cache_lock:
-            # 如果缓存已满，删除最旧的页面
-            if len(self._page_cache) >= self.page_cache_size:
-                oldest_key = min(self._page_cache.keys())
-                del self._page_cache[oldest_key]
+        with self._timer("extract_text"):
+            if page_range:
+                start, end = page_range
+                pages = list(doc.pages(start, end))
+            else:
+                pages = list(doc.pages())
             
-            # 获取页面并缓存
-            page = doc[page_num]
-            page_data = {
-                'text': page.get_text(),
-                'page_num': page_num,
-            }
-            self._page_cache[page_num] = page_data
-            return page_data
+            # ✅ 策略 A：批量获取所有页面文本块，减少跨语言调用
+            text_blocks = []
+            for page in pages:
+                # 使用 PyMuPDF 的批量文本提取 API
+                # 这比多次调用 page.get_text("text") 更高效
+                text_blocks.extend(page.get_text("blocks"))
+            
+            # ✅ 在 Python 层面一次性处理所有文本块
+            return self._process_blocks_batch(text_blocks)
     
-    def _get_cached_page(self, doc: fitz.Document, page_num: int) -> Optional[Dict]:
-        """
-        从缓存获取页面，如果不存在则加载
+    def _process_blocks_batch(self, blocks) -> str:
+        """批量处理文本块，减少循环开销
+        
+        优化说明：
+        1. 使用列表推导式，比 for 循环更快
+        2. 一次性过滤和提取，减少中间步骤
         
         Args:
-            doc: PDF 文档
-            page_num: 页码（0-based）
+            blocks: PyMuPDF 返回的文本块列表
+            block 格式: (x0, y0, x1, y1, text, block_no, block_type)
             
         Returns:
-            页面内容字典
+            str: 合并后的文本
         """
-        with self._cache_lock:
-            if page_num in self._page_cache:
-                logger.debug(f"Page {page_num} cache hit")
-                return self._page_cache[page_num]
-        
-        return self._cache_page(doc, page_num)
+        # 使用列表推导式，性能更高
+        # block 格式: (x0, y0, x1, y1, text, block_no, block_type)
+        # 我们只需要 text (index 4)
+        # 只包含非空文本块
+        return "\n".join(
+            block[4] 
+            for block in blocks 
+            if len(block) >= 5 and block[4]
+        )
     
-    def extract_text(
-        self, 
-        doc: fitz.Document, 
-        page_range: Tuple[int, int] = None,
-        stream: bool = True
-    ) -> Generator[str, None, None]:
-        """
-        提取文本（支持流式处理）
-        
-        Args:
-            doc: PDF 文档
-            page_range: 页面范围 (start, end)，None 表示全部
-            stream: 是否使用流式生成器
+    def extract_tables(self, doc: fitz.Document, page_range: Tuple[int, int] = None) -> List[List[List[str]]]:
+        """提取表格（未优化，保持原实现）"""
+        with self._timer("extract_tables"):
+            import pdfplumber
             
-        Yields:
-            每页的文本（流式模式）或一次性返回所有文本
-        """
-        if page_range:
-            start, end = page_range
-            page_nums = range(start, min(end, doc.page_count))
-        else:
-            page_nums = range(doc.page_count)
-        
-        def extract_page_text(page_num: int) -> Tuple[int, str]:
-            """提取单页文本"""
-            page_data = self._get_cached_page(doc, page_num)
-            return page_num, page_data['text']
-        
-        if stream:
-            # 流式模式：逐页生成
-            for page_num in page_nums:
-                _, text = extract_page_text(page_num)
-                yield text
-        else:
-            # 批量模式：并行处理
-            futures = {}
-            for page_num in page_nums:
-                future = self._executor.submit(extract_page_text, page_num)
-                futures[future] = page_num
-            
-            # 按顺序收集结果
-            results = {}
-            for future in as_completed(futures):
-                page_num, text = future.result()
-                results[page_num] = text
-            
-            for page_num in sorted(results.keys()):
-                yield results[page_num]
-    
-    def extract_text_batch(
-        self, 
-        doc: fitz.Document, 
-        page_range: Tuple[int, int] = None
-    ) -> str:
-        """
-        批量提取文本（一次性返回）
-        
-        Args:
-            doc: PDF 文档
-            page_range: 页面范围
-            
-        Returns:
-            所有文本
-        """
-        return ''.join(self.extract_text(doc, page_range, stream=False))
-    
-    def extract_tables(
-        self, 
-        doc: fitz.Document, 
-        page_range: Tuple[int, int] = None,
-        parallel: bool = True
-    ) -> List[List[List[str]]]:
-        """
-        提取表格（支持并行处理）
-        
-        Args:
-            doc: PDF 文档
-            page_range: 页面范围
-            parallel: 是否并行处理
-            
-        Returns:
-            表格列表
-        """
-        import pdfplumber
-        
-        tables = []
-        
-        def extract_page_tables(pdf_path: str, page_num: int) -> Tuple[int, List]:
-            """提取单页表格"""
-            try:
-                with pdfplumber.open(pdf_path) as pdf:
-                    if page_num >= len(pdf.pages):
-                        return page_num, []
+            tables = []
+            with pdfplumber.open(doc.name) as pdf:
+                for i, page in enumerate(pdf.pages):
+                    if page_range and (i < page_range[0] or i >= page_range[1]):
+                        continue
                     
-                    table = pdf.pages[page_num].extract_table()
-                    return page_num, [table] if table else []
-            except Exception as e:
-                logger.error(f"Error extracting tables from page {page_num}: {e}")
-                return page_num, []
-        
-        if page_range:
-            start, end = page_range
-            page_nums = range(start, min(end, doc.page_count))
-        else:
-            page_nums = range(doc.page_count)
-        
-        if parallel and len(page_nums) > 1:
-            # 并行处理
-            futures = {}
-            for page_num in page_nums:
-                future = self._executor.submit(extract_page_tables, doc.name, page_num)
-                futures[future] = page_num
+                    table = page.extract_table()
+                    if table:
+                        tables.append(table)
             
-            results = {}
-            for future in as_completed(futures):
-                page_num, page_tables = future.result()
-                results[page_num] = page_tables
-            
-            # 按顺序合并结果
-            for page_num in sorted(results.keys()):
-                tables.extend(results[page_num])
-        else:
-            # 串行处理
-            for page_num in page_nums:
-                _, page_tables = extract_page_tables(doc.name, page_num)
-                tables.extend(page_tables)
-        
-        return tables
+            return tables
     
-    def extract_images(
-        self, 
-        doc: fitz.Document, 
-        page_range: Tuple[int, int] = None,
-        parallel: bool = True
-    ) -> List[Dict]:
-        """
-        提取图片（支持并行处理）
-        
-        Args:
-            doc: PDF 文档
-            page_range: 页面范围
-            parallel: 是否并行处理
+    def extract_images(self, doc: fitz.Document, page_range: Tuple[int, int] = None) -> List[Dict]:
+        """提取图片（未优化，保持原实现）"""
+        with self._timer("extract_images"):
+            images = []
             
-        Returns:
-            图片列表
-        """
-        images = []
-        
-        def extract_page_images(doc: fitz.Document, page_num: int) -> List[Dict]:
-            """提取单页图片"""
-            page_images = []
-            page = doc[page_num]
-            
-            for img_index, img in enumerate(page.get_images()):
-                xref = img[0]
-                base_image = doc.extract_image(xref)
-                image_data = base_image["image"]
+            for page_num, page in enumerate(doc.pages()):
+                if page_range and (page_num < page_range[0] or page_num >= page_range[1]):
+                    continue
                 
-                page_images.append({
-                    "page": page_num + 1,
-                    "image_index": img_index,
-                    "xref": xref,
-                    "width": base_image["width"],
-                    "height": base_image["height"],
-                    "data": image_data,
-                    "format": base_image["ext"]
-                })
+                for img_index, img in enumerate(page.get_images()):
+                    xref = img[0]
+                    base_image = doc.extract_image(xref)
+                    image_data = base_image["image"]
+                    
+                    images.append({
+                        "page": page_num + 1,
+                        "image_index": img_index,
+                        "xref": xref,
+                        "width": base_image["width"],
+                        "height": base_image["height"],
+                        "data": image_data,
+                        "format": base_image["ext"]
+                    })
             
-            return page_images
-        
-        if page_range:
-            start, end = page_range
-            page_nums = range(start, min(end, doc.page_count))
-        else:
-            page_nums = range(doc.page_count)
-        
-        if parallel and len(page_nums) > 1:
-            # 并行处理
-            futures = {}
-            for page_num in page_nums:
-                future = self._executor.submit(extract_page_images, doc, page_num)
-                futures[future] = page_num
-            
-            results = {}
-            for future in as_completed(futures):
-                page_num = futures[future]
-                try:
-                    page_images = future.result()
-                    results[page_num] = page_images
-                except Exception as e:
-                    logger.error(f"Error extracting images from page {page_num}: {e}")
-                    results[page_num] = []
-            
-            # 按顺序合并结果
-            for page_num in sorted(results.keys()):
-                images.extend(results[page_num])
-        else:
-            # 串行处理
-            for page_num in page_nums:
-                page_images = extract_page_images(doc, page_num)
-                images.extend(page_images)
-        
-        return images
+            return images
     
     def get_metadata(self, doc: fitz.Document) -> Dict:
-        """获取元数据（优化的快速读取）"""
-        metadata = doc.metadata
+        """获取元数据（未优化，保持原实现）"""
+        with self._timer("get_metadata"):
+            metadata = doc.metadata
+            
+            # Handle pdf_version attribute which may not exist in all versions
+            pdf_version = ""
+            try:
+                pdf_version = str(doc.pdf_version)
+            except AttributeError:
+                # Fallback: try to get from metadata
+                pdf_version = metadata.get("format", "")
+            
+            return {
+                "title": metadata.get("title", ""),
+                "author": metadata.get("author", ""),
+                "subject": metadata.get("subject", ""),
+                "keywords": metadata.get("keywords", "").split(","),
+                "creator": metadata.get("creator", ""),
+                "producer": metadata.get("producer", ""),
+                "created": metadata.get("creationDate", ""),
+                "modified": metadata.get("modDate", ""),
+                "page_count": doc.page_count,
+                "is_encrypted": doc.is_encrypted,
+                "pdf_version": pdf_version,
+            }
+    
+    def get_structure(self, doc: fitz.Document) -> Dict:
+        """获取文档结构（未优化，保持原实现）"""
+        with self._timer("get_structure"):
+            # 简化版本：按页面提取文本和标题
+            structure = {
+                "title": doc.metadata.get("title", ""),
+                "sections": []
+            }
+            
+            for page_num, page in enumerate(doc.pages()):
+                text = page.get_text()
+                # 简单的标题识别（大字体、居中）
+                # 这里只是一个简化版本
+                structure["sections"].append({
+                    "page": page_num + 1,
+                    "text": text
+                })
+            
+            return structure
+    
+    def get_performance_stats(self) -> Dict:
+        """获取性能统计数据
         
-        # Handle pdf_version attribute which may not exist in all versions
-        pdf_version = ""
-        try:
-            pdf_version = str(doc.pdf_version)
-        except AttributeError:
-            pdf_version = metadata.get("format", "")
+        Returns:
+            Dict: 各操作的性能统计（毫秒）
+        """
+        if not hasattr(self, '_performance_stats'):
+            return {}
         
         return {
-            "title": metadata.get("title", ""),
-            "author": metadata.get("author", ""),
-            "subject": metadata.get("subject", ""),
-            "keywords": metadata.get("keywords", "").split(",") if metadata.get("keywords") else [],
-            "creator": metadata.get("creator", ""),
-            "producer": metadata.get("producer", ""),
-            "created": metadata.get("creationDate", ""),
-            "modified": metadata.get("modDate", ""),
-            "page_count": doc.page_count,
-            "is_encrypted": doc.is_encrypted,
-            "pdf_version": pdf_version,
+            "engine": self.name,
+            "version": self.version,
+            "stats": self._performance_stats.copy()
         }
     
-    def get_structure(
-        self, 
-        doc: fitz.Document, 
-        page_range: Tuple[int, int] = None
-    ) -> Dict:
-        """
-        获取文档结构（使用流式处理）
-        
-        Args:
-            doc: PDF 文档
-            page_range: 页面范围
-            
-        Returns:
-            文档结构字典
-        """
-        structure = {
-            "title": doc.metadata.get("title", ""),
-            "sections": []
-        }
-        
-        for text in self.extract_text(doc, page_range, stream=True):
-            structure["sections"].append({
-                "text": text
-            })
-        
-        return structure
-    
-    def __del__(self):
-        """清理线程池"""
-        if hasattr(self, '_executor'):
-            self._executor.shutdown(wait=False)
-
-
-# 保持向后兼容的别名
-PyMuPDFEngineOptimized = BufferedPyMuPDFEngine
+    def reset_performance_stats(self):
+        """重置性能统计数据"""
+        self._performance_stats = {}
