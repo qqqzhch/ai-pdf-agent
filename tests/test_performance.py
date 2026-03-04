@@ -467,16 +467,19 @@ class TestComprehensivePerformance:
             
             # 测试优化引擎
             def test_optimized():
-                engine = BufferedPyMuPDFEngine()
+                engine = OptimizedPyMuPDFEngine()
                 doc = engine.open(pdf_path)
-                text = engine.extract_text_batch(doc)
+                text = engine.extract_text(doc)
                 engine.close(doc)
                 return text
             
             # 测试流式处理
             def test_streaming():
-                engine = BufferedPyMuPDFEngine()
+                engine = OptimizedPyMuPDFEngine()
                 doc = engine.open(pdf_path)
+                text = engine.extract_text(doc)
+                engine.close(doc)
+                return text
                 texts = list(engine.extract_text(doc, stream=True))
                 engine.close(doc)
                 return texts
