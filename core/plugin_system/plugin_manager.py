@@ -110,14 +110,14 @@ class PluginManager:
             for attr_name in dir(module):
                 attr = getattr(module, attr_name)
                 # 检查是否为类且具有插件必需的属性
+                # 不再检查类名是否以 'Plugin' 结尾，因为转换器使用 'Converter' 结尾
                 if (
                     isinstance(attr, type) and
                     hasattr(attr, 'name') and
                     hasattr(attr, 'version') and
                     hasattr(attr, 'plugin_type') and
                     hasattr(attr, 'is_available') and
-                    hasattr(attr, 'execute') and
-                    attr.__name__.endswith('Plugin')
+                    hasattr(attr, 'execute')
                 ):
                     plugin_class = attr
                     break
