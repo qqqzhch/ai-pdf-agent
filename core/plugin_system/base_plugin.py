@@ -75,47 +75,71 @@ class BasePlugin(ABC):
     def check_dependencies(self) -> Tuple[bool, List[str]]:
         """检查依赖是否满足"""
         missing = []
-        
+
+        # 包名映射：处理包名与导入模块名不同的情况
+        # 注意：metadata 使用 PyPI 包名（如 pillow），import 使用模块名（如 PIL）
+        package_name_mapping = {
+            'PIL': 'pillow',  # import name -> PyPI package name
+        }
+
+        def parse_version(version_str: str):
+            """解析版本字符串为元组，用于比较"""
+            import re
+            # 移除版本前缀（如 v, r）和非数字字符（保留数字和点）
+            version_str = str(version_str).lstrip('vrVR')
+            parts = re.findall(r'\d+', version_str)
+            # 填充不足的部分为0
+            while len(parts) < 3:
+                parts.append('0')
+            return tuple(int(p) for p in parts[:3])
+
         for dep in self.dependencies:
             # 解析依赖规范（支持版本约束，如 "pymupdf>=1.23.0"）
             dep_name = dep.split('>=')[0].split('<=')[0].split('==')[0].split('!=')[0].split('~=')[0].split('>')[0].split('<')[0].strip()
-            
+
+            # 使用包名映射
+            package_name = package_name_mapping.get(dep_name, dep_name)
+
             try:
                 # 首先尝试使用 importlib（Python 3.8+）
                 import importlib.metadata as metadata
                 try:
-                    installed_version = metadata.version(dep_name)
+                    installed_version = metadata.version(package_name)
                 except metadata.PackageNotFoundError:
-                    missing.append(dep)
-                    continue
-                
+                    # 如果映射的包名找不到，尝试原始包名
+                    try:
+                        installed_version = metadata.version(dep_name)
+                    except metadata.PackageNotFoundError:
+                        missing.append(dep)
+                        continue
+
                 # 检查版本约束
                 if '>=' in dep:
                     required_version = dep.split('>=')[1].strip()
-                    if installed_version < required_version:
+                    if parse_version(installed_version) < parse_version(required_version):
                         missing.append(dep)
                         continue
                 elif '<=' in dep:
-                    required_version = dep.split('<=')[1].strip()
-                    if installed_version > required_version:
+                    required = dep.split('<=')[1].strip()
+                    if parse_version(installed_version) > parse_version(required):
                         missing.append(dep)
                         continue
                 elif '==' in dep:
-                    required_version = dep.split('==')[1].strip()
-                    if installed_version != required_version:
+                    required = dep.split('==')[1].strip()
+                    if parse_version(installed_version) != parse_version(required):
                         missing.append(dep)
                         continue
                 elif '>' in dep:
-                    required_version = dep.split('>')[1].strip()
-                    if installed_version <= required_version:
+                    required = dep.split('>')[1].strip()
+                    if parse_version(installed_version) <= parse_version(required):
                         missing.append(dep)
                         continue
                 elif '<' in dep:
-                    required_version = dep.split('<')[1].strip()
-                    if installed_version >= required_version:
+                    required = dep.split('<')[1].strip()
+                    if parse_version(installed_version) >= parse_version(required):
                         missing.append(dep)
                         continue
-                        
+
             except ImportError:
                 # 降级到 pkg_resources（Python < 3.8）
                 try:
@@ -128,10 +152,15 @@ class BasePlugin(ABC):
                     # 如果 pkg_resources 也不可用，使用 importlib 检查模块是否存在
                     import importlib
                     try:
-                        importlib.import_module(dep_name)
+                        # 尝试导入映射的包名
+                        importlib.import_module(package_name)
                     except ImportError:
-                        missing.append(dep)
-        
+                        # 尝试款导入原始包名
+                        try:
+                            importlib.import_module(dep_name)
+                        except ImportError:
+                            missing.append(dep)
+
         return (len(missing) == 0, missing)
     
     def get_metadata(self) -> Dict:
