@@ -93,40 +93,46 @@ cd ai-pdf-agent
 # 安装依赖
 pip install -r requirements.txt
 
-# 使用 Python 直接运行
-python3 -m cli.main --help
+# 安装工具
+pip install -e .
+
+# 验证安装
+ai-pdf --version
 ```
 
 ### 验证安装
 
 ```bash
+# 查看版本号
+ai-pdf --version
+
 # 查看 CLI 帮助
-python3 -m cli.main --help
+ai-pdf --help
 
 # 列出所有插件
-python3 -m cli.main plugin list
+ai-pdf plugin list
 
 # 检查插件状态
-python3 -m cli.main plugin check text_reader
+ai-pdf plugin check text_reader
 ```
 
 ### 基本使用
 
 ```bash
 # 1. 提取 PDF 文本
-python3 -m cli.main text document.pdf -o output.txt
+ai-pdf text document.pdf -o output.txt
 
 # 2. 提取文本并输出 JSON（AI Agent 友好）
-python3 -m cli.main text document.pdf --format json --structured -o output.json
+ai-pdf text document.pdf --format json --structured -o output.json
 
 # 3. 转换为 Markdown
-python3 -m cli.main to-markdown document.pdf -o output.md
+ai-pdf to-markdown document.pdf -o output.md
 
 # 4. 提取表格
-python3 -m cli.main tables document.pdf -o tables.json
+ai-pdf tables document.pdf -o tables.json
 
 # 5. 提取图片
-python3 -m cli.main images document.pdf --extract-dir ./images
+ai-pdf images document.pdf --extract-dir ./images
 
 # 6. 转换为图片
 ai-pdf to-image document.pdf -o output.png
