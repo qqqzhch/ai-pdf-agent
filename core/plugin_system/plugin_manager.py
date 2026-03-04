@@ -62,23 +62,62 @@ class PluginManager:
     
     def load_plugin(self, plugin_path: str) -> Optional[BasePlugin]:
         """加载单个插件"""
+        import sys
+        
+        # 保存原始 sys.path
+        original_path = sys.path.copy()
+        
         try:
+            # 获取插件文件的绝对路径
+            abs_plugin_path = os.path.abspath(plugin_path)
+            
+            # 确定项目根目录（查找包含 core/plugins 的目录）
+            plugin_dir = os.path.dirname(abs_plugin_path)
+            current_dir = plugin_dir
+            
+            # 向上查找项目根目录
+            project_root = None
+            for _ in range(5):  # 最多向上查找 5 层
+                if os.path.exists(os.path.join(current_dir, 'core')):
+                    project_root = current_dir
+                    break
+                parent = os.path.dirname(current_dir)
+                if parent == current_dir:
+                    break
+                current_dir = parent
+            
+            # 添加项目根目录到 sys.path
+            if project_root and project_root not in sys.path:
+                sys.path.insert(0, project_root)
+            
             # 动态导入插件模块
+            module_name = os.path.splitext(os.path.basename(plugin_path))[0]
             spec = importlib.util.spec_from_file_location(
-                "plugin_module", 
-                plugin_path
+                f"plugins.{module_name}", 
+                abs_plugin_path
             )
             module = importlib.util.module_from_spec(spec)
+            
+            # 设置模块的包属性（如果需要）
+            if spec.submodule_search_locations:
+                module.__package__ = spec.name.rsplit('.', 1)[0]
+            
+            # 执行模块
             spec.loader.exec_module(module)
             
-            # 查找插件类
+            # 查找插件类（通过类属性而非继承检查）
             plugin_class = None
             for attr_name in dir(module):
                 attr = getattr(module, attr_name)
+                # 检查是否为类且具有插件必需的属性
                 if (
-                    isinstance(attr, type) and 
-                    issubclass(attr, BasePlugin) and 
-                    attr != BasePlugin
+                    isinstance(attr, type) and
+                    hasattr(attr, 'name') and
+                    hasattr(attr, 'version') and
+                    hasattr(attr, 'plugin_type') and
+                    hasattr(attr, 'is_available') and
+                    hasattr(attr, 'execute') and
+                    attr.__name__.endswith('Plugin')
                 ):
                     plugin_class = attr
                     break
@@ -115,6 +154,9 @@ class PluginManager:
         except Exception as e:
             logger.error(f"Failed to load plugin {plugin_path}: {e}", exc_info=True)
             return None
+        finally:
+            # 恢复原始 sys.path
+            sys.path = original_path
     
     def load_all_plugins(self) -> int:
         """加载所有插件"""
