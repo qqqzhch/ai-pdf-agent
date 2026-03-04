@@ -74,25 +74,64 @@ class BasePlugin(ABC):
     
     def check_dependencies(self) -> Tuple[bool, List[str]]:
         """检查依赖是否满足"""
-        try:
-            import pkg_resources
-        except ImportError:
-            # 如果 pkg_resources 不可用，使用 importlib 代替
-            import importlib
-            missing = []
-            for dep in self.dependencies:
-                try:
-                    importlib.import_module(dep)
-                except ImportError:
-                    missing.append(dep)
-            return (len(missing) == 0, missing)
-        
         missing = []
+        
         for dep in self.dependencies:
+            # 解析依赖规范（支持版本约束，如 "pymupdf>=1.23.0"）
+            dep_name = dep.split('>=')[0].split('<=')[0].split('==')[0].split('!=')[0].split('~=')[0].split('>')[0].split('<')[0].strip()
+            
             try:
-                pkg_resources.require(dep)
-            except pkg_resources.DistributionNotFound:
-                missing.append(dep)
+                # 首先尝试使用 importlib（Python 3.8+）
+                import importlib.metadata as metadata
+                try:
+                    installed_version = metadata.version(dep_name)
+                except metadata.PackageNotFoundError:
+                    missing.append(dep)
+                    continue
+                
+                # 检查版本约束
+                if '>=' in dep:
+                    required_version = dep.split('>=')[1].strip()
+                    if installed_version < required_version:
+                        missing.append(dep)
+                        continue
+                elif '<=' in dep:
+                    required_version = dep.split('<=')[1].strip()
+                    if installed_version > required_version:
+                        missing.append(dep)
+                        continue
+                elif '==' in dep:
+                    required_version = dep.split('==')[1].strip()
+                    if installed_version != required_version:
+                        missing.append(dep)
+                        continue
+                elif '>' in dep:
+                    required_version = dep.split('>')[1].strip()
+                    if installed_version <= required_version:
+                        missing.append(dep)
+                        continue
+                elif '<' in dep:
+                    required_version = dep.split('<')[1].strip()
+                    if installed_version >= required_version:
+                        missing.append(dep)
+                        continue
+                        
+            except ImportError:
+                # 降级到 pkg_resources（Python < 3.8）
+                try:
+                    import pkg_resources
+                    try:
+                        pkg_resources.require(dep)
+                    except (pkg_resources.DistributionNotFound, pkg_resources.VersionConflict):
+                        missing.append(dep)
+                except ImportError:
+                    # 如果 pkg_resources 也不可用，使用 importlib 检查模块是否存在
+                    import importlib
+                    try:
+                        importlib.import_module(dep_name)
+                    except ImportError:
+                        missing.append(dep)
+        
         return (len(missing) == 0, missing)
     
     def get_metadata(self) -> Dict:
