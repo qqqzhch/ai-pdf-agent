@@ -1,0 +1,66 @@
+name: Install Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  install-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Install package (development mode)
+      run: |
+        pip install -e .
+    
+    - name: Verify installation
+      run: |
+        python -m pip show ai-pdf-agent
+    
+    - name: Test CLI version command
+      run: |
+        ai-pdf --version
+    
+    - name: Test CLI help command
+      run: |
+        ai-pdf --help
+    
+    - name: Test plugin list command
+      run: |
+        ai-pdf plugin list
+    
+    - name: Test text extraction command
+      run: |
+        ai-pdf text --help
+    
+    - name: Test converter commands
+      run: |
+        ai-pdf to-markdown --help
+        ai-pdf to-html --help
+        ai-pdf to-json --help
+    
+    - name: Verify package structure
+      run: |
+        python -c "import cli.main; print('CLI module OK')"
+        python -c "import core.plugin_system.plugin_manager; print('Plugin system OK')"
+        python -c "import plugins.readers.text_reader; print('Text reader plugin OK')"

@@ -1,0 +1,135 @@
+name: Verify Installation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Install package
+      run: |
+        pip install -e .
+    
+    - name: Verify CLI commands
+      run: |
+        # Test version command
+        echo "Testing version command..."
+        ai-pdf --version
+        echo "✅ Version command OK"
+        
+        # Test help command
+        echo "Testing help command..."
+        ai-pdf --help
+        echo "✅ Help command OK"
+    
+    - name: Verify plugin system
+      run: |
+        # Test plugin list
+        echo "Testing plugin list..."
+        ai-pdf plugin list
+        echo "✅ Plugin list OK"
+        
+        # Test plugin check
+        echo "Testing plugin check..."
+        ai-pdf plugin check text_reader
+        echo "✅ Plugin check OK"
+    
+    - name: Verify text extraction
+      run: |
+        # Create sample PDF
+        python -c "
+        from fitz import Document
+        doc = Document()
+        doc.insert_page(0, text='Sample Document\\nThis is test content.')
+        page = doc[0]
+        page.insert_text(fitz.Point(50, 50), 'Test content', fontsize=12)
+        doc.save('test_sample.pdf')
+        "
+        
+        # Test text extraction
+        echo "Testing text extraction..."
+        ai-pdf text test_sample.pdf -o test_output.txt
+        
+        # Verify output
+        if [ -f test_output.txt ]; then
+          echo "✅ Text extraction OK"
+          cat test_output.txt
+        else
+          echo "❌ Text extraction failed"
+          exit 1
+        fi
+    
+    - name: Verify format converters
+      run: |
+        # Test Markdown converter
+        echo "Testing Markdown converter..."
+        ai-pdf to-markdown test_sample.pdf -o test_output.md
+        if [ -f test_output.md ]; then
+          echo "✅ Markdown converter OK"
+        else
+          echo "❌ Markdown converter failed"
+          exit 1
+        fi
+        
+        # Test JSON converter
+        echo "Testing JSON converter..."
+        ai-pdf to-json test_sample.pdf -o test_output.json
+        if [ -f test_output.json ]; then
+          echo "✅ JSON converter OK"
+        else
+          echo "❌ JSON converter failed"
+          exit 1
+        fi
+    
+    - name: Verify Python API
+      run: |
+        python << 'EOF'
+        import json
+        from plugins.readers.text_reader import TextReaderPlugin
+        from plugins.converters.to_json import ToJsonPlugin
+        
+        # Test text reader plugin
+        print('Testing text reader plugin...')
+        text_plugin = TextReaderPlugin()
+        assert text_plugin.is_available(), 'Text reader plugin not available'
+        
+        result = text_plugin.read('test_sample.pdf')
+        assert result['success'], f'Text reader failed: {result}'
+        print('✅ Text reader plugin OK')
+        
+        # Test JSON converter plugin
+        print('Testing JSON converter plugin...')
+        json_plugin = ToJsonPlugin()
+        assert json_plugin.is_available(), 'JSON converter plugin not available'
+        
+        result = json_plugin.convert('test_sample.pdf', output_path='test_api_output.json')
+        assert result['success'], f'JSON converter failed: {result}'
+        print('✅ JSON converter plugin OK')
+        
+        print('🎉 All Python API tests passed!')
+        EOF
+    
+    - name: Cleanup
+      run: |
+        rm -f test_sample.pdf test_output.* test_api_output.*
+        echo "✅ Cleanup completed"
