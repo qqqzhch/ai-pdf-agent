@@ -1,0 +1,50 @@
+{
+  "team_name": "AI PDF Agent 团队",
+  "cto": "CTO（首席技术官）",
+  "leader": "张架构",
+  "created_at": "2026-03-04T21:32:00.048508",
+  "members": {
+    "张架构": {
+      "name": "张架构",
+      "role": "技术架构负责人",
+      "session_key": "agent:main:subagent:2858e21a",
+      "status": "idle",
+      "created_at": "2026-03-04T21:32:00.050147"
+    },
+    "李开发": {
+      "name": "李开发",
+      "role": "后端核心开发工程师",
+      "session_key": "agent:main:subagent:694521e4",
+      "status": "idle",
+      "created_at": "2026-03-04T21:32:00.050168"
+    },
+    "赵栈": {
+      "name": "赵栈",
+      "role": "全栈开发工程师",
+      "session_key": "agent:main:subagent:f7fb1651",
+      "status": "idle",
+      "created_at": "2026-03-04T21:32:00.050181"
+    },
+    "王测试": {
+      "name": "王测试",
+      "role": "测试工程师",
+      "session_key": "agent:main:subagent:d247c2dc",
+      "status": "idle",
+      "created_at": "2026-03-04T21:32:00.050192"
+    },
+    "陈文档": {
+      "name": "陈文档",
+      "role": "文档工程师",
+      "session_key": "agent:main:subagent:08ba9c6c",
+      "status": "idle",
+      "created_at": "2026-03-04T21:32:00.050202"
+    },
+    "刘运维": {
+      "name": "刘运维",
+      "role": "DevOps 工程师",
+      "session_key": "agent:main:subagent:107c3dcc",
+      "status": "idle",
+      "created_at": "2026-03-04T21:32:00.050212"
+    }
+  }
+}
