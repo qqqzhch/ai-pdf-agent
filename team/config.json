@@ -1,0 +1,55 @@
+{
+  "version": "2.0",
+  "description": "AI Agent 团队配置（3 人精简团队）",
+  
+  "roles": {
+    "product_manager": {
+      "agent_id": "product-manager",
+      "model": "volcengine/ark-code-latest",
+      "max_concurrent": 1,
+      "description": "产品经理 - 需求分析、任务分解、优先级排序",
+      "capabilities": [
+        "task_analysis",
+        "dependency_detection",
+        "priority_sorting",
+        "execution_planning"
+      ]
+    },
+    "developer": {
+      "agent_id": "developer",
+      "model": "volcengine/ark-code-latest",
+      "max_concurrent": 3,
+      "description": "开发工程师 - 代码实现、测试、调试",
+      "capabilities": [
+        "coding",
+        "testing",
+        "debugging",
+        "refactoring"
+      ]
+    },
+    "quality_engineer": {
+      "agent_id": "qa",
+      "model": "volcengine/ark-code-latest",
+      "max_concurrent": 1,
+      "description": "质量工程师 - 代码审查、测试验证、文档完善",
+      "capabilities": [
+        "code_review",
+        "test_validation",
+        "documentation",
+        "quality_assurance"
+      ]
+    }
+  },
+
+  "scheduler": {
+    "max_parallel_tasks": 3,
+    "retry_attempts": 3,
+    "retry_delays": [60, 300, 600]
+  },
+
+  "heartbeat": {
+    "interval_ms": 1800000,
+    "check_stuck_after_ms": 7200000,
+    "alert_on_failure": true
+  }
+}
