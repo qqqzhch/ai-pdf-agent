@@ -7,14 +7,15 @@
 - 配置验证
 """
 
-import os
 import json
 import logging
+import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Union, List
+from typing import Any, Dict, List, Optional, Union
 
 try:
     import yaml
+
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
@@ -24,93 +25,93 @@ logger = logging.getLogger(__name__)
 
 # 默认配置
 DEFAULT_CONFIG = {
-    'pdf_engine': 'pymupdf',
-    'output_format': 'markdown',
-    'include_images': True,
-    'include_tables': True,
-    'image_format': 'png',
-    'image_dpi': 150,
-    'output_encoding': 'utf-8',
-    'chunk_size': 1000,
-    'overlap': 100,
-    'log_level': 'INFO',
-    'log_file': None,
-    'log_format': 'standard',
+    "pdf_engine": "pymupdf",
+    "output_format": "markdown",
+    "include_images": True,
+    "include_tables": True,
+    "image_format": "png",
+    "image_dpi": 150,
+    "output_encoding": "utf-8",
+    "chunk_size": 1000,
+    "overlap": 100,
+    "log_level": "INFO",
+    "log_file": None,
+    "log_format": "standard",
 }
 
 
 # 配置验证 schema
 CONFIG_SCHEMA = {
-    'pdf_engine': {
-        'type': str,
-        'required': True,
-        'choices': ['pymupdf', 'pdfplumber', 'pypdf'],
-        'default': 'pymupdf',
+    "pdf_engine": {
+        "type": str,
+        "required": True,
+        "choices": ["pymupdf", "pdfplumber", "pypdf"],
+        "default": "pymupdf",
     },
-    'output_format': {
-        'type': str,
-        'required': True,
-        'choices': ['markdown', 'html', 'json', 'text', 'csv'],
-        'default': 'markdown',
+    "output_format": {
+        "type": str,
+        "required": True,
+        "choices": ["markdown", "html", "json", "text", "csv"],
+        "default": "markdown",
     },
-    'include_images': {
-        'type': bool,
-        'required': False,
-        'default': True,
+    "include_images": {
+        "type": bool,
+        "required": False,
+        "default": True,
     },
-    'include_tables': {
-        'type': bool,
-        'required': False,
-        'default': True,
+    "include_tables": {
+        "type": bool,
+        "required": False,
+        "default": True,
     },
-    'image_format': {
-        'type': str,
-        'required': False,
-        'choices': ['png', 'jpeg', 'jpg', 'webp'],
-        'default': 'png',
+    "image_format": {
+        "type": str,
+        "required": False,
+        "choices": ["png", "jpeg", "jpg", "webp"],
+        "default": "png",
     },
-    'image_dpi': {
-        'type': int,
-        'required': False,
-        'min': 72,
-        'max': 600,
-        'default': 150,
+    "image_dpi": {
+        "type": int,
+        "required": False,
+        "min": 72,
+        "max": 600,
+        "default": 150,
     },
-    'output_encoding': {
-        'type': str,
-        'required': False,
-        'default': 'utf-8',
+    "output_encoding": {
+        "type": str,
+        "required": False,
+        "default": "utf-8",
     },
-    'chunk_size': {
-        'type': int,
-        'required': False,
-        'min': 100,
-        'max': 10000,
-        'default': 1000,
+    "chunk_size": {
+        "type": int,
+        "required": False,
+        "min": 100,
+        "max": 10000,
+        "default": 1000,
     },
-    'overlap': {
-        'type': int,
-        'required': False,
-        'min': 0,
-        'max': 1000,
-        'default': 100,
+    "overlap": {
+        "type": int,
+        "required": False,
+        "min": 0,
+        "max": 1000,
+        "default": 100,
     },
-    'log_level': {
-        'type': str,
-        'required': False,
-        'choices': ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-        'default': 'INFO',
+    "log_level": {
+        "type": str,
+        "required": False,
+        "choices": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        "default": "INFO",
     },
-    'log_file': {
-        'type': (str, type(None)),
-        'required': False,
-        'default': None,
+    "log_file": {
+        "type": (str, type(None)),
+        "required": False,
+        "default": None,
     },
-    'log_format': {
-        'type': str,
-        'required': False,
-        'choices': ['minimal', 'simple', 'standard', 'detailed', 'full'],
-        'default': 'standard',
+    "log_format": {
+        "type": str,
+        "required": False,
+        "choices": ["minimal", "simple", "standard", "detailed", "full"],
+        "default": "standard",
     },
 }
 
@@ -161,7 +162,9 @@ class Config:
             try:
                 self.load_from_file(config_path)
             except (FileNotFoundError, json.JSONDecodeError, ImportError, ValueError):
-                logger.warning(f"Failed to load config file {config_path}, using defaults")
+                logger.warning(
+                    f"Failed to load config file {config_path}, using defaults"
+                )
                 # 继续使用默认配置
 
         # 加载环境变量
@@ -191,11 +194,13 @@ class Config:
             raise FileNotFoundError(f"Config file not found: {config_path}")
 
         try:
-            with open(config_path, 'r', encoding='utf-8') as f:
-                if config_path.suffix in ['.yaml', '.yml']:
+            with open(config_path, "r", encoding="utf-8") as f:
+                if config_path.suffix in [".yaml", ".yml"]:
                     if not YAML_AVAILABLE:
                         logger.warning("PyYAML not installed, cannot load YAML config")
-                        raise ImportError("PyYAML is required to load YAML config files")
+                        raise ImportError(
+                            "PyYAML is required to load YAML config files"
+                        )
                     config_data = yaml.safe_load(f)
                 else:
                     # 默认尝试 JSON
@@ -223,14 +228,14 @@ class Config:
         环境变量命名规则：AIPDF_<CONFIG_KEY>
         例如：AIPDF_PDF_ENGINE, AIPDF_OUTPUT_FORMAT
         """
-        env_prefix = 'AIPDF_'
+        env_prefix = "AIPDF_"
 
         for key in os.environ:
             if key.startswith(env_prefix):
-                config_key = key[len(env_prefix):].lower()
+                config_key = key[len(env_prefix) :].lower()
 
                 # 转换为 Python 命名风格
-                config_key = config_key.replace('__', '_')
+                config_key = config_key.replace("__", "_")
 
                 # 尝试解析值
                 value = self._parse_env_value(os.environ[key])
@@ -248,9 +253,9 @@ class Config:
             解析后的值（bool, int, float, str）
         """
         # 布尔值
-        if value.lower() in ['true', 'yes', '1', 'on']:
+        if value.lower() in ["true", "yes", "1", "on"]:
             return True
-        elif value.lower() in ['false', 'no', '0', 'off']:
+        elif value.lower() in ["false", "no", "0", "off"]:
             return False
 
         # 整数
@@ -272,8 +277,8 @@ class Config:
         """填充默认值"""
         for field_name, schema in CONFIG_SCHEMA.items():
             if field_name not in self._config:
-                if 'default' in schema:
-                    self._config[field_name] = schema['default']
+                if "default" in schema:
+                    self._config[field_name] = schema["default"]
 
     def get(self, key: str, default: Any = None) -> Any:
         """获取配置项
@@ -286,8 +291,8 @@ class Config:
             配置值
         """
         # 支持嵌套键
-        if '.' in key:
-            keys = key.split('.')
+        if "." in key:
+            keys = key.split(".")
             value = self._config
 
             for k in keys:
@@ -307,8 +312,8 @@ class Config:
             key: 配置键（支持嵌套，如 'output.format'）
             value: 配置值
         """
-        if '.' in key:
-            keys = key.split('.')
+        if "." in key:
+            keys = key.split(".")
             config = self._config
 
             for k in keys[:-1]:
@@ -336,7 +341,7 @@ class Config:
         """
         return self._config.copy()
 
-    def save_to_file(self, output_path: Union[str, Path], format: str = 'json') -> bool:
+    def save_to_file(self, output_path: Union[str, Path], format: str = "json") -> bool:
         """保存配置到文件
 
         Args:
@@ -349,12 +354,14 @@ class Config:
         output_path = Path(output_path)
 
         try:
-            with open(output_path, 'w', encoding='utf-8') as f:
-                if format == 'yaml':
+            with open(output_path, "w", encoding="utf-8") as f:
+                if format == "yaml":
                     if not YAML_AVAILABLE:
                         logger.error("PyYAML not installed, cannot save YAML config")
                         return False
-                    yaml.dump(self._config, f, default_flow_style=False, allow_unicode=True)
+                    yaml.dump(
+                        self._config, f, default_flow_style=False, allow_unicode=True
+                    )
                 else:
                     json.dump(self._config, f, indent=2, ensure_ascii=False)
 
@@ -382,7 +389,7 @@ class Config:
 
         for field_name, schema in CONFIG_SCHEMA.items():
             # 检查必需字段
-            if schema.get('required', False) and field_name not in self._config:
+            if schema.get("required", False) and field_name not in self._config:
                 error = ConfigValidationError(field_name, "Required field is missing")
                 self._validation_errors.append(error)
                 all_valid = False
@@ -395,48 +402,48 @@ class Config:
             value = self._config[field_name]
 
             # 类型检查
-            field_type = schema.get('type')
+            field_type = schema.get("type")
             if field_type:
                 if isinstance(field_type, tuple):
                     # 支持多种类型
                     if not isinstance(value, field_type):
                         error = ConfigValidationError(
                             field_name,
-                            f"Expected type {field_type}, got {type(value).__name__}"
+                            f"Expected type {field_type}, got {type(value).__name__}",
                         )
                         self._validation_errors.append(error)
                         all_valid = False
                 elif not isinstance(value, field_type):
                     error = ConfigValidationError(
                         field_name,
-                        f"Expected type {field_type.__name__}, got {type(value).__name__}"
+                        f"Expected type {field_type.__name__}, got {type(value).__name__}",
                     )
                     self._validation_errors.append(error)
                     all_valid = False
 
             # 选择值检查
-            if 'choices' in schema and value not in schema['choices']:
+            if "choices" in schema and value not in schema["choices"]:
                 error = ConfigValidationError(
                     field_name,
-                    f"Invalid choice '{value}'. Valid options: {schema['choices']}"
+                    f"Invalid choice '{value}'. Valid options: {schema['choices']}",
                 )
                 self._validation_errors.append(error)
                 all_valid = False
 
             # 数值范围检查
             if isinstance(value, (int, float)):
-                if 'min' in schema and value < schema['min']:
+                if "min" in schema and value < schema["min"]:
                     error = ConfigValidationError(
                         field_name,
-                        f"Value {value} is less than minimum {schema['min']}"
+                        f"Value {value} is less than minimum {schema['min']}",
                     )
                     self._validation_errors.append(error)
                     all_valid = False
 
-                if 'max' in schema and value > schema['max']:
+                if "max" in schema and value > schema["max"]:
                     error = ConfigValidationError(
                         field_name,
-                        f"Value {value} is greater than maximum {schema['max']}"
+                        f"Value {value} is greater than maximum {schema['max']}",
                     )
                     self._validation_errors.append(error)
                     all_valid = False
@@ -493,7 +500,7 @@ def load_config(config_path: Optional[str] = None, validate: bool = True) -> Con
     return config
 
 
-def create_default_config(output_path: Union[str, Path], format: str = 'json') -> bool:
+def create_default_config(output_path: Union[str, Path], format: str = "json") -> bool:
     """创建默认配置文件
 
     Args:

@@ -7,12 +7,13 @@
 - 友好的错误提示和解决方案
 """
 
-import click
-import sys
 import logging
+import sys
 import traceback
-from typing import Any, Callable, Dict, Optional, Type
 from functools import wraps
+from typing import Any, Callable, Dict, Optional, Type
+
+import click
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 # 错误代码定义
 class ErrorCode:
     """错误代码常量"""
+
     SUCCESS = 0
     GENERAL_ERROR = 1
     PARAM_ERROR = 2
@@ -40,60 +42,60 @@ class ErrorCode:
 # 错误消息模板
 ERROR_MESSAGES: Dict[int, Dict[str, str]] = {
     ErrorCode.GENERAL_ERROR: {
-        'zh_CN': '发生未知错误',
-        'en_US': 'An unknown error occurred',
+        "zh_CN": "发生未知错误",
+        "en_US": "An unknown error occurred",
     },
     ErrorCode.PARAM_ERROR: {
-        'zh_CN': '参数错误',
-        'en_US': 'Invalid parameter',
+        "zh_CN": "参数错误",
+        "en_US": "Invalid parameter",
     },
     ErrorCode.FILE_NOT_FOUND: {
-        'zh_CN': '文件不存在',
-        'en_US': 'File not found',
+        "zh_CN": "文件不存在",
+        "en_US": "File not found",
     },
     ErrorCode.FILE_READ_ERROR: {
-        'zh_CN': '无法读取文件',
-        'en_US': 'Failed to read file',
+        "zh_CN": "无法读取文件",
+        "en_US": "Failed to read file",
     },
     ErrorCode.FILE_WRITE_ERROR: {
-        'zh_CN': '无法写入文件',
-        'en_US': 'Failed to write file',
+        "zh_CN": "无法写入文件",
+        "en_US": "Failed to write file",
     },
     ErrorCode.PDF_FORMAT_ERROR: {
-        'zh_CN': 'PDF 格式错误或文件损坏',
-        'en_US': 'PDF format error or corrupted file',
+        "zh_CN": "PDF 格式错误或文件损坏",
+        "en_US": "PDF format error or corrupted file",
     },
     ErrorCode.PDF_PASSWORD_ERROR: {
-        'zh_CN': 'PDF 文件需要密码',
-        'en_US': 'PDF file requires password',
+        "zh_CN": "PDF 文件需要密码",
+        "en_US": "PDF file requires password",
     },
     ErrorCode.PLUGIN_ERROR: {
-        'zh_CN': '插件错误',
-        'en_US': 'Plugin error',
+        "zh_CN": "插件错误",
+        "en_US": "Plugin error",
     },
     ErrorCode.PLUGIN_NOT_FOUND: {
-        'zh_CN': '插件未找到',
-        'en_US': 'Plugin not found',
+        "zh_CN": "插件未找到",
+        "en_US": "Plugin not found",
     },
     ErrorCode.CONFIG_ERROR: {
-        'zh_CN': '配置错误',
-        'en_US': 'Configuration error',
+        "zh_CN": "配置错误",
+        "en_US": "Configuration error",
     },
     ErrorCode.NETWORK_ERROR: {
-        'zh_CN': '网络错误',
-        'en_US': 'Network error',
+        "zh_CN": "网络错误",
+        "en_US": "Network error",
     },
     ErrorCode.PERMISSION_ERROR: {
-        'zh_CN': '权限不足',
-        'en_US': 'Permission denied',
+        "zh_CN": "权限不足",
+        "en_US": "Permission denied",
     },
     ErrorCode.MEMORY_ERROR: {
-        'zh_CN': '内存不足',
-        'en_US': 'Out of memory',
+        "zh_CN": "内存不足",
+        "en_US": "Out of memory",
     },
     ErrorCode.VALIDATION_ERROR: {
-        'zh_CN': '数据验证失败',
-        'en_US': 'Data validation failed',
+        "zh_CN": "数据验证失败",
+        "en_US": "Data validation failed",
     },
 }
 
@@ -149,21 +151,23 @@ class AI_PDF_Error(Exception):
             包含错误信息的字典
         """
         return {
-            'error': self.__class__.__name__,
-            'message': self.message,
-            'exit_code': self.exit_code,
-            'details': self.details,
-            'solution': self.solution,
+            "error": self.__class__.__name__,
+            "message": self.message,
+            "exit_code": self.exit_code,
+            "details": self.details,
+            "solution": self.solution,
         }
 
 
 class ParamError(AI_PDF_Error):
     """参数错误"""
+
     exit_code = ErrorCode.PARAM_ERROR
 
 
 class FileNotFoundError(AI_PDF_Error):
     """文件不存在错误"""
+
     exit_code = ErrorCode.FILE_NOT_FOUND
 
     def __init__(self, file_path: str):
@@ -174,22 +178,25 @@ class FileNotFoundError(AI_PDF_Error):
         """
         super().__init__(
             message=f"File not found: {file_path}",
-            solution=f"Please check if the file path is correct: {file_path}"
+            solution=f"Please check if the file path is correct: {file_path}",
         )
 
 
 class FileReadError(AI_PDF_Error):
     """文件读取错误"""
+
     exit_code = ErrorCode.FILE_READ_ERROR
 
 
 class FileWriteError(AI_PDF_Error):
     """文件写入错误"""
+
     exit_code = ErrorCode.FILE_WRITE_ERROR
 
 
 class PDFFormatError(AI_PDF_Error):
     """PDF 格式错误"""
+
     exit_code = ErrorCode.PDF_FORMAT_ERROR
 
     def __init__(self, message: str = "Invalid PDF format or corrupted file"):
@@ -199,30 +206,32 @@ class PDFFormatError(AI_PDF_Error):
             message: 错误消息
         """
         super().__init__(
-            message=message,
-            solution="Please ensure the file is a valid PDF document"
+            message=message, solution="Please ensure the file is a valid PDF document"
         )
 
 
 class PDFPasswordError(AI_PDF_Error):
     """PDF 密码错误"""
+
     exit_code = ErrorCode.PDF_PASSWORD_ERROR
 
     def __init__(self):
         """初始化错误"""
         super().__init__(
             message="PDF file is password-protected",
-            solution="Please provide the password using --password option"
+            solution="Please provide the password using --password option",
         )
 
 
 class PluginError(AI_PDF_Error):
     """插件错误"""
+
     exit_code = ErrorCode.PLUGIN_ERROR
 
 
 class PluginNotFoundError(AI_PDF_Error):
     """插件未找到错误"""
+
     exit_code = ErrorCode.PLUGIN_NOT_FOUND
 
     def __init__(self, plugin_name: str):
@@ -233,22 +242,25 @@ class PluginNotFoundError(AI_PDF_Error):
         """
         super().__init__(
             message=f"Plugin not found: {plugin_name}",
-            solution=f"Please check if the plugin '{plugin_name}' is installed and available"
+            solution=f"Please check if the plugin '{plugin_name}' is installed and available",
         )
 
 
 class ConfigError(AI_PDF_Error):
     """配置错误"""
+
     exit_code = ErrorCode.CONFIG_ERROR
 
 
 class NetworkError(AI_PDF_Error):
     """网络错误"""
+
     exit_code = ErrorCode.NETWORK_ERROR
 
 
 class PermissionError(AI_PDF_Error):
     """权限错误"""
+
     exit_code = ErrorCode.PERMISSION_ERROR
 
     def __init__(self, resource: str = "resource"):
@@ -259,28 +271,30 @@ class PermissionError(AI_PDF_Error):
         """
         super().__init__(
             message=f"Permission denied: {resource}",
-            solution="Please check file permissions or run with appropriate privileges"
+            solution="Please check file permissions or run with appropriate privileges",
         )
 
 
 class MemoryError(AI_PDF_Error):
     """内存错误"""
+
     exit_code = ErrorCode.MEMORY_ERROR
 
     def __init__(self):
         """初始化错误"""
         super().__init__(
             message="Out of memory",
-            solution="Try processing smaller files or increase available memory"
+            solution="Try processing smaller files or increase available memory",
         )
 
 
 class ValidationError(AI_PDF_Error):
     """验证错误"""
+
     exit_code = ErrorCode.VALIDATION_ERROR
 
 
-def get_error_message(code: int, locale: str = 'en_US') -> str:
+def get_error_message(code: int, locale: str = "en_US") -> str:
     """获取错误消息
 
     Args:
@@ -291,14 +305,12 @@ def get_error_message(code: int, locale: str = 'en_US') -> str:
         错误消息
     """
     if code in ERROR_MESSAGES:
-        return ERROR_MESSAGES[code].get(locale, ERROR_MESSAGES[code]['en_US'])
+        return ERROR_MESSAGES[code].get(locale, ERROR_MESSAGES[code]["en_US"])
     return ERROR_MESSAGES[ErrorCode.GENERAL_ERROR][locale]
 
 
 def format_error_message(
-    error: Exception,
-    verbose: bool = False,
-    json_output: bool = False
+    error: Exception, verbose: bool = False, json_output: bool = False
 ) -> str:
     """格式化错误消息
 
@@ -312,16 +324,17 @@ def format_error_message(
     """
     if json_output:
         import json
+
         if isinstance(error, AI_PDF_Error):
             error_dict = error.to_dict()
         else:
             error_dict = {
-                'error': error.__class__.__name__,
-                'message': str(error),
+                "error": error.__class__.__name__,
+                "message": str(error),
             }
 
         if verbose:
-            error_dict['traceback'] = traceback.format_exc()
+            error_dict["traceback"] = traceback.format_exc()
 
         return json.dumps(error_dict, indent=2, ensure_ascii=False)
 
@@ -356,6 +369,7 @@ def handle_errors(
     Returns:
         装饰器函数
     """
+
     def decorator(f: Callable) -> Callable:
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -371,10 +385,10 @@ def handle_errors(
             json_output = False
             quiet = False
 
-            if ctx is not None and hasattr(ctx, 'obj') and ctx.obj is not None:
-                verbose = getattr(ctx.obj, 'debug', False)
-                json_output = getattr(ctx.obj, 'json_output', False)
-                quiet = getattr(ctx.obj, 'quiet', False)
+            if ctx is not None and hasattr(ctx, "obj") and ctx.obj is not None:
+                verbose = getattr(ctx.obj, "debug", False)
+                json_output = getattr(ctx.obj, "json_output", False)
+                quiet = getattr(ctx.obj, "quiet", False)
 
             try:
                 # 调用原始函数
@@ -438,7 +452,7 @@ def handle_errors(
                     else:
                         click.echo(
                             "\n💡 Run with --debug or --verbose for more details",
-                            err=True
+                            err=True,
                         )
 
                 if exit_on_error:
@@ -499,6 +513,7 @@ def validate_file_exists(file_path: str) -> str:
         FileNotFoundError: 文件不存在
     """
     import os
+
     if not os.path.exists(file_path):
         raise FileNotFoundError(file_path)
     return file_path
@@ -524,10 +539,10 @@ def validate_pdf_file(file_path: str) -> str:
 
     # 检查文件扩展名
     path = Path(file_path)
-    if path.suffix.lower() not in ['.pdf']:
+    if path.suffix.lower() not in [".pdf"]:
         raise ValidationError(
             message=f"Not a PDF file: {file_path}",
-            solution="Please provide a valid PDF file with .pdf extension"
+            solution="Please provide a valid PDF file with .pdf extension",
         )
 
     # 检查文件大小（防止处理过大文件）

@@ -7,27 +7,27 @@
 - 子命令注册
 """
 
-import sys
 import logging
 import os
+import sys
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 import click
 
-from core.plugin_system import PluginManager, PluginType
-from cli.error_handler import handle_errors
 from cli.config import Config, ConfigError
-from cli.logger import setup_logging, get_logger
+from cli.error_handler import handle_errors
+from cli.logger import get_logger, setup_logging
+from core.plugin_system import PluginManager, PluginType
 
 logger = get_logger(__name__)
 
 # 全局上下文设置
 CONTEXT_SETTINGS = {
-    'help_option_names': ['-h', '--help'],
-    'max_content_width': 120,
-    'ignore_unknown_options': True,
-    'allow_extra_args': True,
+    "help_option_names": ["-h", "--help"],
+    "max_content_width": 120,
+    "ignore_unknown_options": True,
+    "allow_extra_args": True,
 }
 
 
@@ -72,8 +72,10 @@ class CLIContext:
     def _setup_logging(self):
         """设置日志级别和格式"""
         # 从配置获取日志设置（配置加载后）
-        log_level = 'DEBUG' if self.debug else ('INFO' if self.verbose else 'WARNING')
-        log_format = 'detailed' if self.debug else ('standard' if self.verbose else 'minimal')
+        log_level = "DEBUG" if self.debug else ("INFO" if self.verbose else "WARNING")
+        log_format = (
+            "detailed" if self.debug else ("standard" if self.verbose else "minimal")
+        )
 
         # 设置日志
         setup_logging(
@@ -100,12 +102,12 @@ class CLIContext:
 
             # 从配置更新日志设置
             if self.config:
-                log_level = self.config.get('log_level', 'INFO')
-                log_file = self.config.get('log_file')
-                log_format = self.config.get('log_format', 'standard')
+                log_level = self.config.get("log_level", "INFO")
+                log_file = self.config.get("log_file")
+                log_format = self.config.get("log_format", "standard")
 
                 # 重新设置日志（如果配置中有日志设置）
-                if log_file or log_format != 'standard':
+                if log_file or log_format != "standard":
                     setup_logging(
                         level=log_level,
                         verbose=self.verbose,
@@ -135,7 +137,7 @@ class CLIContext:
             self.plugin_manager = PluginManager()
 
             # 自动发现并加载插件
-            plugin_dir = Path(__file__).parent.parent / 'plugins'
+            plugin_dir = Path(__file__).parent.parent / "plugins"
             if plugin_dir.exists():
                 # 使用 PluginManager 的方法
                 loaded_count = self.plugin_manager.load_all_plugins()
@@ -185,12 +187,12 @@ class CLIContext:
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.option('--verbose', '-v', is_flag=True, help='详细输出模式')
-@click.option('--debug', '-d', is_flag=True, help='调试模式（显示详细日志）')
-@click.option('--quiet', '-q', is_flag=True, help='静默模式（只显示错误）')
-@click.option('--json', is_flag=True, help='JSON 格式输出')
-@click.option('--config', '-c', type=click.Path(exists=False), help='配置文件路径')
-@click.version_option(version='0.1.0', prog_name='ai-pdf-agent')
+@click.option("--verbose", "-v", is_flag=True, help="详细输出模式")
+@click.option("--debug", "-d", is_flag=True, help="调试模式（显示详细日志）")
+@click.option("--quiet", "-q", is_flag=True, help="静默模式（只显示错误）")
+@click.option("--json", is_flag=True, help="JSON 格式输出")
+@click.option("--config", "-c", type=click.Path(exists=False), help="配置文件路径")
+@click.version_option(version="0.1.0", prog_name="ai-pdf-agent")
 @click.pass_context
 @handle_errors()
 def cli(ctx, verbose, debug, quiet, json, config):
@@ -241,9 +243,9 @@ def cli(ctx, verbose, debug, quiet, json, config):
 
 def register_commands():
     """注册所有子命令"""
-    from cli.commands import plugin
-    from cli.commands import text, tables, images, metadata, structure
-    from cli.commands import to_markdown, to_html, to_json, to_csv, to_image, to_epub
+    from cli.commands import (images, metadata, plugin, structure, tables,
+                              text, to_csv, to_epub, to_html, to_image,
+                              to_json, to_markdown)
 
     # 注册子命令
     cli.add_command(plugin.plugin_group)
@@ -280,7 +282,7 @@ def _invoke(self, *args, **kwargs):
 cli.invoke = _invoke.__get__(cli, cli.__class__)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 确保工作目录正确
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)
@@ -292,7 +294,7 @@ if __name__ == '__main__':
         click.echo("\n操作已取消", err=True)
         sys.exit(130)
     except Exception as e:
-        if '--debug' in sys.argv or '-d' in sys.argv:
+        if "--debug" in sys.argv or "-d" in sys.argv:
             logger.exception("未捕获的异常")
         else:
             click.echo(f"错误: {e}", err=True)

@@ -1,10 +1,10 @@
 """图片读取插件 - 使用 PyMuPDF 提取 PDF 图片"""
 
-import os
-from typing import Dict, Optional, Any, Tuple, List, Generator
 import logging
+import os
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, Generator, List, Optional, Tuple
 
 from core.plugin_system.base_reader_plugin import BaseReaderPlugin
 from core.plugin_system.plugin_type import PluginType
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ImageMetadata:
     """图片元数据"""
+
     page_number: int  # 页码（1-based）
     image_index: int  # 图片索引
     width: int  # 宽度
@@ -146,7 +147,11 @@ class ImageReaderPlugin(BaseReaderPlugin):
 
             if "page" in kwargs:
                 page_num = kwargs["page"]
-                if not isinstance(page_num, int) or page_num < 1 or page_num > page_count:
+                if (
+                    not isinstance(page_num, int)
+                    or page_num < 1
+                    or page_num > page_count
+                ):
                     msg = f"Invalid page number: {page_num}. Must be between 1 and {page_count}"
                     result["error"] = msg
                     self.pdf_engine.close(doc)
@@ -176,7 +181,9 @@ class ImageReaderPlugin(BaseReaderPlugin):
                 if not isinstance(pages, list) or not all(
                     isinstance(p, int) for p in pages
                 ):
-                    result["error"] = f"Invalid pages: {pages}. Must be a list of integers"
+                    result["error"] = (
+                        f"Invalid pages: {pages}. Must be a list of integers"
+                    )
                     self.pdf_engine.close(doc)
                     return result
                 for page_num in pages:
@@ -199,14 +206,16 @@ class ImageReaderPlugin(BaseReaderPlugin):
             # 提取图片
             images = []
             for page_num in pages_to_extract:
-                page_images = list(self.extract_images(
-                    doc,
-                    page_num,
-                    extract_dir=extract_dir,
-                    image_format=image_format,
-                    dpi=dpi,
-                    include_metadata=include_metadata
-                ))
+                page_images = list(
+                    self.extract_images(
+                        doc,
+                        page_num,
+                        extract_dir=extract_dir,
+                        image_format=image_format,
+                        dpi=dpi,
+                        include_metadata=include_metadata,
+                    )
+                )
                 images.extend(page_images)
 
             # 关闭文档
@@ -232,7 +241,7 @@ class ImageReaderPlugin(BaseReaderPlugin):
         extract_dir: Optional[str] = None,
         image_format: str = "png",
         dpi: int = 150,
-        include_metadata: bool = True
+        include_metadata: bool = True,
     ) -> Generator[Dict[str, Any], None, None]:
         """
         提取指定页面的所有图片（生成器）
@@ -262,7 +271,9 @@ class ImageReaderPlugin(BaseReaderPlugin):
                 base_image = doc.extract_image(xref)
 
                 if base_image is None:
-                    logger.warning(f"Failed to extract image {xref} from page {page_num}")
+                    logger.warning(
+                        f"Failed to extract image {xref} from page {page_num}"
+                    )
                     continue
 
                 image_bytes = base_image["image"]
@@ -282,8 +293,9 @@ class ImageReaderPlugin(BaseReaderPlugin):
                     # 获取图片尺寸
                     try:
                         # 使用 PIL 获取图片尺寸
-                        from PIL import Image
                         import io
+
+                        from PIL import Image
 
                         pil_image = Image.open(io.BytesIO(image_bytes))
                         image_data["width"] = pil_image.width
@@ -329,8 +341,9 @@ class ImageReaderPlugin(BaseReaderPlugin):
                     # 如果需要转换格式
                     if image_format.lower() != image_ext.lower():
                         try:
-                            from PIL import Image
                             import io
+
+                            from PIL import Image
 
                             # 使用 PIL 转换格式
                             pil_image = Image.open(io.BytesIO(image_bytes))
@@ -351,7 +364,9 @@ class ImageReaderPlugin(BaseReaderPlugin):
                                 f"Failed to convert image format: {e}, saving as original"
                             )
                             # 保存原始格式
-                            filename = f"page_{page_num}_image_{img_index + 1}.{image_ext}"
+                            filename = (
+                                f"page_{page_num}_image_{img_index + 1}.{image_ext}"
+                            )
                             filepath = os.path.join(extract_dir, filename)
                             with open(filepath, "wb") as f:
                                 f.write(image_bytes)
@@ -371,7 +386,7 @@ class ImageReaderPlugin(BaseReaderPlugin):
             except Exception as e:
                 logger.error(
                     f"Error processing image {img_index} on page {page_num}: {e}",
-                    exc_info=True
+                    exc_info=True,
                 )
                 continue
 
@@ -383,7 +398,7 @@ class ImageReaderPlugin(BaseReaderPlugin):
         extract_dir: Optional[str] = None,
         image_format: str = "png",
         dpi: int = 150,
-        include_metadata: bool = True
+        include_metadata: bool = True,
     ) -> Dict[str, Any]:
         """
         按页码范围提取图片
@@ -406,14 +421,11 @@ class ImageReaderPlugin(BaseReaderPlugin):
             extract_dir=extract_dir,
             format=image_format,
             dpi=dpi,
-            include_metadata=include_metadata
+            include_metadata=include_metadata,
         )
 
     def save_images(
-        self,
-        images: List[Dict[str, Any]],
-        output_dir: str,
-        image_format: str = "png"
+        self, images: List[Dict[str, Any]], output_dir: str, image_format: str = "png"
     ) -> Dict[str, Any]:
         """
         保存图片到指定目录
@@ -426,12 +438,7 @@ class ImageReaderPlugin(BaseReaderPlugin):
         Returns:
             Dict[str, Any]: 保存结果
         """
-        result = {
-            "success": False,
-            "saved_count": 0,
-            "failed_count": 0,
-            "errors": []
-        }
+        result = {"success": False, "saved_count": 0, "failed_count": 0, "errors": []}
 
         try:
             # 创建输出目录
@@ -460,10 +467,7 @@ class ImageReaderPlugin(BaseReaderPlugin):
                     saved_count += 1
                 except Exception as e:
                     failed_count += 1
-                    result["errors"].append({
-                        "index": idx,
-                        "error": str(e)
-                    })
+                    result["errors"].append({"index": idx, "error": str(e)})
                     logger.error(f"Failed to save image {idx}: {e}")
 
             result["success"] = True
@@ -487,8 +491,9 @@ class ImageReaderPlugin(BaseReaderPlugin):
             Optional[ImageMetadata]: 图片元数据
         """
         try:
-            from PIL import Image
             import io
+
+            from PIL import Image
 
             pil_image = Image.open(io.BytesIO(image_bytes))
 

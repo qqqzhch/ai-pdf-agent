@@ -3,28 +3,35 @@
 使用 text_reader 插件提取 PDF 文本内容
 """
 
-import click
 import json
 import logging
 from typing import Optional
 
-from cli.error_handler import handle_errors, AI_PDF_Error, PluginNotFoundError, validate_pdf_file
+import click
+
+from cli.error_handler import (AI_PDF_Error, PluginNotFoundError,
+                               handle_errors, validate_pdf_file)
 
 logger = logging.getLogger(__name__)
 
 
-@click.command('text')
-@click.argument('input', type=click.Path(exists=False))
-@click.option('-o', '--output', type=click.Path(),
-              help='Output file path (save text to file)')
-@click.option('-p', '--pages',
-              help='Page range (e.g., 1-5, 1,3,5, or single page)')
-@click.option('-f', '--format', 'output_format',
-              type=click.Choice(['text', 'json', 'markdown'],
-              case_sensitive=False),
-              default='text', help='Output format (default: text)')
-@click.option('--structured', is_flag=True,
-              help='Return structured output with metadata')
+@click.command("text")
+@click.argument("input", type=click.Path(exists=False))
+@click.option(
+    "-o", "--output", type=click.Path(), help="Output file path (save text to file)"
+)
+@click.option("-p", "--pages", help="Page range (e.g., 1-5, 1,3,5, or single page)")
+@click.option(
+    "-f",
+    "--format",
+    "output_format",
+    type=click.Choice(["text", "json", "markdown"], case_sensitive=False),
+    default="text",
+    help="Output format (default: text)",
+)
+@click.option(
+    "--structured", is_flag=True, help="Return structured output with metadata"
+)
 @click.pass_obj
 @handle_errors()
 def text_command(ctx, input, output, pages, output_format, structured):
@@ -47,7 +54,7 @@ def text_command(ctx, input, output, pages, output_format, structured):
     plugin = TextReaderPlugin()
 
     if not plugin.is_available():
-        raise PluginNotFoundError('text_reader')
+        raise PluginNotFoundError("text_reader")
 
     # 解析页码范围
     kwargs = {}
@@ -57,7 +64,7 @@ def text_command(ctx, input, output, pages, output_format, structured):
             raise AI_PDF_Error(
                 message=f"Invalid page range format: {pages}",
                 details="Supported formats: '1', '1-5', '1,3,5', '1-3,5,7-9'",
-                solution="Check the page range format"
+                solution="Check the page range format",
             )
         kwargs.update(parsed)
 
@@ -67,11 +74,11 @@ def text_command(ctx, input, output, pages, output_format, structured):
     if not result["success"]:
         raise AI_PDF_Error(
             message=f"Failed to extract text from {input}",
-            details=result.get('error', 'Unknown error')
+            details=result.get("error", "Unknown error"),
         )
 
     # 准备输出
-    if output_format.lower() == 'json' or structured:
+    if output_format.lower() == "json" or structured:
         # JSON 格式输出
         output_data = {
             "success": True,
@@ -92,14 +99,13 @@ def text_command(ctx, input, output, pages, output_format, structured):
     # 输出结果
     if output:
         try:
-            with open(output, 'w', encoding='utf-8') as f:
+            with open(output, "w", encoding="utf-8") as f:
                 f.write(output_str)
             if not ctx.json_output:
                 click.echo(f"✓ Text extracted to: {output}")
         except Exception as e:
             raise AI_PDF_Error(
-                message=f"Failed to write to output file: {output}",
-                details=str(e)
+                message=f"Failed to write to output file: {output}", details=str(e)
             )
     else:
         click.echo(output_str)
@@ -125,15 +131,15 @@ def parse_page_range(pages: str) -> Optional[dict]:
     """
     try:
         # 单页
-        if '-' not in pages and ',' not in pages:
+        if "-" not in pages and "," not in pages:
             page_num = int(pages.strip())
             if page_num < 1:
                 return None
             return {"page": page_num}
 
         # 范围 "1-5"
-        if '-' in pages and ',' not in pages:
-            parts = pages.split('-')
+        if "-" in pages and "," not in pages:
+            parts = pages.split("-")
             if len(parts) == 2:
                 start = int(parts[0].strip())
                 end = int(parts[1].strip())
@@ -142,22 +148,22 @@ def parse_page_range(pages: str) -> Optional[dict]:
                 return {"page_range": (start, end)}
 
         # 多页 "1,3,5"
-        if ',' in pages and '-' not in pages:
-            page_list = [int(p.strip()) for p in pages.split(',')]
+        if "," in pages and "-" not in pages:
+            page_list = [int(p.strip()) for p in pages.split(",")]
             if any(p < 1 for p in page_list):
                 return None
             return {"pages": page_list}
 
         # 混合 "1-3,5,7-9"
-        if ',' in pages and '-' in pages:
+        if "," in pages and "-" in pages:
             page_list = []
-            parts = pages.split(',')
+            parts = pages.split(",")
 
             for part in parts:
                 part = part.strip()
-                if '-' in part:
+                if "-" in part:
                     # 处理范围
-                    range_parts = part.split('-')
+                    range_parts = part.split("-")
                     if len(range_parts) == 2:
                         start = int(range_parts[0].strip())
                         end = int(range_parts[1].strip())

@@ -1,4 +1,4 @@
-"""测试 EPUB 转换器插件 (ToEpubConverter)"""
+"""测试 EPUB 转换器插件 (ToEpubPlugin)"""
 
 import pytest
 import os
@@ -8,16 +8,16 @@ import sys
 # 确保可以导入插件
 sys.path.insert(0, '/root/.openclaw/workspace/ai-pdf-agent')
 
-from plugins.converters.epub_converter import ToEpubConverter
+from plugins.converters.to_epub import ToEpubPlugin
 
 
-class TestToEpubConverter:
-    """测试 ToEpubConverter 类"""
+class TestToEpubPlugin:
+    """测试 ToEpubPlugin 类"""
 
     @pytest.fixture
     def converter(self):
         """创建转换器实例"""
-        return ToEpubConverter()
+        return ToEpubPlugin()
 
     @pytest.fixture
     def sample_pdf_path(self):
@@ -325,7 +325,7 @@ class TestTextConversion:
     @pytest.fixture
     def converter(self):
         """创建转换器实例"""
-        return ToEpubConverter()
+        return ToEpubPlugin()
 
     @pytest.fixture
     def temp_output_path(self):
@@ -397,7 +397,7 @@ class TestHelperMethods:
     @pytest.fixture
     def converter(self):
         """创建转换器实例"""
-        return ToEpubConverter()
+        return ToEpubPlugin()
 
     def test_determine_pages_to_process_all(self, converter):
         """测试确定要处理的所有页面"""
@@ -445,7 +445,7 @@ class TestHelperMethods:
 
     def test_convert_text_block_to_html(self) -> None:
         """测试将文本块转换为 HTML"""
-        converter = ToEpubConverter()
+        converter = ToEpubPlugin()
 
         # 创建一个模拟的文本块
         block = {
@@ -547,7 +547,7 @@ class TestPluginMetadata:
     @pytest.fixture
     def converter(self):
         """创建转换器实例"""
-        return ToEpubConverter()
+        return ToEpubPlugin()
 
     def test_check_dependencies(self, converter):
         """测试检查依赖"""
@@ -579,7 +579,7 @@ class TestEdgeCases:
     @pytest.fixture
     def converter(self):
         """创建转换器实例"""
-        return ToEpubConverter()
+        return ToEpubPlugin()
 
     @pytest.fixture
     def temp_output_path(self):
@@ -630,4 +630,4 @@ class TestEdgeCases:
 
 
 # 测试完成
-__all__ = ["ToEpubConverter"]
+__all__ = ["ToEpubPlugin"]

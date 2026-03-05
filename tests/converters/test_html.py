@@ -1,4 +1,4 @@
-"""测试 HTML 转换器插件 (ToHtmlConverter)"""
+"""测试 HTML 转换器插件 (ToHtmlPlugin)"""
 
 import pytest
 import os
@@ -8,14 +8,14 @@ import sys
 # 确保可以导入插件
 sys.path.insert(0, '/root/.openclaw/workspace/ai-pdf-agent')
 
-from plugins.converters.html_converter import ToHtmlConverter
+from plugins.converters.to_html import ToHtmlPlugin
 
 
 # 共享 fixtures
 @pytest.fixture
 def converter():
     """创建转换器实例"""
-    return ToHtmlConverter()
+    return ToHtmlPlugin()
 
 
 @pytest.fixture
@@ -35,8 +35,8 @@ def temp_output_path():
         os.remove(path)
 
 
-class TestToHtmlConverter:
-    """测试 ToHtmlConverter 类"""
+class TestToHtmlPlugin:
+    """测试 ToHtmlPlugin 类"""
 
     def test_converter_inherits_from_base_plugin(self, converter):
         """测试转换器继承自 BasePlugin"""

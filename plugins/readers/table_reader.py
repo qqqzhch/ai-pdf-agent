@@ -1,8 +1,8 @@
 """表格读取插件 - 使用 PyMuPDF 提取 PDF 表格"""
 
-import os
-from typing import Dict, Optional, Any, Tuple, List
 import logging
+import os
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.plugin_system.base_reader_plugin import BaseReaderPlugin
 from core.plugin_system.plugin_type import PluginType
@@ -16,7 +16,9 @@ class TableReaderPlugin(BaseReaderPlugin):
     # 插件元数据
     name = "table_reader"
     version = "1.0.0"
-    description = "使用 PyMuPDF 提取 PDF 表格内容，支持按页、按范围提取，返回结构化表格数据"
+    description = (
+        "使用 PyMuPDF 提取 PDF 表格内容，支持按页、按范围提取，返回结构化表格数据"
+    )
     plugin_type = PluginType.READER
     author = "李开发"
     homepage = ""
@@ -110,9 +112,7 @@ class TableReaderPlugin(BaseReaderPlugin):
             result["metadata"] = self.pdf_engine.get_metadata(doc)
 
             # 确定要提取的页面
-            pages_to_extract = self._determine_pages_to_extract(
-                kwargs, page_count
-            )
+            pages_to_extract = self._determine_pages_to_extract(kwargs, page_count)
             result["pages_extracted"] = pages_to_extract
 
             # 提取表格
@@ -141,14 +141,14 @@ class TableReaderPlugin(BaseReaderPlugin):
         except FileNotFoundError:
             result["error"] = f"File not found: {pdf_path}"
         except Exception as e:
-            logger.error(f"Error reading tables from PDF {pdf_path}: {e}", exc_info=True)
+            logger.error(
+                f"Error reading tables from PDF {pdf_path}: {e}", exc_info=True
+            )
             result["error"] = str(e)
 
         return result
 
-    def _determine_pages_to_extract(
-        self, kwargs: Dict, page_count: int
-    ) -> List[int]:
+    def _determine_pages_to_extract(self, kwargs: Dict, page_count: int) -> List[int]:
         """
         确定要提取的页码列表
 
@@ -162,10 +162,7 @@ class TableReaderPlugin(BaseReaderPlugin):
         # 情况1：提取指定页
         if "page" in kwargs:
             page_num = kwargs["page"]
-            if (
-                isinstance(page_num, int)
-                and 1 <= page_num <= page_count
-            ):
+            if isinstance(page_num, int) and 1 <= page_num <= page_count:
                 return [page_num]
 
         # 情况2：提取页面范围
@@ -212,8 +209,9 @@ class TableReaderPlugin(BaseReaderPlugin):
 
             # 使用 PyMuPDF 的 find_tables 方法
             # Suppress the "pymupdf_layout" warning by redirecting stdout temporarily
-            import sys
             import io
+            import sys
+
             old_stdout = sys.stdout
             sys.stdout = io.StringIO()
             try:
@@ -231,7 +229,7 @@ class TableReaderPlugin(BaseReaderPlugin):
                 table_data = {
                     "bbox": tab.bbox,  # 表格边界框
                     "header": tab.header,  # 表头行索引
-                    "rows": []
+                    "rows": [],
                 }
 
                 # 提取所有行
@@ -253,7 +251,9 @@ class TableReaderPlugin(BaseReaderPlugin):
                     tables.append(table_data)
 
         except Exception as e:
-            logger.error(f"Error extracting tables from page {page + 1}: {e}", exc_info=True)
+            logger.error(
+                f"Error extracting tables from page {page + 1}: {e}", exc_info=True
+            )
 
         return tables
 
@@ -297,13 +297,7 @@ class TableReaderPlugin(BaseReaderPlugin):
         Returns:
             List[Dict]: 简化的表格列表
         """
-        return [
-            {
-                "page": table["page"],
-                "rows": table["rows"]
-            }
-            for table in tables
-        ]
+        return [{"page": table["page"], "rows": table["rows"]} for table in tables]
 
     def validate(self, pdf_path: str) -> Tuple[bool, Optional[str]]:
         """

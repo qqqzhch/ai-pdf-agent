@@ -3,26 +3,37 @@
 使用 image_reader 插件提取 PDF 图片
 """
 
-import click
 import json
 import logging
+
+import click
 
 logger = logging.getLogger(__name__)
 
 
-@click.command('images')
-@click.argument('input', type=click.Path(exists=True))
-@click.option('-o', '--output', type=click.Path(), help='Output JSON file with image metadata')
-@click.option('--extract-dir', type=click.Path(), help='Directory to extract images')
-@click.option('-p', '--pages', help='Page range (e.g., 1-5, 1,3,5)')
-@click.option('-f', '--format', 'image_format',
-              type=click.Choice(['png', 'jpeg', 'ppm', 'pbm', 'pam'],
-                               case_sensitive=False),
-              default='png', help='Image extraction format (default: png)')
-@click.option('--dpi', type=int, default=150, help='Image DPI (default: 150)')
-@click.option('--metadata-only', is_flag=True, help='Only extract metadata, do not save images')
+@click.command("images")
+@click.argument("input", type=click.Path(exists=True))
+@click.option(
+    "-o", "--output", type=click.Path(), help="Output JSON file with image metadata"
+)
+@click.option("--extract-dir", type=click.Path(), help="Directory to extract images")
+@click.option("-p", "--pages", help="Page range (e.g., 1-5, 1,3,5)")
+@click.option(
+    "-f",
+    "--format",
+    "image_format",
+    type=click.Choice(["png", "jpeg", "ppm", "pbm", "pam"], case_sensitive=False),
+    default="png",
+    help="Image extraction format (default: png)",
+)
+@click.option("--dpi", type=int, default=150, help="Image DPI (default: 150)")
+@click.option(
+    "--metadata-only", is_flag=True, help="Only extract metadata, do not save images"
+)
 @click.pass_obj
-def images_command(ctx, input, output, extract_dir, pages, image_format, dpi, metadata_only):
+def images_command(
+    ctx, input, output, extract_dir, pages, image_format, dpi, metadata_only
+):
     """Extract images from PDF
 
     Extract images from PDF files with page range, format, and output options.
@@ -43,7 +54,7 @@ def images_command(ctx, input, output, extract_dir, pages, image_format, dpi, me
 
     # 解析页码范围
     kwargs = {}
-    if (pages):
+    if pages:
         parsed = parse_page_range(pages)
         if parsed is None:
             raise click.ClickException(f"Error: Invalid page range format: {pages}")
@@ -51,11 +62,11 @@ def images_command(ctx, input, output, extract_dir, pages, image_format, dpi, me
 
     # 设置保存目录
     if extract_dir and not metadata_only:
-        kwargs['extract_dir'] = extract_dir
+        kwargs["extract_dir"] = extract_dir
 
     # 设置图片格式
-    kwargs['format'] = image_format
-    kwargs['dpi'] = dpi
+    kwargs["format"] = image_format
+    kwargs["dpi"] = dpi
 
     # 读取图片
     result = plugin.read(input, **kwargs)
@@ -79,7 +90,7 @@ def images_command(ctx, input, output, extract_dir, pages, image_format, dpi, me
 
     # 输出结果
     if output:
-        with open(output, 'w', encoding='utf-8') as f:
+        with open(output, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
         click.echo(f"✓ Image metadata saved to: {output}")
     else:
@@ -87,7 +98,9 @@ def images_command(ctx, input, output, extract_dir, pages, image_format, dpi, me
 
     # 显示摘要信息（仅在保存到文件时）
     if output:
-        click.echo(f"Summary: {result['count']} images found on {len(result['pages_extracted'])} page(s)")
+        click.echo(
+            f"Summary: {result['count']} images found on {len(result['pages_extracted'])} page(s)"
+        )
         if extract_dir and not metadata_only:
             saved_count = sum(1 for img in result["images"] if "saved_path" in img)
             click.echo(f"✓ {saved_count} images saved to: {extract_dir}")
@@ -99,15 +112,15 @@ def parse_page_range(pages: str):
     """解析页码范围字符串"""
     try:
         # 单页
-        if '-' not in pages and ',' not in pages:
+        if "-" not in pages and "," not in pages:
             page_num = int(pages.strip())
             if page_num < 1:
                 return None
             return {"page": page_num}
 
         # 范围 "1-5"
-        if '-' in pages and ',' not in pages:
-            parts = pages.split('-')
+        if "-" in pages and "," not in pages:
+            parts = pages.split("-")
             if len(parts) == 2:
                 start = int(parts[0].strip())
                 end = int(parts[1].strip())
@@ -116,21 +129,21 @@ def parse_page_range(pages: str):
                 return {"page_range": (start, end)}
 
         # 多页 "1,3,5"
-        if ',' in pages and '-' not in pages:
-            page_list = [int(p.strip()) for p in pages.split(',')]
+        if "," in pages and "-" not in pages:
+            page_list = [int(p.strip()) for p in pages.split(",")]
             if any(p < 1 for p in page_list):
                 return None
             return {"pages": page_list}
 
         # 混合 "1-3,5,7-9"
-        if ',' in pages and '-' in pages:
+        if "," in pages and "-" in pages:
             page_list = []
-            parts = pages.split(',')
+            parts = pages.split(",")
 
             for part in parts:
                 part = part.strip()
-                if '-' in part:
-                    range_parts = part.split('-')
+                if "-" in part:
+                    range_parts = part.split("-")
                     if len(range_parts) == 2:
                         start = int(range_parts[0].strip())
                         end = int(range_parts[1].strip())

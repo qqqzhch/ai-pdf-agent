@@ -1,6 +1,6 @@
 """测试 Image 转换器
 
-测试 ToImageConverter 类，确保其正确实现 PDF 到图片的转换功能。
+测试 ToImagePlugin 类，确保其正确实现 PDF 到图片的转换功能。
 """
 
 import sys
@@ -14,15 +14,15 @@ from io import BytesIO
 
 from PIL import Image
 
-from plugins.converters.image_converter import ToImageConverter
+from plugins.converters.to_image import ToImagePlugin
 
 
-class TestToImageConverter(unittest.TestCase):
-    """测试 ToImageConverter 类"""
+class TestToImagePlugin(unittest.TestCase):
+    """测试 ToImagePlugin 类"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToImageConverter()
+        self.converter = ToImagePlugin()
 
         # 创建测试 PDF 文件路径
         self.test_pdf_path = os.path.join(
@@ -655,12 +655,12 @@ class TestToImageConverter(unittest.TestCase):
         self.assertEqual(pil_img.mode, "L")  # 灰度模式
 
 
-class TestToImageConverterEdgeCases(unittest.TestCase):
-    """测试 ToImageConverter 边界情况"""
+class TestToImagePluginEdgeCases(unittest.TestCase):
+    """测试 ToImagePlugin 边界情况"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToImageConverter()
+        self.converter = ToImagePlugin()
 
     def test_determine_pages_invalid_single_page(self):
         """测试无效的单一页码"""

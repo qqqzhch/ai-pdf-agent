@@ -1,10 +1,10 @@
 """HTML 转换插件 - 使用 PyMuPDF 将 PDF 转换为 HTML"""
 
-import os
-from typing import Dict, Optional, Any, Tuple, List
-import logging
-import html
 import base64
+import html
+import logging
+import os
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.plugin_system.base_converter_plugin import BaseConverterPlugin
 from core.plugin_system.plugin_type import PluginType
@@ -209,17 +209,19 @@ class ToHtmlPlugin(BaseConverterPlugin):
         """
         # HTML 头部
         html_parts = []
-        html_parts.append('<!DOCTYPE html>')
+        html_parts.append("<!DOCTYPE html>")
         html_parts.append('<html lang="zh-CN">')
-        html_parts.append('<head>')
+        html_parts.append("<head>")
         html_parts.append('    <meta charset="UTF-8">')
-        html_parts.append('    <meta name="viewport" content="width=device-width, initial-scale=1.0">')
+        html_parts.append(
+            '    <meta name="viewport" content="width=device-width, initial-scale=1.0">'
+        )
 
         # 标题
         title = doc.metadata.get("title", "PDF 文档")
         if not title:
             title = "PDF 文档"
-        html_parts.append(f'    <title>{html.escape(title)}</title>')
+        html_parts.append(f"    <title>{html.escape(title)}</title>")
 
         # 响应式样式
         if responsive:
@@ -231,31 +233,31 @@ class ToHtmlPlugin(BaseConverterPlugin):
             html_parts.append(
                 "        table { width: 100%; border-collapse: collapse; margin: 10px 0; }"
             )
-            html_parts.append("        table, th, td { border: 1px solid #ddd; padding: 8px; }")
+            html_parts.append(
+                "        table, th, td { border: 1px solid #ddd; padding: 8px; }"
+            )
             html_parts.append("        th { background-color: #f2f2f2; }")
             html_parts.append("        img { max-width: 100%; height: auto; }")
-            html_parts.append("        pre { white-space: pre-wrap; word-wrap: break-word; }")
+            html_parts.append(
+                "        pre { white-space: pre-wrap; word-wrap: break-word; }"
+            )
             html_parts.append("    </style>")
 
-        html_parts.append('</head>')
-        html_parts.append('<body>')
+        html_parts.append("</head>")
+        html_parts.append("<body>")
 
         # 转换每个页面
         for page_num in pages:
-            page_html = self._convert_page_to_html(
-                doc, page_num - 1, embed_images
-            )
+            page_html = self._convert_page_to_html(doc, page_num - 1, embed_images)
             html_parts.append(page_html)
 
         # HTML 尾部
-        html_parts.append('</body>')
-        html_parts.append('</html>')
+        html_parts.append("</body>")
+        html_parts.append("</html>")
 
         return "\n".join(html_parts)
 
-    def _convert_page_to_html(
-        self, doc, page_num: int, embed_images: bool
-    ) -> str:
+    def _convert_page_to_html(self, doc, page_num: int, embed_images: bool) -> str:
         """
         将单个页面转换为 HTML
 
@@ -292,7 +294,9 @@ class ToHtmlPlugin(BaseConverterPlugin):
             return "\n".join(html_parts)
 
         except Exception as e:
-            logger.error(f"Error converting page {page_num + 1} to HTML: {e}", exc_info=True)
+            logger.error(
+                f"Error converting page {page_num + 1} to HTML: {e}", exc_info=True
+            )
             return f'<div class="page-error">Error converting page {page_num + 1}: {html.escape(str(e))}</div>'
 
     def _convert_text_block_to_html(self, block: Dict) -> str:
@@ -334,9 +338,7 @@ class ToHtmlPlugin(BaseConverterPlugin):
             # 判断是否为列表项
             is_list_item = line_text.lstrip().startswith(
                 ("•", "-", "*", "·", "○", "●")
-            ) or any(
-                line_text.lstrip().startswith(f"{i}.") for i in range(1, 10)
-            )
+            ) or any(line_text.lstrip().startswith(f"{i}.") for i in range(1, 10))
 
             if is_heading:
                 # 根据字体大小确定标题级别
@@ -348,23 +350,25 @@ class ToHtmlPlugin(BaseConverterPlugin):
                     tag = "h3"
                 else:
                     tag = "h4"
-                html_parts.append(f'    <{tag}>{html.escape(line_text)}</{tag}>')
+                html_parts.append(f"    <{tag}>{html.escape(line_text)}</{tag}>")
             elif is_list_item:
                 # 判断是有序列表还是无序列表
                 if any(line_text.lstrip().startswith(f"{i}.") for i in range(1, 10)):
                     # 有序列表
                     item_text = line_text.split(".", 1)[1].strip()
-                    html_parts.append(f'    <li>{html.escape(item_text)}</li>')
+                    html_parts.append(f"    <li>{html.escape(item_text)}</li>")
                 else:
                     # 无序列表
                     item_text = line_text.lstrip()
-                    item_text = item_text[1:].strip() if item_text[0] in [
-                        "•", "-", "*", "·"
-                    ] else item_text
-                    html_parts.append(f'    <li>{html.escape(item_text)}</li>')
+                    item_text = (
+                        item_text[1:].strip()
+                        if item_text[0] in ["•", "-", "*", "·"]
+                        else item_text
+                    )
+                    html_parts.append(f"    <li>{html.escape(item_text)}</li>")
             else:
                 # 普通段落
-                html_parts.append(f'    <p>{html.escape(line_text)}</p>')
+                html_parts.append(f"    <p>{html.escape(line_text)}</p>")
 
         return "\n".join(html_parts)
 
@@ -455,9 +459,9 @@ class ToHtmlPlugin(BaseConverterPlugin):
 
                 # 第一行作为表头
                 if row_index == 0:
-                    html_parts.append(f'        <th>{html.escape(cell_text)}</th>')
+                    html_parts.append(f"        <th>{html.escape(cell_text)}</th>")
                 else:
-                    html_parts.append(f'        <td>{html.escape(cell_text)}</td>')
+                    html_parts.append(f"        <td>{html.escape(cell_text)}</td>")
 
             html_parts.append("    </tr>")
 
@@ -465,9 +469,7 @@ class ToHtmlPlugin(BaseConverterPlugin):
 
         return "\n".join(html_parts)
 
-    def convert_list_to_html(
-        self, items: List[str], ordered: bool = False
-    ) -> str:
+    def convert_list_to_html(self, items: List[str], ordered: bool = False) -> str:
         """
         将列表转换为 HTML 列表
 
@@ -487,15 +489,13 @@ class ToHtmlPlugin(BaseConverterPlugin):
         html_parts.append(f"<{tag}>")
 
         for item in items:
-            html_parts.append(f'    <li>{html.escape(str(item))}</li>')
+            html_parts.append(f"    <li>{html.escape(str(item))}</li>")
 
         html_parts.append(f"</{tag}>")
 
         return "\n".join(html_parts)
 
-    def convert_images_to_html(
-        self, images: List[Dict], embed: bool = False
-    ) -> str:
+    def convert_images_to_html(self, images: List[Dict], embed: bool = False) -> str:
         """
         将图片列表转换为 HTML
 

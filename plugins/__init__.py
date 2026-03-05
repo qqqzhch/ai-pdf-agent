@@ -1,7 +1,7 @@
 """Plugins 模块"""
 
-from .readers import TextReaderPlugin, StructureReaderPlugin, OCRReaderPlugin
 from .converters import ToJsonPlugin, ToMarkdownPlugin
+from .readers import OCRReaderPlugin, StructureReaderPlugin, TextReaderPlugin
 
 __all__ = [
     "TextReaderPlugin",

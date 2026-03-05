@@ -9,15 +9,15 @@
 - reload: 重新加载所有插件
 """
 
-import click
 import json
 import os
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
+import click
 
 from core.plugin_system import PluginManager, PluginType
-from utils.error_handler import handle_errors, AI_PDF_Error
-
+from utils.error_handler import AI_PDF_Error, handle_errors
 
 # 禁用插件配置文件路径
 DISABLED_PLUGINS_FILE = Path.home() / ".ai-pdf" / "disabled_plugins.json"
@@ -29,9 +29,9 @@ def load_disabled_plugins() -> set:
         return set()
 
     try:
-        with open(DISABLED_PLUGINS_FILE, 'r', encoding='utf-8') as f:
+        with open(DISABLED_PLUGINS_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            return set(data.get('disabled', []))
+            return set(data.get("disabled", []))
     except Exception:
         return set()
 
@@ -41,8 +41,8 @@ def save_disabled_plugins(disabled: set):
     DISABLED_PLUGINS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     try:
-        with open(DISABLED_PLUGINS_FILE, 'w', encoding='utf-8') as f:
-            json.dump({'disabled': list(disabled)}, f, indent=2, ensure_ascii=False)
+        with open(DISABLED_PLUGINS_FILE, "w", encoding="utf-8") as f:
+            json.dump({"disabled": list(disabled)}, f, indent=2, ensure_ascii=False)
     except Exception as e:
         raise AI_PDF_Error(f"Failed to save disabled plugins: {e}")
 
@@ -53,7 +53,7 @@ def is_plugin_disabled(name: str) -> bool:
     return name in disabled
 
 
-@click.group('plugin')
+@click.group("plugin")
 @click.pass_context
 def plugin_group(ctx):
     """插件管理命令
@@ -83,10 +83,12 @@ def plugin_group(ctx):
     pass
 
 
-@plugin_group.command('list')
-@click.option('--type', 'plugin_type', help='按插件类型过滤 (reader, converter, ocr, etc.)')
-@click.option('--all', 'show_all', is_flag=True, help='显示所有插件（包括禁用的）')
-@click.option('--json', 'json_output', is_flag=True, help='JSON 格式输出')
+@plugin_group.command("list")
+@click.option(
+    "--type", "plugin_type", help="按插件类型过滤 (reader, converter, ocr, etc.)"
+)
+@click.option("--all", "show_all", is_flag=True, help="显示所有插件（包括禁用的）")
+@click.option("--json", "json_output", is_flag=True, help="JSON 格式输出")
 @click.pass_obj
 @handle_errors
 def plugin_list(ctx, plugin_type: Optional[str], show_all: bool, json_output: bool):
@@ -135,16 +137,16 @@ def plugin_list(ctx, plugin_type: Optional[str], show_all: bool, json_output: bo
             continue
 
         plugin_info = {
-            'name': p.name,
-            'version': p.version,
-            'description': p.description,
-            'plugin_type': p.plugin_type.value,
-            'enabled': not is_disabled,
+            "name": p.name,
+            "version": p.version,
+            "description": p.description,
+            "plugin_type": p.plugin_type.value,
+            "enabled": not is_disabled,
         }
         plugin_data.append(plugin_info)
 
     # 按名称排序
-    plugin_data.sort(key=lambda x: x['name'])
+    plugin_data.sort(key=lambda x: x["name"])
 
     # 输出
     if json_output:
@@ -155,7 +157,7 @@ def plugin_list(ctx, plugin_type: Optional[str], show_all: bool, json_output: bo
             return
 
         # 计算列宽
-        name_width = max(len(p['name']) for p in plugin_data)
+        name_width = max(len(p["name"]) for p in plugin_data)
         name_width = max(name_width, 20)
         version_width = 10
         type_width = 12
@@ -168,13 +170,15 @@ def plugin_list(ctx, plugin_type: Optional[str], show_all: bool, json_output: bo
 
         # 打印插件信息
         for p in plugin_data:
-            status = "✓" if p['enabled'] else "✗"
-            click.echo(f"{p['name']:<{name_width}} {p['version']:<{version_width}} {p['plugin_type']:<{type_width}} {status:<{status_width}} {p['description']}")
+            status = "✓" if p["enabled"] else "✗"
+            click.echo(
+                f"{p['name']:<{name_width}} {p['version']:<{version_width}} {p['plugin_type']:<{type_width}} {status:<{status_width}} {p['description']}"
+            )
 
 
-@plugin_group.command('info')
-@click.argument('name')
-@click.option('--json', 'json_output', is_flag=True, help='JSON 格式输出')
+@plugin_group.command("info")
+@click.argument("name")
+@click.option("--json", "json_output", is_flag=True, help="JSON 格式输出")
 @click.pass_obj
 @handle_errors
 def plugin_info(ctx, name: str, json_output: bool):
@@ -218,20 +222,20 @@ def plugin_info(ctx, name: str, json_output: bool):
 
     # 准备输出数据
     info = {
-        'name': metadata['name'],
-        'version': metadata['version'],
-        'description': metadata['description'],
-        'plugin_type': metadata['plugin_type'],
-        'author': metadata.get('author', 'N/A'),
-        'homepage': metadata.get('homepage', 'N/A'),
-        'license': metadata.get('license', 'N/A'),
-        'python_dependencies': metadata['dependencies'],
-        'system_dependencies': metadata['system_dependencies'],
-        'enabled': not is_disabled,
-        'available': is_available,
-        'dependencies_ok': deps_ok,
-        'missing_dependencies': missing_deps,
-        'config': config,
+        "name": metadata["name"],
+        "version": metadata["version"],
+        "description": metadata["description"],
+        "plugin_type": metadata["plugin_type"],
+        "author": metadata.get("author", "N/A"),
+        "homepage": metadata.get("homepage", "N/A"),
+        "license": metadata.get("license", "N/A"),
+        "python_dependencies": metadata["dependencies"],
+        "system_dependencies": metadata["system_dependencies"],
+        "enabled": not is_disabled,
+        "available": is_available,
+        "dependencies_ok": deps_ok,
+        "missing_dependencies": missing_deps,
+        "config": config,
     }
 
     # 输出
@@ -254,17 +258,21 @@ def plugin_info(ctx, name: str, json_output: bool):
         click.echo(f"  依赖状态: {'✓ 满足' if info['dependencies_ok'] else '✗ 缺失'}")
         click.echo()
         click.echo("依赖项:")
-        click.echo(f"  Python 依赖: {', '.join(info['python_dependencies']) if info['python_dependencies'] else '无'}")
-        click.echo(f"  系统依赖: {', '.join(info['system_dependencies']) if info['system_dependencies'] else '无'}")
+        click.echo(
+            f"  Python 依赖: {', '.join(info['python_dependencies']) if info['python_dependencies'] else '无'}"
+        )
+        click.echo(
+            f"  系统依赖: {', '.join(info['system_dependencies']) if info['system_dependencies'] else '无'}"
+        )
 
-        if info['missing_dependencies']:
+        if info["missing_dependencies"]:
             click.echo(f"  ⚠ 缺失依赖: {', '.join(info['missing_dependencies'])}")
 
 
-@plugin_group.command('check')
-@click.option('--name', 'plugin_name', help='检查指定插件（不指定则检查所有插件）')
-@click.option('--json', 'json_output', is_flag=True, help='JSON 格式输出')
-@click.option('--verbose', '-v', is_flag=True, help='显示详细信息')
+@plugin_group.command("check")
+@click.option("--name", "plugin_name", help="检查指定插件（不指定则检查所有插件）")
+@click.option("--json", "json_output", is_flag=True, help="JSON 格式输出")
+@click.option("--verbose", "-v", is_flag=True, help="显示详细信息")
 @click.pass_obj
 @handle_errors
 def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bool):
@@ -317,14 +325,14 @@ def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bo
         is_healthy = deps_ok and is_available
 
         result = {
-            'name': plugin.name,
-            'healthy': is_healthy,
-            'enabled': not is_disabled,
-            'available': is_available,
-            'dependencies_ok': deps_ok,
-            'missing_dependencies': missing_deps,
-            'version': plugin.version,
-            'plugin_type': plugin.plugin_type.value,
+            "name": plugin.name,
+            "healthy": is_healthy,
+            "enabled": not is_disabled,
+            "available": is_available,
+            "dependencies_ok": deps_ok,
+            "missing_dependencies": missing_deps,
+            "version": plugin.version,
+            "plugin_type": plugin.plugin_type.value,
         }
         results.append(result)
 
@@ -332,7 +340,7 @@ def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bo
             all_ok = False
 
     # 按名称排序
-    results.sort(key=lambda x: x['name'])
+    results.sort(key=lambda x: x["name"])
 
     # 输出
     if json_output:
@@ -343,7 +351,7 @@ def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bo
             return
 
         # 计算列宽
-        name_width = max(len(r['name']) for r in results)
+        name_width = max(len(r["name"]) for r in results)
         name_width = max(name_width, 20)
 
         if verbose:
@@ -352,10 +360,10 @@ def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bo
             click.echo("=" * 80)
 
             for r in results:
-                status_icon = "✓" if r['healthy'] else "✗"
-                enabled_icon = "✓" if r['enabled'] else "✗"
-                available_icon = "✓" if r['available'] else "✗"
-                deps_icon = "✓" if r['dependencies_ok'] else "✗"
+                status_icon = "✓" if r["healthy"] else "✗"
+                enabled_icon = "✓" if r["enabled"] else "✗"
+                available_icon = "✓" if r["available"] else "✗"
+                deps_icon = "✓" if r["dependencies_ok"] else "✗"
 
                 click.echo(f"\n{status_icon} {r['name']} (v{r['version']})")
                 click.echo(f"  类型: {r['plugin_type']}")
@@ -363,7 +371,7 @@ def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bo
                 click.echo(f"  可用: {available_icon}")
                 click.echo(f"  依赖: {deps_icon}")
 
-                if r['missing_dependencies']:
+                if r["missing_dependencies"]:
                     click.echo(f"  缺失: {', '.join(r['missing_dependencies'])}")
         else:
             # 简洁模式
@@ -372,11 +380,13 @@ def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bo
             click.echo("-" * len(header))
 
             for r in results:
-                status = "✓ OK" if r['healthy'] else "✗ FAIL"
-                enabled = "✓" if r['enabled'] else "✗"
-                deps = "✓" if r['dependencies_ok'] else "✗"
+                status = "✓ OK" if r["healthy"] else "✗ FAIL"
+                enabled = "✓" if r["enabled"] else "✗"
+                deps = "✓" if r["dependencies_ok"] else "✗"
 
-                click.echo(f"{r['name']:<{name_width}} {r['plugin_type']:<12} {status:<10} {enabled:<8} {deps:<6}")
+                click.echo(
+                    f"{r['name']:<{name_width}} {r['plugin_type']:<12} {status:<10} {enabled:<8} {deps:<6}"
+                )
 
         # 总体状态
         click.echo()
@@ -386,8 +396,8 @@ def plugin_check(ctx, plugin_name: Optional[str], json_output: bool, verbose: bo
             click.echo("✗ 部分插件存在问题，请检查详细输出")
 
 
-@plugin_group.command('enable')
-@click.argument('name')
+@plugin_group.command("enable")
+@click.argument("name")
 @click.pass_obj
 @handle_errors
 def plugin_enable(ctx, name: str):
@@ -424,9 +434,9 @@ def plugin_enable(ctx, name: str):
     click.echo(f"✓ Plugin '{name}' has been enabled")
 
 
-@plugin_group.command('disable')
-@click.argument('name')
-@click.option('--force', is_flag=True, help='强制禁用（即使插件正在使用）')
+@plugin_group.command("disable")
+@click.argument("name")
+@click.option("--force", is_flag=True, help="强制禁用（即使插件正在使用）")
 @click.pass_obj
 @handle_errors
 def plugin_disable(ctx, name: str, force: bool):
@@ -471,8 +481,8 @@ def plugin_disable(ctx, name: str, force: bool):
     click.echo(f"✓ Plugin '{name}' has been disabled")
 
 
-@plugin_group.command('reload')
-@click.option('--verbose', '-v', is_flag=True, help='显示详细信息')
+@plugin_group.command("reload")
+@click.option("--verbose", "-v", is_flag=True, help="显示详细信息")
 @click.pass_obj
 @handle_errors
 def plugin_reload(ctx, verbose: bool):

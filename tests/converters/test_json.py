@@ -1,4 +1,4 @@
-"""测试 JSON 转换器插件 (ToJsonConverter)
+"""测试 JSON 转换器插件 (ToJsonPlugin)
 
 测试用例覆盖：
 1. 插件初始化和元数据
@@ -20,19 +20,19 @@ import json
 import tempfile
 import unittest
 
-from plugins.converters.json_converter import ToJsonConverter
+from plugins.converters.to_json import ToJsonPlugin
 
 
-class TestToJsonConverterInitialization(unittest.TestCase):
-    """测试 ToJsonConverter 初始化和元数据"""
+class TestToJsonPluginInitialization(unittest.TestCase):
+    """测试 ToJsonPlugin 初始化和元数据"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
 
     def test_converter_class_exists(self):
         """测试转换器类存在"""
-        self.assertIsNotNone(ToJsonConverter)
+        self.assertIsNotNone(ToJsonPlugin)
 
     def test_converter_initialization(self):
         """测试转换器初始化"""
@@ -83,12 +83,12 @@ class TestToJsonConverterInitialization(unittest.TestCase):
         self.assertIn("output_path", help_text)
 
 
-class TestToJsonConverterValidation(unittest.TestCase):
-    """测试 ToJsonConverter 验证功能"""
+class TestToJsonPluginValidation(unittest.TestCase):
+    """测试 ToJsonPlugin 验证功能"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
 
     def test_validate_nonexistent_file(self):
         """测试验证不存在的文件"""
@@ -167,12 +167,12 @@ class TestToJsonConverterValidation(unittest.TestCase):
         self.assertFalse(self.converter.validate_output(None))
 
 
-class TestToJsonConverterConversion(unittest.TestCase):
-    """测试 ToJsonConverter 基本转换功能"""
+class TestToJsonPluginConversion(unittest.TestCase):
+    """测试 ToJsonPlugin 基本转换功能"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
 
         # 创建测试 PDF 文件路径
         self.test_pdf_path = os.path.join(
@@ -261,12 +261,12 @@ class TestToJsonConverterConversion(unittest.TestCase):
             self.assertIn("pages_processed", json_data["document"])
 
 
-class TestToJsonConverterPageSelection(unittest.TestCase):
-    """测试 ToJsonConverter 页码选择功能"""
+class TestToJsonPluginPageSelection(unittest.TestCase):
+    """测试 ToJsonPlugin 页码选择功能"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -357,12 +357,12 @@ class TestToJsonConverterPageSelection(unittest.TestCase):
         self.assertGreater(len(json_data["document"]["pages_processed"]), 0)
 
 
-class TestToJsonConverterContentExtraction(unittest.TestCase):
-    """测试 ToJsonConverter 内容提取功能"""
+class TestToJsonPluginContentExtraction(unittest.TestCase):
+    """测试 ToJsonPlugin 内容提取功能"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -534,12 +534,12 @@ class TestToJsonConverterContentExtraction(unittest.TestCase):
                 self.assertIn("col_count", table)
 
 
-class TestToJsonConverterOutputOptions(unittest.TestCase):
-    """测试 ToJsonConverter 输出选项"""
+class TestToJsonPluginOutputOptions(unittest.TestCase):
+    """测试 ToJsonPlugin 输出选项"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -639,12 +639,12 @@ class TestToJsonConverterOutputOptions(unittest.TestCase):
         self.assertIsNotNone(result["error"])
 
 
-class TestToJsonConverterCustomSchema(unittest.TestCase):
-    """测试 ToJsonConverter 自定义 schema 功能"""
+class TestToJsonPluginCustomSchema(unittest.TestCase):
+    """测试 ToJsonPlugin 自定义 schema 功能"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -757,12 +757,12 @@ class TestToJsonConverterCustomSchema(unittest.TestCase):
         self.assertIsInstance(result["keywords"], list)
 
 
-class TestToJsonConverterEdgeCases(unittest.TestCase):
-    """测试 ToJsonConverter 边界情况"""
+class TestToJsonPluginEdgeCases(unittest.TestCase):
+    """测试 ToJsonPlugin 边界情况"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
 
     def test_empty_pdf_file(self):
         """测试空 PDF 文件"""
@@ -843,12 +843,12 @@ class TestToJsonConverterEdgeCases(unittest.TestCase):
                     os.unlink(temp_path)
 
 
-class TestToJsonConverterIntegration(unittest.TestCase):
-    """测试 ToJsonConverter 集成测试"""
+class TestToJsonPluginIntegration(unittest.TestCase):
+    """测试 ToJsonPlugin 集成测试"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToJsonConverter()
+        self.converter = ToJsonPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"

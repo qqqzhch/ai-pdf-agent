@@ -1,9 +1,10 @@
 """结构读取插件 - 分析 PDF 文档结构"""
 
+import logging
 import os
 import re
-from typing import Dict, Optional, Any, List, Tuple
-import logging
+from typing import Any, Dict, List, Optional, Tuple
+
 import fitz  # PyMuPDF
 
 from core.plugin_system.base_reader_plugin import BaseReaderPlugin
@@ -17,7 +18,9 @@ class StructureReaderPlugin(BaseReaderPlugin):
 
     name = "structure_reader"
     version = "1.0.0"
-    description = "分析 PDF 文档结构，提取大纲、页面层次和逻辑结构（标题、段落、列表等）"
+    description = (
+        "分析 PDF 文档结构，提取大纲、页面层次和逻辑结构（标题、段落、列表等）"
+    )
     plugin_type = PluginType.READER
     author = "李开发"
     homepage = ""
@@ -35,6 +38,7 @@ class StructureReaderPlugin(BaseReaderPlugin):
         if self.pdf_engine is None:
             try:
                 from core.engine.pymupdf_engine import PyMuPDFEngine
+
                 self.pdf_engine = PyMuPDFEngine()
             except ImportError as e:
                 logger.warning(f"Failed to import PyMuPDFEngine: {e}")
@@ -87,7 +91,9 @@ class StructureReaderPlugin(BaseReaderPlugin):
                 result["outline"] = self.get_outline(doc)
 
             if include_page_structure:
-                result["page_structure"] = self.get_page_structure(doc, pages_to_analyze)
+                result["page_structure"] = self.get_page_structure(
+                    doc, pages_to_analyze
+                )
 
             if include_blocks:
                 result["blocks"] = self.analyze_blocks(doc, pages_to_analyze)
@@ -140,7 +146,7 @@ class StructureReaderPlugin(BaseReaderPlugin):
                 "title": title.strip(),
                 "page": page,
                 "dest": dest,
-                "children": []
+                "children": [],
             }
 
             while stack and stack[-1][0] >= level:
@@ -155,7 +161,9 @@ class StructureReaderPlugin(BaseReaderPlugin):
 
         return tree
 
-    def get_page_structure(self, doc: fitz.Document, pages: List[int]) -> List[Dict[str, Any]]:
+    def get_page_structure(
+        self, doc: fitz.Document, pages: List[int]
+    ) -> List[Dict[str, Any]]:
         page_structure = []
 
         for page_num in pages:
@@ -197,7 +205,11 @@ class StructureReaderPlugin(BaseReaderPlugin):
             if font_sizes:
                 font_sizes.sort()
                 n = len(font_sizes)
-                median_font_size = font_sizes[n // 2] if n % 2 == 1 else (font_sizes[n // 2 - 1] + font_sizes[n // 2]) / 2
+                median_font_size = (
+                    font_sizes[n // 2]
+                    if n % 2 == 1
+                    else (font_sizes[n // 2 - 1] + font_sizes[n // 2]) / 2
+                )
 
             has_header = False
             has_footer = False
@@ -214,22 +226,26 @@ class StructureReaderPlugin(BaseReaderPlugin):
             except Exception as e:
                 logger.debug(f"Error detecting header/footer: {e}")
 
-            page_structure.append({
-                "page": page_num,
-                "width": width,
-                "height": height,
-                "rotation": rotation,
-                "text_blocks": text_blocks,
-                "image_blocks": image_blocks,
-                "drawing_blocks": drawing_blocks,
-                "median_font_size": round(median_font_size, 2),
-                "has_header": has_header,
-                "has_footer": has_footer
-            })
+            page_structure.append(
+                {
+                    "page": page_num,
+                    "width": width,
+                    "height": height,
+                    "rotation": rotation,
+                    "text_blocks": text_blocks,
+                    "image_blocks": image_blocks,
+                    "drawing_blocks": drawing_blocks,
+                    "median_font_size": round(median_font_size, 2),
+                    "has_header": has_header,
+                    "has_footer": has_footer,
+                }
+            )
 
         return page_structure
 
-    def analyze_blocks(self, doc: fitz.Document, pages: List[int]) -> List[Dict[str, Any]]:
+    def analyze_blocks(
+        self, doc: fitz.Document, pages: List[int]
+    ) -> List[Dict[str, Any]]:
         blocks = []
 
         for page_num in pages:
@@ -253,26 +269,31 @@ class StructureReaderPlugin(BaseReaderPlugin):
                     "content": text.strip() if text else None,
                     "metadata": {
                         "block_type": block_type,
-                        "bbox": (round(x0, 2), round(y0, 2), round(x1, 2), round(y1, 2))
-                    }
+                        "bbox": (
+                            round(x0, 2),
+                            round(y0, 2),
+                            round(x1, 2),
+                            round(y1, 2),
+                        ),
+                    },
                 }
 
                 if block_type == 0:
-                    block_info["metadata"]["font_info"] = self._extract_font_info(page, x0, y0, x1, y1)
+                    block_info["metadata"]["font_info"] = self._extract_font_info(
+                        page, x0, y0, x1, y1
+                    )
 
                 blocks.append(block_info)
 
         return blocks
 
     def _get_block_type_name(self, block_type: int) -> str:
-        type_map = {
-            0: "text",
-            1: "image",
-            2: "drawing"
-        }
+        type_map = {0: "text", 1: "image", 2: "drawing"}
         return type_map.get(block_type, "unknown")
 
-    def _extract_font_info(self, page: fitz.Page, x0: float, y0: float, x1: float, y1: float) -> List[Dict[str, Any]]:
+    def _extract_font_info(
+        self, page: fitz.Page, x0: float, y0: float, x1: float, y1: float
+    ) -> List[Dict[str, Any]]:
         font_info = []
 
         try:
@@ -282,18 +303,22 @@ class StructureReaderPlugin(BaseReaderPlugin):
                 if "lines" in block:
                     for line in block["lines"]:
                         for span in line.get("spans", []):
-                            font_info.append({
-                                "font": span.get("font", ""),
-                                "size": round(span.get("size", 0), 2),
-                                "color": span.get("color", (0, 0, 0)),
-                                "flags": span.get("flags", 0)
-                            })
+                            font_info.append(
+                                {
+                                    "font": span.get("font", ""),
+                                    "size": round(span.get("size", 0), 2),
+                                    "color": span.get("color", (0, 0, 0)),
+                                    "flags": span.get("flags", 0),
+                                }
+                            )
         except Exception as e:
             logger.debug(f"Error extracting font info: {e}")
 
         return font_info
 
-    def detect_logical_structure(self, doc: fitz.Document, pages: List[int] = None, blocks: List = None) -> List[Dict[str, Any]]:
+    def detect_logical_structure(
+        self, doc: fitz.Document, pages: List[int] = None, blocks: List = None
+    ) -> List[Dict[str, Any]]:
         if blocks is None:
             blocks = self.analyze_blocks(doc, pages)
 
@@ -304,23 +329,27 @@ class StructureReaderPlugin(BaseReaderPlugin):
             page = doc[page_num - 1]
 
             page_structure = self.get_page_structure(doc, [page_num])
-            median_font_size = page_structure[0]["median_font_size"] if page_structure else 12.0
+            median_font_size = (
+                page_structure[0]["median_font_size"] if page_structure else 12.0
+            )
 
             for block in page_blocks:
                 if block["type"] != "text":
-                    logical_structure.append({
-                        "page": page_num,
-                        "type": block["type"].lower(),
-                        "level": 0,
-                        "content": block["content"],
-                        "position": {
-                            "x0": block["x0"],
-                            "y0": block["y0"],
-                            "x1": block["x1"],
-                            "y1": block["y1"]
-                        },
-                        "metadata": block["metadata"]
-                    })
+                    logical_structure.append(
+                        {
+                            "page": page_num,
+                            "type": block["type"].lower(),
+                            "level": 0,
+                            "content": block["content"],
+                            "position": {
+                                "x0": block["x0"],
+                                "y0": block["y0"],
+                                "x1": block["x1"],
+                                "y1": block["y1"],
+                            },
+                            "metadata": block["metadata"],
+                        }
+                    )
                     continue
 
                 text = block["content"]
@@ -330,39 +359,42 @@ class StructureReaderPlugin(BaseReaderPlugin):
                 font_info = block["metadata"].get("font_info", [])
                 font_size = font_info[0]["size"] if font_info else median_font_size
 
-                structure_type, level = self._classify_text_block(text, font_size, median_font_size)
+                structure_type, level = self._classify_text_block(
+                    text, font_size, median_font_size
+                )
 
-                logical_structure.append({
-                    "page": page_num,
-                    "type": structure_type,
-                    "level": level,
-                    "content": text,
-                    "position": {
-                        "x0": block["x0"],
-                        "y0": block["y0"],
-                        "x1": block["x1"],
-                        "y1": block["y1"]
-                    },
-                    "metadata": {
-                        "font_size": font_size,
-                        "font_info": font_info
+                logical_structure.append(
+                    {
+                        "page": page_num,
+                        "type": structure_type,
+                        "level": level,
+                        "content": text,
+                        "position": {
+                            "x0": block["x0"],
+                            "y0": block["y0"],
+                            "x1": block["x1"],
+                            "y1": block["y1"],
+                        },
+                        "metadata": {"font_size": font_size, "font_info": font_info},
                     }
-                })
+                )
 
         return logical_structure
 
-    def _classify_text_block(self, text: str, font_size: float, median_font_size: float) -> Tuple[str, int]:
+    def _classify_text_block(
+        self, text: str, font_size: float, median_font_size: float
+    ) -> Tuple[str, int]:
         text = text.strip()
 
         if not text:
             return "empty", 0
 
         list_patterns = {
-            r'^\s*[•●○]\s+': 'list',
-            r'^\s*[-–—]\s+': 'list',
-            r'^\s*\d+\.\s+': 'list',
-            r'^\s*[a-zA-Z]\.\s+': 'list',
-            r'^\s*\(\d+\)\s+': 'list',
+            r"^\s*[•●○]\s+": "list",
+            r"^\s*[-–—]\s+": "list",
+            r"^\s*\d+\.\s+": "list",
+            r"^\s*[a-zA-Z]\.\s+": "list",
+            r"^\s*\(\d+\)\s+": "list",
         }
 
         for pattern, item_type in list_patterns.items():
@@ -379,12 +411,12 @@ class StructureReaderPlugin(BaseReaderPlugin):
             return "heading", 2
 
         numbered_patterns = [
-            r'^\d+\.\s+',
-            r'^\d+\.\d+\s+',
-            r'^\d+\.\d+\.\d+\s+',
-            r'^第[一二三四五六七八九十百千]+[章节篇]\s+',
-            r'^Chapter\s+\d+',
-            r'^Section\s+\d+',
+            r"^\d+\.\s+",
+            r"^\d+\.\d+\s+",
+            r"^\d+\.\d+\.\d+\s+",
+            r"^第[一二三四五六七八九十百千]+[章节篇]\s+",
+            r"^Chapter\s+\d+",
+            r"^Section\s+\d+",
         ]
 
         for pattern in numbered_patterns:
@@ -400,17 +432,14 @@ class StructureReaderPlugin(BaseReaderPlugin):
         result = self.read(pdf_path)
 
         if not result["success"]:
-            return {
-                "success": False,
-                "error": result["error"]
-            }
+            return {"success": False, "error": result["error"]}
 
         tree = {
             "success": True,
             "metadata": result["metadata"],
             "outline": result["outline"],
             "structure": result["logical_structure"],
-            "statistics": self._calculate_structure_statistics(result)
+            "statistics": self._calculate_structure_statistics(result),
         }
 
         return tree
@@ -419,7 +448,7 @@ class StructureReaderPlugin(BaseReaderPlugin):
         stats = {
             "total_pages": result["page_count"],
             "outline_items": self._count_outline_items(result["outline"]),
-            "structure_types": {}
+            "structure_types": {},
         }
 
         for item in result["logical_structure"]:
@@ -436,7 +465,9 @@ class StructureReaderPlugin(BaseReaderPlugin):
             count += self._count_outline_items(item.get("children", []))
         return count
 
-    def _get_pages_to_analyze(self, kwargs: Dict[str, Any], page_count: int) -> List[int]:
+    def _get_pages_to_analyze(
+        self, kwargs: Dict[str, Any], page_count: int
+    ) -> List[int]:
         if "page" in kwargs:
             page_num = kwargs["page"]
             if 1 <= page_num <= page_count:

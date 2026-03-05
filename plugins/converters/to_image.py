@@ -1,10 +1,10 @@
 """Image 转换插件 - 将 PDF 页面转换为图片"""
 
-import os
-from typing import Dict, List, Optional, Any, Tuple
-import logging
-from io import BytesIO
 import base64
+import logging
+import os
+from io import BytesIO
+from typing import Any, Dict, List, Optional, Tuple
 
 import fitz  # PyMuPDF
 from PIL import Image
@@ -32,7 +32,20 @@ class ToImagePlugin(BaseConverterPlugin):
     system_dependencies = []
 
     # 支持的图片格式（PyMuPDF 原生支持的格式）
-    SUPPORTED_FORMATS = ["png", "jpeg", "jpg", "pnm", "pgm", "ppm", "pbm", "pam", "tga", "tpic", "psd", "ps"]
+    SUPPORTED_FORMATS = [
+        "png",
+        "jpeg",
+        "jpg",
+        "pnm",
+        "pgm",
+        "ppm",
+        "pbm",
+        "pam",
+        "tga",
+        "tpic",
+        "psd",
+        "ps",
+    ]
 
     def __init__(self, pdf_engine=None):
         """
@@ -47,6 +60,7 @@ class ToImagePlugin(BaseConverterPlugin):
         if self.pdf_engine is None:
             try:
                 from core.engine.pymupdf_engine import PyMuPDFEngine
+
                 self.pdf_engine = PyMuPDFEngine()
             except ImportError as e:
                 logger.warning(f"Failed to import PyMuPDFEngine: {e}")
@@ -117,10 +131,12 @@ class ToImagePlugin(BaseConverterPlugin):
                 image_format = "jpeg"
 
             if image_format not in self.SUPPORTED_FORMATS:
-                result["error"] = f"Unsupported format: {image_format}. Supported: {', '.join(self.SUPPORTED_FORMATS)}"
+                result["error"] = (
+                    f"Unsupported format: {image_format}. Supported: {', '.join(self.SUPPORTED_FORMATS)}"
+                )
                 return result
 
-            dpi = kwargs.get("dpi", dpi if 'dpi' in locals() else 150)
+            dpi = kwargs.get("dpi", dpi if "dpi" in locals() else 150)
             quality = kwargs.get("quality", 85)
             grayscale = kwargs.get("grayscale", False)
             embed = kwargs.get("embed", False)
@@ -149,7 +165,11 @@ class ToImagePlugin(BaseConverterPlugin):
             output_template = None
 
             if output_path:
-                if os.path.isdir(output_path) or output_path.endswith("/") or output_path.endswith("\\"):
+                if (
+                    os.path.isdir(output_path)
+                    or output_path.endswith("/")
+                    or output_path.endswith("\\")
+                ):
                     # 输出到目录
                     output_dir = output_path
                     output_template = "page_{page}.{format}"
@@ -180,11 +200,17 @@ class ToImagePlugin(BaseConverterPlugin):
                         img = Image.open(BytesIO(img_bytes))
                         img = img.convert("L")
                         output = BytesIO()
-                        img.save(output, format=image_format, quality=quality if image_format == "jpeg" else None)
+                        img.save(
+                            output,
+                            format=image_format,
+                            quality=quality if image_format == "jpeg" else None,
+                        )
                         img_bytes = output.getvalue()
 
                     # 生成文件名
-                    filename = self._generate_filename(output_template, page_num, image_format)
+                    filename = self._generate_filename(
+                        output_template, page_num, image_format
+                    )
                     if output_dir:
                         full_path = os.path.join(output_dir, filename)
                     else:
@@ -210,16 +236,15 @@ class ToImagePlugin(BaseConverterPlugin):
                     # 如果需要嵌入 base64
                     if embed:
                         b64_data = base64.b64encode(img_bytes).decode("utf-8")
-                        image_data["data"] = f"data:image/{image_format};base64,{b64_data}"
+                        image_data["data"] = (
+                            f"data:image/{image_format};base64,{b64_data}"
+                        )
 
                     result["images"].append(image_data)
 
                 except Exception as e:
                     logger.error(f"Error converting page {page_num}: {e}")
-                    result["images"].append({
-                        "page": page_num,
-                        "error": str(e)
-                    })
+                    result["images"].append({"page": page_num, "error": str(e)})
 
             # 关闭文档
             self.pdf_engine.close(doc)
@@ -231,7 +256,9 @@ class ToImagePlugin(BaseConverterPlugin):
         except FileNotFoundError:
             result["error"] = f"File not found: {pdf_path}"
         except Exception as e:
-            logger.error(f"Error converting PDF {pdf_path} to image: {e}", exc_info=True)
+            logger.error(
+                f"Error converting PDF {pdf_path} to image: {e}", exc_info=True
+            )
             result["error"] = str(e)
 
         return result

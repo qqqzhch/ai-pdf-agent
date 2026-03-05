@@ -1,4 +1,4 @@
-"""测试 CSV 转换器 (ToCsvConverter)"""
+"""测试 CSV 转换器 (ToCsvPlugin)"""
 
 # 添加项目根目录到路径
 import sys
@@ -11,15 +11,15 @@ import unittest
 import io
 import shutil
 
-from plugins.converters.csv_converter import ToCsvConverter
+from plugins.converters.to_csv import ToCsvPlugin
 
 
-class TestToCsvConverterInitialization(unittest.TestCase):
-    """测试 ToCsvConverter 初始化"""
+class TestToCsvPluginInitialization(unittest.TestCase):
+    """测试 ToCsvPlugin 初始化"""
 
     def test_initialization_default(self):
         """测试默认初始化"""
-        converter = ToCsvConverter()
+        converter = ToCsvPlugin()
 
         self.assertEqual(converter.name, "csv_converter")
         self.assertEqual(converter.version, "1.0.0")
@@ -32,7 +32,7 @@ class TestToCsvConverterInitialization(unittest.TestCase):
         from core.engine.pymupdf_engine import PyMuPDFEngine
 
         engine = PyMuPDFEngine()
-        converter = ToCsvConverter(pdf_engine=engine)
+        converter = ToCsvPlugin(pdf_engine=engine)
 
         self.assertIsNotNone(converter.pdf_engine)
         self.assertEqual(converter.pdf_engine, engine)
@@ -44,14 +44,14 @@ class TestToCsvConverterInitialization(unittest.TestCase):
 
         engine = PyMuPDFEngine()
         reader = TableReaderPlugin(engine)
-        converter = ToCsvConverter(table_reader=reader)
+        converter = ToCsvPlugin(table_reader=reader)
 
         self.assertIsNotNone(converter.table_reader)
         self.assertEqual(converter.table_reader, reader)
 
     def test_plugin_metadata(self):
         """测试插件元数据"""
-        converter = ToCsvConverter()
+        converter = ToCsvPlugin()
         metadata = converter.get_metadata()
 
         self.assertEqual(metadata["name"], "csv_converter")
@@ -60,12 +60,12 @@ class TestToCsvConverterInitialization(unittest.TestCase):
         self.assertIn("pymupdf>=1.23.0", metadata["dependencies"])
 
 
-class TestToCsvConverterValidation(unittest.TestCase):
-    """测试 ToCsvConverter 验证功能"""
+class TestToCsvPluginValidation(unittest.TestCase):
+    """测试 ToCsvPlugin 验证功能"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToCsvConverter()
+        self.converter = ToCsvPlugin()
 
     def test_validate_nonexistent_file(self):
         """测试验证不存在的文件"""
@@ -169,12 +169,12 @@ class TestToCsvConverterValidation(unittest.TestCase):
         self.assertFalse(self.converter.validate_output("not a dict"))
 
 
-class TestToCsvConverterConversion(unittest.TestCase):
-    """测试 ToCsvConverter 转换功能"""
+class TestToCsvPluginConversion(unittest.TestCase):
+    """测试 ToCsvPlugin 转换功能"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToCsvConverter()
+        self.converter = ToCsvPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -285,12 +285,12 @@ class TestToCsvConverterConversion(unittest.TestCase):
         self.assertTrue(result["success"])
 
 
-class TestToCsvConverterMultiTableModes(unittest.TestCase):
-    """测试 ToCsvConverter 多表格模式"""
+class TestToCsvPluginMultiTableModes(unittest.TestCase):
+    """测试 ToCsvPlugin 多表格模式"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToCsvConverter()
+        self.converter = ToCsvPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -412,12 +412,12 @@ class TestToCsvConverterMultiTableModes(unittest.TestCase):
                 os.unlink(output_path)
 
 
-class TestToCsvConverterFormatting(unittest.TestCase):
-    """测试 ToCsvConverter 格式化选项"""
+class TestToCsvPluginFormatting(unittest.TestCase):
+    """测试 ToCsvPlugin 格式化选项"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToCsvConverter()
+        self.converter = ToCsvPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -685,12 +685,12 @@ class TestToCsvConverterFormatting(unittest.TestCase):
                 os.unlink(output_path)
 
 
-class TestToCsvConverterHelperMethods(unittest.TestCase):
-    """测试 ToCsvConverter 辅助方法"""
+class TestToCsvPluginHelperMethods(unittest.TestCase):
+    """测试 ToCsvPlugin 辅助方法"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToCsvConverter()
+        self.converter = ToCsvPlugin()
 
     def test_determine_pages_to_extract_single_page(self):
         """测试确定提取页码 - 单页"""
@@ -847,12 +847,12 @@ class TestToCsvConverterHelperMethods(unittest.TestCase):
         self.assertIn("quoting", help_text)
 
 
-class TestToCsvConverterIntegration(unittest.TestCase):
-    """测试 ToCsvConverter 集成场景"""
+class TestToCsvPluginIntegration(unittest.TestCase):
+    """测试 ToCsvPlugin 集成场景"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToCsvConverter()
+        self.converter = ToCsvPlugin()
         self.test_pdf_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             "test_sample.pdf"
@@ -986,12 +986,12 @@ class TestToCsvConverterIntegration(unittest.TestCase):
                 self.assertTrue(os.path.exists(output_path))
 
 
-class TestToCsvConverterEdgeCases(unittest.TestCase):
-    """测试 ToCsvConverter 边界情况"""
+class TestToCsvPluginEdgeCases(unittest.TestCase):
+    """测试 ToCsvPlugin 边界情况"""
 
     def setUp(self):
         """测试前的设置"""
-        self.converter = ToCsvConverter()
+        self.converter = ToCsvPlugin()
 
     def test_convert_invalid_delimiter_fallback(self):
         """测试无效分隔符回退到默认"""

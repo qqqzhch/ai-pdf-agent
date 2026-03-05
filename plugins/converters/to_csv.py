@@ -1,9 +1,9 @@
 """CSV 转换插件 - 将 PDF 表格转换为 CSV 格式"""
 
-import os
 import csv
-from typing import Dict, List, Optional, Any, Tuple
 import logging
+import os
+from typing import Any, Dict, List, Optional, Tuple
 
 import fitz  # PyMuPDF
 
@@ -42,6 +42,7 @@ class ToCsvPlugin(BaseConverterPlugin):
         if self.pdf_engine is None:
             try:
                 from core.engine.pymupdf_engine import PyMuPDFEngine
+
                 self.pdf_engine = PyMuPDFEngine()
             except ImportError as e:
                 logger.warning(f"Failed to import PyMuPDFEngine: {e}")
@@ -132,11 +133,7 @@ class ToCsvPlugin(BaseConverterPlugin):
                 tables = page.find_tables()
 
                 for table in tables:
-                    table_data = {
-                        "page": page_num,
-                        "bbox": table.bbox,
-                        "rows": []
-                    }
+                    table_data = {"page": page_num, "bbox": table.bbox, "rows": []}
 
                     # 提取表格数据
                     extracted = table.extract()
@@ -176,7 +173,9 @@ class ToCsvPlugin(BaseConverterPlugin):
                 tables_to_convert = [all_tables[table_index]]
 
             # 构建 CSV 内容
-            csv_content = self._build_csv_content(tables_to_convert, include_header, delimiter, merge_tables)
+            csv_content = self._build_csv_content(
+                tables_to_convert, include_header, delimiter, merge_tables
+            )
             result["content"] = csv_content
             result["tables_converted"] = len(tables_to_convert)
 
@@ -240,11 +239,7 @@ class ToCsvPlugin(BaseConverterPlugin):
         return list(range(1, page_count + 1))
 
     def _build_csv_content(
-        self,
-        tables: List[Dict],
-        include_header: bool,
-        delimiter: str,
-        merge: bool
+        self, tables: List[Dict], include_header: bool, delimiter: str, merge: bool
     ) -> str:
         """
         构建 CSV 内容

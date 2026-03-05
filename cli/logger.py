@@ -12,27 +12,28 @@ import sys
 from typing import Optional
 
 try:
-    from colorama import init, Fore, Style
+    from colorama import Fore, Style, init
+
     COLORAMA_AVAILABLE = True
 except ImportError:
     COLORAMA_AVAILABLE = False
 
     # 定义颜色代码作为后备
     class Fore:
-        BLACK = ''
-        RED = ''
-        GREEN = ''
-        YELLOW = ''
-        BLUE = ''
-        MAGENTA = ''
-        CYAN = ''
-        WHITE = ''
-        RESET = ''
+        BLACK = ""
+        RED = ""
+        GREEN = ""
+        YELLOW = ""
+        BLUE = ""
+        MAGENTA = ""
+        CYAN = ""
+        WHITE = ""
+        RESET = ""
 
     class Style:
-        BRIGHT = ''
-        DIM = ''
-        RESET_ALL = ''
+        BRIGHT = ""
+        DIM = ""
+        RESET_ALL = ""
 
 
 # 日志级别颜色映射
@@ -55,7 +56,7 @@ class ColoredFormatter(logging.Formatter):
         self,
         fmt: Optional[str] = None,
         datefmt: Optional[str] = None,
-        style: str = '%',
+        style: str = "%",
         use_colors: bool = True,
     ):
         """初始化格式化器
@@ -99,11 +100,11 @@ class StructuredFormatter(logging.Formatter):
         self,
         fmt: Optional[str] = None,
         datefmt: Optional[str] = None,
-        style: str = '%',
+        style: str = "%",
     ):
         """初始化格式化器"""
         super().__init__(fmt, datefmt, style)
-        self.datefmt = datefmt or '%Y-%m-%d %H:%M:%S'
+        self.datefmt = datefmt or "%Y-%m-%d %H:%M:%S"
 
     def format(self, record: logging.LogRecord) -> str:
         """格式化日志记录为 JSON
@@ -117,28 +118,28 @@ class StructuredFormatter(logging.Formatter):
         import json
 
         log_data = {
-            'timestamp': self.formatTime(record, self.datefmt),
-            'level': record.levelname,
-            'logger': record.name,
-            'message': record.getMessage(),
-            'module': record.module,
-            'function': record.funcName,
-            'line': record.lineno,
+            "timestamp": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+            "module": record.module,
+            "function": record.funcName,
+            "line": record.lineno,
         }
 
         # 添加异常信息
         if record.exc_info:
-            log_data['exception'] = self.formatException(record.exc_info)
+            log_data["exception"] = self.formatException(record.exc_info)
 
         # 添加额外字段
-        if hasattr(record, 'extra'):
-            log_data['extra'] = record.extra
+        if hasattr(record, "extra"):
+            log_data["extra"] = record.extra
 
         return json.dumps(log_data, ensure_ascii=False)
 
 
 def setup_logging(
-    level: str = 'INFO',
+    level: str = "INFO",
     verbose: bool = False,
     debug: bool = False,
     quiet: bool = False,
@@ -163,16 +164,16 @@ def setup_logging(
     # 确定日志级别
     if debug:
         log_level = logging.DEBUG
-        format_str = '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s'
+        format_str = "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
     elif verbose:
         log_level = logging.INFO
-        format_str = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     elif quiet:
         log_level = logging.ERROR
-        format_str = '%(levelname)s: %(message)s'
+        format_str = "%(levelname)s: %(message)s"
     else:
         log_level = getattr(logging, level.upper(), logging.INFO)
-        format_str = '%(message)s'
+        format_str = "%(message)s"
 
     # 初始化 colorama
     if use_colors and COLORAMA_AVAILABLE:
@@ -197,7 +198,7 @@ def setup_logging(
         else:
             console_formatter = ColoredFormatter(
                 fmt=format_str,
-                datefmt='%Y-%m-%d %H:%M:%S',
+                datefmt="%Y-%m-%d %H:%M:%S",
                 use_colors=use_colors,
             )
 
@@ -213,7 +214,7 @@ def setup_logging(
             error_formatter = StructuredFormatter()
         else:
             error_formatter = ColoredFormatter(
-                fmt='%(levelname)s: %(message)s',
+                fmt="%(levelname)s: %(message)s",
                 use_colors=use_colors,
             )
 
@@ -222,12 +223,12 @@ def setup_logging(
 
     # 文件处理器
     if log_file:
-        file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
         file_handler.setLevel(logging.DEBUG)  # 文件记录所有级别
 
         file_formatter = logging.Formatter(
-            fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S',
+            fmt="%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
         file_handler.setFormatter(file_formatter)
         root_logger.addHandler(file_handler)
@@ -335,15 +336,15 @@ def log_function_call(func):
 
 # 预定义的常用日志格式
 LOG_FORMATS = {
-    'minimal': '%(message)s',
-    'simple': '%(levelname)s: %(message)s',
-    'standard': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    'detailed': '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
-    'full': '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d)d - %(funcName)s() - %(message)s',
+    "minimal": "%(message)s",
+    "simple": "%(levelname)s: %(message)s",
+    "standard": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "detailed": "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+    "full": "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d)d - %(funcName)s() - %(message)s",
 }
 
 
-def get_format(name: str = 'standard') -> str:
+def get_format(name: str = "standard") -> str:
     """获取预定义的日志格式
 
     Args:
@@ -352,4 +353,4 @@ def get_format(name: str = 'standard') -> str:
     Returns:
         str: 格式字符串
     """
-    return LOG_FORMATS.get(name, LOG_FORMATS['standard'])
+    return LOG_FORMATS.get(name, LOG_FORMATS["standard"])

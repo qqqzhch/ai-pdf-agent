@@ -1,9 +1,9 @@
 """JSON 转换器插件 - 将 PDF 内容转换为 JSON 格式"""
 
-import os
 import json
-from typing import Dict, Optional, Any, Tuple, List
 import logging
+import os
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.plugin_system.base_converter_plugin import BaseConverterPlugin
 from core.plugin_system.plugin_type import PluginType
@@ -115,9 +115,7 @@ class ToJsonPlugin(BaseConverterPlugin):
             result["metadata"] = metadata
 
             # 确定要处理的页面
-            pages_to_process = self._determine_pages_to_process(
-                kwargs, page_count
-            )
+            pages_to_process = self._determine_pages_to_process(kwargs, page_count)
 
             # 设置实际处理的页数
             result["pages"] = len(pages_to_process)
@@ -138,7 +136,7 @@ class ToJsonPlugin(BaseConverterPlugin):
                 "filename": os.path.basename(pdf_path),
                 "path": pdf_path,
                 "page_count": page_count,
-                "pages_processed": pages_to_process
+                "pages_processed": pages_to_process,
             }
 
             # 添加元数据
@@ -147,7 +145,9 @@ class ToJsonPlugin(BaseConverterPlugin):
 
             # 添加文档结构
             if include_structure:
-                json_data["structure"] = self.convert_structure_to_json(doc, pages_to_process)
+                json_data["structure"] = self.convert_structure_to_json(
+                    doc, pages_to_process
+                )
 
             # 添加文本内容
             if include_text:
@@ -187,9 +187,7 @@ class ToJsonPlugin(BaseConverterPlugin):
 
         return result
 
-    def _determine_pages_to_process(
-        self, kwargs: Dict, page_count: int
-    ) -> List[int]:
+    def _determine_pages_to_process(self, kwargs: Dict, page_count: int) -> List[int]:
         """
         确定要处理的页码列表
 
@@ -203,10 +201,7 @@ class ToJsonPlugin(BaseConverterPlugin):
         # 情况1：处理指定页
         if "page" in kwargs:
             page_num = kwargs["page"]
-            if (
-                isinstance(page_num, int)
-                and 1 <= page_num <= page_count
-            ):
+            if isinstance(page_num, int) and 1 <= page_num <= page_count:
                 return [page_num]
 
         # 情况2：处理页面范围
@@ -226,7 +221,11 @@ class ToJsonPlugin(BaseConverterPlugin):
         # 情况3：处理指定页列表
         elif "pages" in kwargs:
             pages = kwargs["pages"]
-            if isinstance(pages, list) and pages and all(isinstance(p, int) for p in pages):
+            if (
+                isinstance(pages, list)
+                and pages
+                and all(isinstance(p, int) for p in pages)
+            ):
                 # 验证所有页码都在范围内
                 if all(1 <= p <= page_count for p in pages):
                     return sorted(pages)
@@ -234,9 +233,7 @@ class ToJsonPlugin(BaseConverterPlugin):
         # 情况4：处理所有页面（默认）
         return list(range(1, page_count + 1))
 
-    def convert_text_to_json(
-        self, doc, pages: List[int]
-    ) -> Dict[str, Any]:
+    def convert_text_to_json(self, doc, pages: List[int]) -> Dict[str, Any]:
         """
         将 PDF 文本内容转换为 JSON 格式
 
@@ -247,10 +244,7 @@ class ToJsonPlugin(BaseConverterPlugin):
         Returns:
             Dict[str, Any]: 文本 JSON 数据
         """
-        text_data = {
-            "total_pages": len(pages),
-            "pages": []
-        }
+        text_data = {"total_pages": len(pages), "pages": []}
 
         for page_num in pages:
             try:
@@ -268,32 +262,33 @@ class ToJsonPlugin(BaseConverterPlugin):
                     if block[6] == 0:  # 0 表示文本块
                         block_text = block[4]
                         if block_text.strip():
-                            blocks_data.append({
-                                "text": block_text.strip(),
-                                "bbox": block[:4],  # 边界框
-                                "line_no": block[5]  # 行号
-                            })
+                            blocks_data.append(
+                                {
+                                    "text": block_text.strip(),
+                                    "bbox": block[:4],  # 边界框
+                                    "line_no": block[5],  # 行号
+                                }
+                            )
 
                 # 添加页面数据
-                text_data["pages"].append({
-                    "page_number": page_num,
-                    "full_text": text,
-                    "blocks": blocks_data,
-                    "char_count": len(text)
-                })
+                text_data["pages"].append(
+                    {
+                        "page_number": page_num,
+                        "full_text": text,
+                        "blocks": blocks_data,
+                        "char_count": len(text),
+                    }
+                )
 
             except Exception as e:
-                logger.error(f"Error extracting text from page {page_num}: {e}", exc_info=True)
-                text_data["pages"].append({
-                    "page_number": page_num,
-                    "error": str(e)
-                })
+                logger.error(
+                    f"Error extracting text from page {page_num}: {e}", exc_info=True
+                )
+                text_data["pages"].append({"page_number": page_num, "error": str(e)})
 
         return text_data
 
-    def convert_table_to_json(
-        self, doc, pages: List[int]
-    ) -> Dict[str, Any]:
+    def convert_table_to_json(self, doc, pages: List[int]) -> Dict[str, Any]:
         """
         将 PDF 表格转换为 JSON 数组
 
@@ -304,10 +299,7 @@ class ToJsonPlugin(BaseConverterPlugin):
         Returns:
             Dict[str, Any]: 表格 JSON 数据
         """
-        table_data = {
-            "total_tables": 0,
-            "pages": []
-        }
+        table_data = {"total_tables": 0, "pages": []}
 
         for page_num in pages:
             try:
@@ -327,7 +319,7 @@ class ToJsonPlugin(BaseConverterPlugin):
                             "header": tab.header,
                             "rows": [],
                             "row_count": 0,
-                            "col_count": 0
+                            "col_count": 0,
                         }
 
                         # 提取所有行
@@ -344,31 +336,32 @@ class ToJsonPlugin(BaseConverterPlugin):
                         # 设置行列数
                         if table_obj["rows"]:
                             table_obj["row_count"] = len(table_obj["rows"])
-                            table_obj["col_count"] = max(len(row) for row in table_obj["rows"])
+                            table_obj["col_count"] = max(
+                                len(row) for row in table_obj["rows"]
+                            )
 
                         page_tables.append(table_obj)
 
                 # 添加页面数据
-                table_data["pages"].append({
-                    "page_number": page_num,
-                    "tables": page_tables,
-                    "table_count": len(page_tables)
-                })
+                table_data["pages"].append(
+                    {
+                        "page_number": page_num,
+                        "tables": page_tables,
+                        "table_count": len(page_tables),
+                    }
+                )
 
                 table_data["total_tables"] += len(page_tables)
 
             except Exception as e:
-                logger.error(f"Error extracting tables from page {page_num}: {e}", exc_info=True)
-                table_data["pages"].append({
-                    "page_number": page_num,
-                    "error": str(e)
-                })
+                logger.error(
+                    f"Error extracting tables from page {page_num}: {e}", exc_info=True
+                )
+                table_data["pages"].append({"page_number": page_num, "error": str(e)})
 
         return table_data
 
-    def convert_metadata_to_json(
-        self, metadata: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def convert_metadata_to_json(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
         """
         将文档元数据转换为 JSON 格式
 
@@ -396,9 +389,7 @@ class ToJsonPlugin(BaseConverterPlugin):
 
         return clean_metadata
 
-    def convert_structure_to_json(
-        self, doc, pages: List[int]
-    ) -> Dict[str, Any]:
+    def convert_structure_to_json(self, doc, pages: List[int]) -> Dict[str, Any]:
         """
         将文档结构信息转换为 JSON 格式
 
@@ -409,9 +400,7 @@ class ToJsonPlugin(BaseConverterPlugin):
         Returns:
             Dict[str, Any]: 结构信息 JSON
         """
-        structure_data = {
-            "pages": []
-        }
+        structure_data = {"pages": []}
 
         for page_num in pages:
             try:
@@ -427,7 +416,7 @@ class ToJsonPlugin(BaseConverterPlugin):
                     "rotation": page_obj.rotation,
                     "text_blocks": 0,
                     "image_blocks": 0,
-                    "drawing_blocks": 0
+                    "drawing_blocks": 0,
                 }
 
                 # 统计块类型
@@ -443,11 +432,13 @@ class ToJsonPlugin(BaseConverterPlugin):
                 structure_data["pages"].append(page_info)
 
             except Exception as e:
-                logger.error(f"Error extracting structure from page {page_num}: {e}", exc_info=True)
-                structure_data["pages"].append({
-                    "page_number": page_num,
-                    "error": str(e)
-                })
+                logger.error(
+                    f"Error extracting structure from page {page_num}: {e}",
+                    exc_info=True,
+                )
+                structure_data["pages"].append(
+                    {"page_number": page_num, "error": str(e)}
+                )
 
         return structure_data
 
@@ -472,45 +463,38 @@ class ToJsonPlugin(BaseConverterPlugin):
                         "page_count": {"type": "integer"},
                         "pages_processed": {
                             "type": "array",
-                            "items": {"type": "integer"}
-                        }
+                            "items": {"type": "integer"},
+                        },
                     },
-                    "required": ["filename", "page_count"]
+                    "required": ["filename", "page_count"],
                 },
-                "metadata": {
-                    "type": "object",
-                    "description": "Document metadata"
-                },
+                "metadata": {"type": "object", "description": "Document metadata"},
                 "text": {
                     "type": "object",
                     "properties": {
                         "total_pages": {"type": "integer"},
-                        "pages": {"type": "array"}
-                    }
+                        "pages": {"type": "array"},
+                    },
                 },
                 "tables": {
                     "type": "object",
                     "properties": {
                         "total_tables": {"type": "integer"},
-                        "pages": {"type": "array"}
-                    }
+                        "pages": {"type": "array"},
+                    },
                 },
                 "structure": {
                     "type": "object",
-                    "properties": {
-                        "pages": {"type": "array"}
-                    }
-                }
+                    "properties": {"pages": {"type": "array"}},
+                },
             },
-            "required": ["document"]
+            "required": ["document"],
         }
 
         return schema
 
     def apply_custom_schema(
-        self,
-        data: Dict[str, Any],
-        schema: Dict[str, Any]
+        self, data: Dict[str, Any], schema: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         应用自定义 JSON Schema 过滤数据

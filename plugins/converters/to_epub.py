@@ -1,10 +1,10 @@
 """EPUB 转换插件 - 将 PDF 转换为 EPUB 格式"""
 
-import os
-from typing import Dict, List, Optional, Any, Tuple
 import logging
-from datetime import datetime
+import os
 import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
 import fitz  # PyMuPDF
 
@@ -127,7 +127,10 @@ class ToEpubPlugin(BaseConverterPlugin):
 
             # 如果没有指定标题，使用 PDF 标题或文件名
             if not book_title:
-                book_title = metadata.get("title") or os.path.splitext(os.path.basename(pdf_path))[0]
+                book_title = (
+                    metadata.get("title")
+                    or os.path.splitext(os.path.basename(pdf_path))[0]
+                )
 
             # 如果没有指定作者，使用 PDF 作者
             if not book_author:
@@ -170,18 +173,22 @@ class ToEpubPlugin(BaseConverterPlugin):
                 toc_entries = []
 
                 # 按章节分组页面
-                page_groups = self._group_pages_by_chapter(pages_to_process, chapter_pages)
+                page_groups = self._group_pages_by_chapter(
+                    pages_to_process, chapter_pages
+                )
 
                 for group_idx, page_group in enumerate(page_groups):
                     # 创建章节 HTML 内容
-                    chapter_html = self._create_chapter_html(doc, page_group, include_images, image_count)
+                    chapter_html = self._create_chapter_html(
+                        doc, page_group, include_images, image_count
+                    )
 
                     # 创建章节
                     chapter_filename = f"chapter_{group_idx + 1}.xhtml"
                     chapter = epub.EpubHtml(
                         title=f"Chapter {group_idx + 1}",
                         file_name=chapter_filename,
-                        lang="zh"
+                        lang="zh",
                     )
                     chapter.content = chapter_html
 
@@ -211,7 +218,7 @@ class ToEpubPlugin(BaseConverterPlugin):
                     uid="style_nav",
                     file_name="style/nav.css",
                     media_type="text/css",
-                    content=css_content
+                    content=css_content,
                 )
                 book.add_item(nav_css)
 
@@ -229,7 +236,9 @@ class ToEpubPlugin(BaseConverterPlugin):
                 result["success"] = True
 
             except ImportError:
-                result["error"] = "ebooklib is required for EPUB conversion. Install with: pip install EbookLib"
+                result["error"] = (
+                    "ebooklib is required for EPUB conversion. Install with: pip install EbookLib"
+                )
             except Exception as e:
                 logger.error(f"Error creating EPUB: {e}", exc_info=True)
                 result["error"] = f"Error creating EPUB: {str(e)}"
@@ -286,7 +295,9 @@ class ToEpubPlugin(BaseConverterPlugin):
         # 情况4：处理所有页面（默认）
         return list(range(1, page_count + 1))
 
-    def _group_pages_by_chapter(self, pages: List[int], chapter_pages: int) -> List[List[int]]:
+    def _group_pages_by_chapter(
+        self, pages: List[int], chapter_pages: int
+    ) -> List[List[int]]:
         """
         按章节分组页面
 
@@ -304,10 +315,12 @@ class ToEpubPlugin(BaseConverterPlugin):
             # 按指定页数分组
             groups = []
             for i in range(0, len(pages), chapter_pages):
-                groups.append(pages[i:i + chapter_pages])
+                groups.append(pages[i : i + chapter_pages])
             return groups
 
-    def _create_chapter_html(self, doc, pages: List[int], include_images: bool, image_count: int) -> str:
+    def _create_chapter_html(
+        self, doc, pages: List[int], include_images: bool, image_count: int
+    ) -> str:
         """
         创建章节 HTML 内容
 
@@ -330,7 +343,7 @@ class ToEpubPlugin(BaseConverterPlugin):
 
             # 添加页面分隔符
             html_parts.append('<div class="page-break">')
-            html_parts.append(f'<h4>Page {page_num}</h4>')
+            html_parts.append(f"<h4>Page {page_num}</h4>")
 
             # 遍历所有块
             for block in blocks:
@@ -342,7 +355,7 @@ class ToEpubPlugin(BaseConverterPlugin):
                         img_html = self._convert_image_block_to_html(block, page_num)
                         html_parts.append(img_html)
 
-            html_parts.append('</div>')
+            html_parts.append("</div>")
 
         return "\n".join(html_parts)
 
@@ -381,16 +394,14 @@ class ToEpubPlugin(BaseConverterPlugin):
             # 判断是否为列表项
             is_list_item = line_text.lstrip().startswith(
                 ("•", "-", "*", "·", "○", "●")
-            ) or any(
-                line_text.lstrip().startswith(f"{i}.") for i in range(1, 10)
-            )
+            ) or any(line_text.lstrip().startswith(f"{i}.") for i in range(1, 10))
 
             if is_list_item:
                 # 列表项
-                html_parts.append(f'<li>{escaped_text}</li>')
+                html_parts.append(f"<li>{escaped_text}</li>")
             else:
                 # 普通段落
-                html_parts.append(f'<p>{escaped_text}</p>')
+                html_parts.append(f"<p>{escaped_text}</p>")
 
         return "\n".join(html_parts)
 
@@ -418,7 +429,7 @@ class ToEpubPlugin(BaseConverterPlugin):
         except (IndexError, TypeError, ValueError):
             width, height = 0, 0
 
-        return f'<p><em>[Image from page {page_num} - {width}x{height}]</em></p>'
+        return f"<p><em>[Image from page {page_num} - {width}x{height}]</em></p>"
 
     def _get_default_css(self) -> str:
         """

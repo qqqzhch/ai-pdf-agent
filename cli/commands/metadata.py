@@ -3,20 +3,23 @@
 使用 metadata_reader 插件提取 PDF 元数据和文档统计
 """
 
-import click
 import json
 import logging
+
+import click
 
 logger = logging.getLogger(__name__)
 
 
-@click.command('metadata')
-@click.argument('input', type=click.Path(exists=True))
-@click.option('-o', '--output', type=click.Path(), help='Output JSON file path')
-@click.option('--full', is_flag=True, help='Include all metadata (stats and properties)')
-@click.option('--raw', is_flag=True, help='Show raw metadata without normalization')
-@click.option('--stats', is_flag=True, help='Include document statistics')
-@click.option('--properties', is_flag=True, help='Include PDF properties')
+@click.command("metadata")
+@click.argument("input", type=click.Path(exists=True))
+@click.option("-o", "--output", type=click.Path(), help="Output JSON file path")
+@click.option(
+    "--full", is_flag=True, help="Include all metadata (stats and properties)"
+)
+@click.option("--raw", is_flag=True, help="Show raw metadata without normalization")
+@click.option("--stats", is_flag=True, help="Include document statistics")
+@click.option("--properties", is_flag=True, help="Include PDF properties")
 @click.pass_obj
 def metadata_command(ctx, input, output, full, raw, stats, properties):
     """Read PDF metadata
@@ -34,21 +37,19 @@ def metadata_command(ctx, input, output, full, raw, stats, properties):
     plugin = MetadataReaderPlugin()
 
     if not plugin.is_available():
-        raise click.ClickException(
-            "Error: Metadata reader plugin is not available"
-        )
+        raise click.ClickException("Error: Metadata reader plugin is not available")
 
     # 设置读取选项
     kwargs = {}
 
     if full:
-        kwargs['include_stats'] = True
-        kwargs['include_properties'] = True
+        kwargs["include_stats"] = True
+        kwargs["include_properties"] = True
     else:
-        kwargs['include_stats'] = stats
-        kwargs['include_properties'] = properties
+        kwargs["include_stats"] = stats
+        kwargs["include_properties"] = properties
 
-    kwargs['normalize'] = not raw
+    kwargs["normalize"] = not raw
 
     # 读取元数据
     result = plugin.read(input, **kwargs)
@@ -79,7 +80,7 @@ def metadata_command(ctx, input, output, full, raw, stats, properties):
 
     # 输出结果
     if output:
-        with open(output, 'w', encoding='utf-8') as f:
+        with open(output, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
         click.echo(f"✓ Metadata saved to: {output}")
     else:
@@ -95,9 +96,9 @@ def metadata_command(ctx, input, output, full, raw, stats, properties):
         if basic.get("subject"):
             click.echo(f"Subject: {basic['subject']}")
         if basic.get("keywords"):
-            kw = basic['keywords']
+            kw = basic["keywords"]
             if isinstance(kw, list):
-                kw_str = ', '.join(kw)
+                kw_str = ", ".join(kw)
             else:
                 kw_str = kw
             click.echo(f"Keywords: {kw_str}")

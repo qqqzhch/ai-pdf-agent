@@ -1,10 +1,10 @@
 """元数据读取插件 - 使用 PyMuPDF 提取 PDF 元数据"""
 
+import logging
 import os
 import re
 from datetime import datetime
-from typing import Dict, Optional, Any, Tuple, List
-import logging
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.plugin_system.base_reader_plugin import BaseReaderPlugin
 from core.plugin_system.plugin_type import PluginType
@@ -159,17 +159,11 @@ class MetadataReaderPlugin(BaseReaderPlugin):
                 "title": raw_metadata.get("title", "").strip(),
                 "author": raw_metadata.get("author", "").strip(),
                 "subject": raw_metadata.get("subject", "").strip(),
-                "keywords": self._parse_keywords(
-                    raw_metadata.get("keywords", "")
-                ),
+                "keywords": self._parse_keywords(raw_metadata.get("keywords", "")),
                 "creator": raw_metadata.get("creator", "").strip(),
                 "producer": raw_metadata.get("producer", "").strip(),
-                "created": self._parse_pdf_date(
-                    raw_metadata.get("creationDate", "")
-                ),
-                "modified": self._parse_pdf_date(
-                    raw_metadata.get("modDate", "")
-                ),
+                "created": self._parse_pdf_date(raw_metadata.get("creationDate", "")),
+                "modified": self._parse_pdf_date(raw_metadata.get("modDate", "")),
             }
 
             # PDF 版本
@@ -214,15 +208,9 @@ class MetadataReaderPlugin(BaseReaderPlugin):
                 "title": raw_metadata.get("title", "").strip(),
                 "author": raw_metadata.get("author", "").strip(),
                 "subject": raw_metadata.get("subject", "").strip(),
-                "keywords": self._parse_keywords(
-                    raw_metadata.get("keywords", "")
-                ),
-                "created": self._parse_pdf_date(
-                    raw_metadata.get("creationDate", "")
-                ),
-                "modified": self._parse_pdf_date(
-                    raw_metadata.get("modDate", "")
-                ),
+                "keywords": self._parse_keywords(raw_metadata.get("keywords", "")),
+                "created": self._parse_pdf_date(raw_metadata.get("creationDate", "")),
+                "modified": self._parse_pdf_date(raw_metadata.get("modDate", "")),
             }
 
         except Exception as e:

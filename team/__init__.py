@@ -14,11 +14,7 @@ AI Agent 团队管理系统 - Version 2.0
 """
 
 from .agent_pool import AgentPool
-from .task_scheduler import DynamicTaskScheduler
 from .heartbeat import HeartbeatMonitor
+from .task_scheduler import DynamicTaskScheduler
 
-__all__ = [
-    "AgentPool",
-    "DynamicTaskScheduler", 
-    "HeartbeatMonitor"
-]
+__all__ = ["AgentPool", "DynamicTaskScheduler", "HeartbeatMonitor"]

@@ -13,10 +13,10 @@ OCR 文本提取插件 - 使用 Tesseract 或 PaddleOCR 从 PDF 图片中提取�
 版本：1.0.0
 """
 
-import os
-import logging
 import io
-from typing import Dict, List, Optional, Any, Tuple
+import logging
+import os
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.plugin_system.base_reader_plugin import BaseReaderPlugin
 from core.plugin_system.plugin_type import PluginType
@@ -63,6 +63,7 @@ class OCRReaderPlugin(BaseReaderPlugin):
         if self.pdf_engine is None:
             try:
                 from core.engine.pymupdf_engine import PyMuPDFEngine
+
                 self.pdf_engine = PyMuPDFEngine()
             except ImportError as e:
                 logger.warning(f"Failed to import PyMuPDFEngine: {e}")
@@ -101,6 +102,7 @@ class OCRReaderPlugin(BaseReaderPlugin):
         if engine_name == "tesseract":
             try:
                 import pytesseract
+
                 # 检查 tesseract 是否安装
                 pytesseract.get_tesseract_version()
                 self.ocr_engine = pytesseract
@@ -115,7 +117,8 @@ class OCRReaderPlugin(BaseReaderPlugin):
         elif engine_name == "paddleocr":
             try:
                 from paddleocr import PaddleOCR
-                self.ocr_engine = PaddleOCR(use_angle_cls=True, lang='ch')
+
+                self.ocr_engine = PaddleOCR(use_angle_cls=True, lang="ch")
                 self.ocr_engine_name = "paddleocr"
                 logger.info("PaddleOCR engine initialized")
             except Exception as e:
@@ -176,12 +179,14 @@ class OCRReaderPlugin(BaseReaderPlugin):
                     image_rects = page.get_image_rects(xref)
                     bbox = image_rects[0] if image_rects else (0, 0, 0, 0)
 
-                    images.append({
-                        "page_num": page_num,
-                        "image_index": img_index,
-                        "bbox": bbox,
-                        "data": image_bytes
-                    })
+                    images.append(
+                        {
+                            "page_num": page_num,
+                            "image_index": img_index,
+                            "bbox": bbox,
+                            "data": image_bytes,
+                        }
+                    )
 
         doc.close()
         return images
@@ -204,27 +209,27 @@ class OCRReaderPlugin(BaseReaderPlugin):
         try:
             # 使用 image_to_data 获取位置信息
             data = pytesseract.image_to_data(
-                image,
-                lang=self.language,
-                output_type=pytesseract.Output.DICT
+                image, lang=self.language, output_type=pytesseract.Output.DICT
             )
 
             blocks = []
-            for i, text in enumerate(data['text']):
+            for i, text in enumerate(data["text"]):
                 if text.strip():  # 忽略空文本
-                    confidence = data['conf'][i] / 100.0
+                    confidence = data["conf"][i] / 100.0
 
                     if confidence >= self.confidence_threshold:
-                        blocks.append({
-                            "text": text,
-                            "bbox": (
-                                data['left'][i],
-                                data['top'][i],
-                                data['left'][i] + data['width'][i],
-                                data['top'][i] + data['height'][i]
-                            ),
-                            "confidence": confidence
-                        })
+                        blocks.append(
+                            {
+                                "text": text,
+                                "bbox": (
+                                    data["left"][i],
+                                    data["top"][i],
+                                    data["left"][i] + data["width"][i],
+                                    data["top"][i] + data["height"][i],
+                                ),
+                                "confidence": confidence,
+                            }
+                        )
 
             return blocks
         except Exception as e:
@@ -247,8 +252,8 @@ class OCRReaderPlugin(BaseReaderPlugin):
 
         try:
             # PaddleOCR 需要 RGB 模式
-            if image.mode != 'RGB':
-                image = image.convert('RGB')
+            if image.mode != "RGB":
+                image = image.convert("RGB")
 
             # 执行 OCR
             result = self.ocr_engine.ocr(image, cls=True)
@@ -266,16 +271,18 @@ class OCRReaderPlugin(BaseReaderPlugin):
                         x_coords = [point[0] for point in box]
                         y_coords = [point[1] for point in box]
 
-                        blocks.append({
-                            "text": text,
-                            "bbox": (
-                                min(x_coords),
-                                min(y_coords),
-                                max(x_coords),
-                                max(y_coords)
-                            ),
-                            "confidence": confidence
-                        })
+                        blocks.append(
+                            {
+                                "text": text,
+                                "bbox": (
+                                    min(x_coords),
+                                    min(y_coords),
+                                    max(x_coords),
+                                    max(y_coords),
+                                ),
+                                "confidence": confidence,
+                            }
+                        )
 
             return blocks
         except Exception as e:
@@ -319,7 +326,7 @@ class OCRReaderPlugin(BaseReaderPlugin):
             "image_count": 0,
             "text_block_count": 0,
             "engine": None,
-            "error": None
+            "error": None,
         }
 
         try:
@@ -339,7 +346,11 @@ class OCRReaderPlugin(BaseReaderPlugin):
             # 验证页面参数（在初始化 OCR 引擎之前）
             if "page" in kwargs:
                 page_num = kwargs["page"]
-                if not isinstance(page_num, int) or page_num < 1 or page_num > page_count:
+                if (
+                    not isinstance(page_num, int)
+                    or page_num < 1
+                    or page_num > page_count
+                ):
                     result["error"] = (
                         f"Invalid page number: {page_num}. "
                         f"Must be between 1 and {page_count}"
@@ -361,7 +372,9 @@ class OCRReaderPlugin(BaseReaderPlugin):
                     return result
             elif "pages" in kwargs:
                 pages = kwargs["pages"]
-                if not isinstance(pages, list) or not all(isinstance(p, int) for p in pages):
+                if not isinstance(pages, list) or not all(
+                    isinstance(p, int) for p in pages
+                ):
                     result["error"] = (
                         f"Invalid pages: {pages}. Must be a list of integers"
                     )
@@ -462,7 +475,7 @@ class OCRReaderPlugin(BaseReaderPlugin):
                             page_bbox[0] + local_bbox[0],
                             page_bbox[1] + local_bbox[1],
                             page_bbox[0] + local_bbox[2],
-                            page_bbox[1] + local_bbox[3]
+                            page_bbox[1] + local_bbox[3],
                         )
                         # 添加额外信息
                         block["page_num"] = page_num
@@ -570,7 +583,7 @@ class OCRReaderPlugin(BaseReaderPlugin):
             "image_count",
             "text_block_count",
             "engine",
-            "error"
+            "error",
         ]
         for key in required_keys:
             if key not in result:

@@ -1,9 +1,9 @@
 """Markdown 转换器插件"""
 
-import re
-import os
 import logging
-from typing import Dict, List, Optional, Any, Tuple
+import os
+import re
+from typing import Any, Dict, List, Optional, Tuple
 
 import fitz  # PyMuPDF
 
@@ -129,7 +129,12 @@ class ToMarkdownPlugin(BaseConverterPlugin):
 
                 # 处理页面内容
                 content, img_count = self._convert_page_to_markdown(
-                    page, page_num, preserve_tables, preserve_images, image_prefix, image_count
+                    page,
+                    page_num,
+                    preserve_tables,
+                    preserve_images,
+                    image_prefix,
+                    image_count,
                 )
                 image_count = img_count
 
@@ -321,7 +326,9 @@ class ToMarkdownPlugin(BaseConverterPlugin):
 
             # 表头
             header = table_data[0]
-            markdown_lines.append("| " + " | ".join(str(cell) for cell in header) + " |")
+            markdown_lines.append(
+                "| " + " | ".join(str(cell) for cell in header) + " |"
+            )
 
             # 分隔线
             separator = "| " + " | ".join("---" for _ in header) + " |"
@@ -329,7 +336,9 @@ class ToMarkdownPlugin(BaseConverterPlugin):
 
             # 数据行
             for row in table_data[1:]:
-                markdown_lines.append("| " + " | ".join(str(cell) for cell in row) + " |")
+                markdown_lines.append(
+                    "| " + " | ".join(str(cell) for cell in row) + " |"
+                )
 
             return "\n".join(markdown_lines)
 

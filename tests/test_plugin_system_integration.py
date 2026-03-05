@@ -31,64 +31,59 @@ from core.plugin_system.plugin_type import PluginType
 
 # ========== 测试插件 ==========
 
-class TestReaderPlugin(BasePlugin):
-    """测试用 Reader 插件"""
+
+class TestReaderPluginFixtureFixture(BasePlugin):
+    """测试用 Reader 插件（Fixture，避免 pytest 收集）"""
     name = "test_reader"
     version = "1.0.0"
     description = "Test reader plugin"
     plugin_type = PluginType.READER
     author = "Test"
     dependencies = []
-    
-    def __init__(self):
-        super().__init__()
-        self.initialized = False
-        self.started = False
-        self.stopped = False
-    
+
     def is_available(self) -> bool:
         return True
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         return {"status": "success", "data": "test data"}
-    
+
     def on_load(self) -> None:
         super().on_load()
-        self.initialized = True
-    
+        self.initialized = False
+
     def on_unload(self) -> None:
         super().on_unload()
-        self.stopped = True
+        self.stopped = False
 
 
-class TestConverterPlugin(BasePlugin):
-    """测试用 Converter 插件"""
+class TestConverterPluginFixtureFixture(BasePlugin):
+    """测试用 Converter 插件（Fixture，避免 pytest 收集）"""
     name = "test_converter"
     version = "1.0.0"
     description = "Test converter plugin"
     plugin_type = PluginType.CONVERTER
     author = "Test"
     dependencies = ["numpy>=1.0.0"]  # 模拟依赖
-    
+
     def is_available(self) -> bool:
         return True
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         return {"status": "converted", "format": kwargs.get("format", "unknown")}
 
 
-class TestOCRPlugin(BasePlugin):
-    """测试用 OCR 插件"""
+class TestOCRPluginFixtureFixture(BasePlugin):
+    """测试用 OCR 插件（Fixture，避免 pytest 收集）"""
     name = "test_ocr"
     version = "2.0.0"
     description = "Test OCR plugin"
     plugin_type = PluginType.OCR
     author = "Test"
     dependencies = []
-    
+
     def is_available(self) -> bool:
         return True
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         text = kwargs.get("image", "")
         return {"status": "success", "text": f"OCR result: {text}"}
@@ -137,16 +132,17 @@ def temp_plugin_dir(tmp_path):
 @pytest.fixture
 def sample_plugin():
     """创建示例插件实例"""
-    return TestReaderPlugin()
+    from plugins.readers.text_reader import TextReaderPlugin
+    return TextReaderPlugin()
 
 
 @pytest.fixture
 def test_plugins():
     """返回所有测试插件类"""
     return [
-        TestReaderPlugin,
-        TestConverterPlugin,
-        TestOCRPlugin,
+        TestReaderPluginFixture,
+        TestConverterPluginFixture,
+        TestOCRPluginFixture,
         UnavailablePlugin
     ]
 
@@ -381,9 +377,9 @@ class TestPluginRegistration:
     def test_register_multiple_plugins(self, plugin_manager):
         """测试注册多个插件"""
         plugins = [
-            TestReaderPlugin(),
-            TestConverterPlugin(),
-            TestOCRPlugin()
+            TestReaderPluginFixture(),
+            TestConverterPluginFixture(),
+            TestOCRPluginFixture()
         ]
         
         for plugin in plugins:
@@ -396,9 +392,9 @@ class TestPluginRegistration:
     def test_plugin_type_filtering(self, plugin_manager):
         """测试按类型过滤插件"""
         # 添加不同类型的插件
-        plugin_manager.plugins["test_reader"] = TestReaderPlugin()
-        plugin_manager.plugins["test_converter"] = TestConverterPlugin()
-        plugin_manager.plugins["test_ocr"] = TestOCRPlugin()
+        plugin_manager.plugins["test_reader"] = TestReaderPluginFixture()
+        plugin_manager.plugins["test_converter"] = TestConverterPluginFixture()
+        plugin_manager.plugins["test_ocr"] = TestOCRPluginFixture()
         
         # 过滤 Reader 类型
         reader_plugins = plugin_manager.list_plugins(PluginType.READER)
@@ -416,8 +412,8 @@ class TestPluginRegistration:
     
     def test_list_plugin_names(self, plugin_manager):
         """测试列出插件名称"""
-        plugin_manager.plugins["test_reader"] = TestReaderPlugin()
-        plugin_manager.plugins["test_converter"] = TestConverterPlugin()
+        plugin_manager.plugins["test_reader"] = TestReaderPluginFixture()
+        plugin_manager.plugins["test_converter"] = TestConverterPluginFixture()
         
         names = plugin_manager.list_plugin_names()
         assert isinstance(names, list)
@@ -436,7 +432,7 @@ class TestPluginExecution:
     
     def test_plugin_instantiation(self, plugin_manager):
         """测试插件实例化"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         retrieved = plugin_manager.get_plugin("test_reader")
@@ -446,7 +442,7 @@ class TestPluginExecution:
     
     def test_execute_plugin_success(self, plugin_manager):
         """测试成功执行插件"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         result = plugin_manager.execute_plugin("test_reader")
@@ -457,7 +453,7 @@ class TestPluginExecution:
     
     def test_execute_plugin_with_params(self, plugin_manager):
         """测试带参数执行插件"""
-        plugin = TestConverterPlugin()
+        plugin = TestConverterPluginFixture()
         plugin_manager.plugins["test_converter"] = plugin
         
         result = plugin_manager.execute_plugin("test_converter", format="markdown")
@@ -473,7 +469,7 @@ class TestPluginExecution:
     
     def test_execute_plugin_with_kwargs(self, plugin_manager):
         """测试使用 kwargs 执行插件"""
-        plugin = TestOCRPlugin()
+        plugin = TestOCRPluginFixture()
         plugin_manager.plugins["test_ocr"] = plugin
         
         result = plugin_manager.execute_plugin("test_ocr", image="test.png")
@@ -520,7 +516,7 @@ class TestPluginDependencies:
     
     def test_check_dependencies_no_deps(self, plugin_manager):
         """测试无依赖插件"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         deps_ok, missing = plugin.check_dependencies()
         
         assert deps_ok is True
@@ -528,7 +524,7 @@ class TestPluginDependencies:
     
     def test_check_dependencies_with_deps(self, plugin_manager):
         """测试有依赖的插件"""
-        plugin = TestConverterPlugin()
+        plugin = TestConverterPluginFixture()
         deps_ok, missing = plugin.check_dependencies()
         
         # numpy 应该已安装
@@ -617,7 +613,7 @@ class LifecyclePlugin(BasePlugin):
     
     def test_plugin_on_unload_hook(self, plugin_manager):
         """测试 on_unload 钩子"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         plugin.on_load()
@@ -637,7 +633,7 @@ class LifecyclePlugin(BasePlugin):
     
     def test_unload_plugin_success(self, plugin_manager):
         """测试成功卸载插件"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         result = plugin_manager.unload_plugin("test_reader")
@@ -831,7 +827,7 @@ class TestConfiguration:
     
     def test_set_plugin_config(self, plugin_manager):
         """测试设置插件配置"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         config = {"setting": "value"}
@@ -842,7 +838,7 @@ class TestConfiguration:
     
     def test_get_plugin_config(self, plugin_manager):
         """测试获取插件配置"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         plugin_manager.plugin_configs["test_reader"] = {"setting": "value"}
         
@@ -851,7 +847,7 @@ class TestConfiguration:
     
     def test_config_update_hook(self, plugin_manager):
         """测试配置更新钩子调用"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         old_config = {"setting1": "old"}
@@ -928,7 +924,7 @@ class TestPluginInfo:
     
     def test_get_plugin_info(self, plugin_manager):
         """测试获取插件信息"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         info = plugin_manager.get_plugin_info("test_reader")
@@ -948,9 +944,9 @@ class TestPluginInfo:
     
     def test_get_all_plugin_info(self, plugin_manager):
         """测试获取所有插件信息"""
-        plugin_manager.plugins["test_reader"] = TestReaderPlugin()
-        plugin_manager.plugins["test_converter"] = TestConverterPlugin()
-        plugin_manager.plugins["test_ocr"] = TestOCRPlugin()
+        plugin_manager.plugins["test_reader"] = TestReaderPluginFixture()
+        plugin_manager.plugins["test_converter"] = TestConverterPluginFixture()
+        plugin_manager.plugins["test_ocr"] = TestOCRPluginFixture()
         
         infos = plugin_manager.get_all_plugin_info()
         
@@ -1001,7 +997,7 @@ class PerfPlugin{i}(BasePlugin):
     
     def test_plugin_execution_performance(self, plugin_manager):
         """测试插件执行性能"""
-        plugin = TestReaderPlugin()
+        plugin = TestReaderPluginFixture()
         plugin_manager.plugins["test_reader"] = plugin
         
         iterations = 1000

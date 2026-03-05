@@ -3,23 +3,26 @@
 使用 structure_reader 插件分析 PDF 文档结构
 """
 
-import click
 import json
 import logging
+
+import click
 
 logger = logging.getLogger(__name__)
 
 
-@click.command('structure')
-@click.argument('input', type=click.Path(exists=True))
-@click.option('-o', '--output', type=click.Path(), help='Output JSON file path')
-@click.option('-p', '--pages', help='Page range (e.g., 1-5, 1,3,5)')
-@click.option('--outline-only', is_flag=True, help='Extract outline (TOC) only')
-@click.option('--blocks-only', is_flag=True, help='Extract blocks only')
-@click.option('--logical-only', is_flag=True, help='Extract logical structure only')
-@click.option('--tree', is_flag=True, help='Output as structure tree (simplified view)')
+@click.command("structure")
+@click.argument("input", type=click.Path(exists=True))
+@click.option("-o", "--output", type=click.Path(), help="Output JSON file path")
+@click.option("-p", "--pages", help="Page range (e.g., 1-5, 1,3,5)")
+@click.option("--outline-only", is_flag=True, help="Extract outline (TOC) only")
+@click.option("--blocks-only", is_flag=True, help="Extract blocks only")
+@click.option("--logical-only", is_flag=True, help="Extract logical structure only")
+@click.option("--tree", is_flag=True, help="Output as structure tree (simplified view)")
 @click.pass_obj
-def structure_command(ctx, input, output, pages, outline_only, blocks_only, logical_only, tree):
+def structure_command(
+    ctx, input, output, pages, outline_only, blocks_only, logical_only, tree
+):
     """Extract document structure from PDF
 
     Analyze PDF document structure including outline (TOC), page structure,
@@ -37,49 +40,42 @@ def structure_command(ctx, input, output, pages, outline_only, blocks_only, logi
     plugin = StructureReaderPlugin()
 
     if not plugin.is_available():
-        raise click.ClickException(
-            "Error: Structure reader plugin is not available"
-        )
+        raise click.ClickException("Error: Structure reader plugin is not available")
 
     # 解析页码范围
     kwargs = {}
     if pages:
         parsed = parse_page_range(pages)
         if parsed is None:
-            raise click.ClickException(
-                f"Error: Invalid page range format: {pages}"
-            )
+            raise click.ClickException(f"Error: Invalid page range format: {pages}")
         kwargs.update(parsed)
 
     # 设置要提取的内容
     if outline_only:
-        kwargs['include_outline'] = True
-        kwargs['include_page_structure'] = False
-        kwargs['include_logical_structure'] = False
-        kwargs['include_blocks'] = False
+        kwargs["include_outline"] = True
+        kwargs["include_page_structure"] = False
+        kwargs["include_logical_structure"] = False
+        kwargs["include_blocks"] = False
     elif blocks_only:
-        kwargs['include_outline'] = False
-        kwargs['include_page_structure'] = False
-        kwargs['include_logical_structure'] = False
-        kwargs['include_blocks'] = True
+        kwargs["include_outline"] = False
+        kwargs["include_page_structure"] = False
+        kwargs["include_logical_structure"] = False
+        kwargs["include_blocks"] = True
     elif logical_only:
-        kwargs['include_outline'] = False
-        kwargs['include_page_structure'] = False
-        kwargs['include_logical_structure'] = True
-        kwargs['include_blocks'] = False
+        kwargs["include_outline"] = False
+        kwargs["include_page_structure"] = False
+        kwargs["include_logical_structure"] = True
+        kwargs["include_blocks"] = False
     else:
         # 默认：提取所有
-        kwargs['include_outline'] = True
-        kwargs['include_page_structure'] = True
-        kwargs['include_logical_structure'] = True
-        kwargs['include_blocks'] = True
+        kwargs["include_outline"] = True
+        kwargs["include_page_structure"] = True
+        kwargs["include_logical_structure"] = True
+        kwargs["include_blocks"] = True
 
     # 读取结构
     if tree:
-        result = {
-            "success": False,
-            "error": None
-        }
+        result = {"success": False, "error": None}
         try:
             structure_tree = plugin.get_structure_tree(input)
             if structure_tree.get("success"):
@@ -126,7 +122,7 @@ def structure_command(ctx, input, output, pages, outline_only, blocks_only, logi
 
     # 输出结果
     if output:
-        with open(output, 'w', encoding='utf-8') as f:
+        with open(output, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
         click.echo(f"✓ Structure saved to: {output}")
     else:
@@ -147,7 +143,9 @@ def structure_command(ctx, input, output, pages, outline_only, blocks_only, logi
                 type_counts[item_type] = type_counts.get(item_type, 0) + 1
 
             if type_counts:
-                click.echo(f"Structure types: {', '.join(f'{k}: {v}' for k, v in type_counts.items())}")
+                click.echo(
+                    f"Structure types: {', '.join(f'{k}: {v}' for k, v in type_counts.items())}"
+                )
 
     return 0
 
@@ -156,15 +154,15 @@ def parse_page_range(pages: str):
     """解析页码范围字符串"""
     try:
         # 单页
-        if '-' not in pages and ',' not in pages:
+        if "-" not in pages and "," not in pages:
             page_num = int(pages.strip())
             if page_num < 1:
                 return None
             return {"page": page_num}
 
         # 范围 "1-5"
-        if '-' in pages and ',' not in pages:
-            parts = pages.split('-')
+        if "-" in pages and "," not in pages:
+            parts = pages.split("-")
             if len(parts) == 2:
                 start = int(parts[0].strip())
                 end = int(parts[1].strip())
@@ -173,21 +171,21 @@ def parse_page_range(pages: str):
                 return {"page_range": (start, end)}
 
         # 多页 "1,3,5"
-        if ',' in pages and '-' not in pages:
-            page_list = [int(p.strip()) for p in pages.split(',')]
+        if "," in pages and "-" not in pages:
+            page_list = [int(p.strip()) for p in pages.split(",")]
             if any(p < 1 for p in page_list):
                 return None
             return {"pages": page_list}
 
         # 混合 "1-3,5,7-9"
-        if ',' in pages and '-' in pages:
+        if "," in pages and "-" in pages:
             page_list = []
-            parts = pages.split(',')
+            parts = pages.split(",")
 
             for part in parts:
                 part = part.strip()
-                if '-' in part:
-                    range_parts = part.split('-')
+                if "-" in part:
+                    range_parts = part.split("-")
                     if len(range_parts) == 2:
                         start = int(range_parts[0].strip())
                         end = int(range_parts[1].strip())

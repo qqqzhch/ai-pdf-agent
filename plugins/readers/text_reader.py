@@ -1,8 +1,8 @@
 """文本读取插件 - 使用 PyMuPDF 提取 PDF 文本"""
 
-import os
-from typing import Dict, Optional, Any, Tuple
 import logging
+import os
+from typing import Any, Dict, Optional, Tuple
 
 from core.plugin_system.base_reader_plugin import BaseReaderPlugin
 from core.plugin_system.plugin_type import PluginType

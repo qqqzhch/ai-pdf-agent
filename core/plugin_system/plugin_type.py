@@ -5,7 +5,7 @@ from enum import Enum
 
 class PluginType(Enum):
     """插件类型
-    
+
     各类型说明：
     - READER: 阅读器插件，用于读取/提取 PDF 内容（文本、表格、图片等）
     - CONVERTER: 转换器插件，用于 PDF 格式转换（Markdown、HTML、JSON 等）
@@ -17,6 +17,7 @@ class PluginType(Enum):
     - ANALYZE: 分析插件，用于文档分析（质量评估、内容分析）
     - CUSTOM: 自定义插件，用户自定义功能
     """
+
     READER = "reader"
     CONVERTER = "converter"
     OCR = "ocr"
