@@ -2,36 +2,65 @@
   "version": "2.0",
   "status": "completed",
   "tasks": {
-    "total": 3,
-    "pending": 3,
+    "total": 6,
+    "pending": 6,
     "in_progress": 0,
     "completed": 0,
     "failed": 0
   },
   "task_list": [
     {
-      "id": "OPT-1",
-      "title": "修复测试收集错误",
-      "description": "修复 5 个测试文件的收集错误",
+      "id": "OPT-5",
+      "title": "运行代码质量检查",
+      "description": "运行代码质量检查：\n1. pylint 检查（plugins/, team/）\n2. mypy 类型检查\n3. 分析发现的问题\n4. 修复关键问题\n\n命令：\n- pylint plugins/ team/ --errors-only\n- mypy plugins/ team/",
       "priority": 0,
       "dependencies": [],
       "timeout": 3600
     },
     {
-      "id": "OPT-2",
-      "title": "格式化团队管理代码",
-      "description": "使用 Black 格式化 team/ 目录",
-      "priority": 0,
-      "dependencies": [],
-      "timeout": 600
-    },
-    {
-      "id": "OPT-3",
-      "title": "安装开发依赖",
-      "description": "安装 pylint、black、isort、pytest-cov、mypy",
+      "id": "OPT-6",
+      "title": "性能基准测试",
+      "description": "运行性能基准测试：\n1. 测试不同大小 PDF 的处理时间\n2. 测试内存使用\n3. 对比优化前后性能\n4. 生成性能报告\n5. 识别性能瓶颈\n\n命令：python3 -m pytest tests/test_performance.py -v",
       "priority": 1,
       "dependencies": [],
-      "timeout": 600
+      "timeout": 3600
+    },
+    {
+      "id": "OPT-7",
+      "title": "优化慢速测试",
+      "description": "优化慢速测试：\n1. 识别耗时 > 1 秒的测试\n2. 分析慢速原因\n3. 优化测试实现\n4. 添加性能断言\n5. 使用 pytest.mark.slow 标记慢速测试",
+      "priority": 2,
+      "dependencies": [
+        "OPT-6"
+      ],
+      "timeout": 3600
+    },
+    {
+      "id": "OPT-8",
+      "title": "添加集成测试快照",
+      "description": "添加集成测试快照：\n1. 为关键功能添加快照测试\n2. 使用 pytest-snapshot 插件\n3. 确保输出一致性\n4. 支持快照更新机制\n5. 在 CI 中验证快照",
+      "priority": 2,
+      "dependencies": [],
+      "timeout": 3600
+    },
+    {
+      "id": "OPT-9",
+      "title": "配置 pre-commit hooks",
+      "description": "配置 pre-commit hooks：\n1. 安装 pre-commit\n2. 创建 .pre-commit-config.yaml\n3. 配置 black、isort、pylint hooks\n4. 配置 pytest hook\n5. 安装并测试 hooks\n\n命令：pre-commit install",
+      "priority": 1,
+      "dependencies": [],
+      "timeout": 1800
+    },
+    {
+      "id": "OPT-10",
+      "title": "清理临时文件",
+      "description": "清理临时文件：\n1. 删除 team/ 目录（测试用）\n2. 删除 test_team.py\n3. 删除 assign_tasks.py\n4. 删除 start_team.py\n5. 删除 fix_tests.py\n6. 删除 optimize.py\n7. 删除 code_quality_check.py\n8. 清理 .pytest_cache",
+      "priority": 3,
+      "dependencies": [
+        "OPT-5",
+        "OPT-9"
+      ],
+      "timeout": 300
     }
   ],
   "active_agents": [],
@@ -39,37 +68,72 @@
     "groups": [
       [
         {
-          "id": "OPT-1",
-          "title": "修复测试收集错误",
-          "description": "修复 5 个测试文件的收集错误",
+          "id": "OPT-5",
+          "title": "运行代码质量检查",
+          "description": "运行代码质量检查：\n1. pylint 检查（plugins/, team/）\n2. mypy 类型检查\n3. 分析发现的问题\n4. 修复关键问题\n\n命令：\n- pylint plugins/ team/ --errors-only\n- mypy plugins/ team/",
           "priority": 0,
           "dependencies": [],
           "timeout": 3600
         },
         {
-          "id": "OPT-2",
-          "title": "格式化团队管理代码",
-          "description": "使用 Black 格式化 team/ 目录",
-          "priority": 0,
-          "dependencies": [],
-          "timeout": 600
-        },
-        {
-          "id": "OPT-3",
-          "title": "安装开发依赖",
-          "description": "安装 pylint、black、isort、pytest-cov、mypy",
+          "id": "OPT-6",
+          "title": "性能基准测试",
+          "description": "运行性能基准测试：\n1. 测试不同大小 PDF 的处理时间\n2. 测试内存使用\n3. 对比优化前后性能\n4. 生成性能报告\n5. 识别性能瓶颈\n\n命令：python3 -m pytest tests/test_performance.py -v",
           "priority": 1,
           "dependencies": [],
-          "timeout": 600
+          "timeout": 3600
+        },
+        {
+          "id": "OPT-9",
+          "title": "配置 pre-commit hooks",
+          "description": "配置 pre-commit hooks：\n1. 安装 pre-commit\n2. 创建 .pre-commit-config.yaml\n3. 配置 black、isort、pylint hooks\n4. 配置 pytest hook\n5. 安装并测试 hooks\n\n命令：pre-commit install",
+          "priority": 1,
+          "dependencies": [],
+          "timeout": 1800
+        }
+      ],
+      [
+        {
+          "id": "OPT-8",
+          "title": "添加集成测试快照",
+          "description": "添加集成测试快照：\n1. 为关键功能添加快照测试\n2. 使用 pytest-snapshot 插件\n3. 确保输出一致性\n4. 支持快照更新机制\n5. 在 CI 中验证快照",
+          "priority": 2,
+          "dependencies": [],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "OPT-7",
+          "title": "优化慢速测试",
+          "description": "优化慢速测试：\n1. 识别耗时 > 1 秒的测试\n2. 分析慢速原因\n3. 优化测试实现\n4. 添加性能断言\n5. 使用 pytest.mark.slow 标记慢速测试",
+          "priority": 2,
+          "dependencies": [
+            "OPT-6"
+          ],
+          "timeout": 3600
+        }
+      ],
+      [
+        {
+          "id": "OPT-10",
+          "title": "清理临时文件",
+          "description": "清理临时文件：\n1. 删除 team/ 目录（测试用）\n2. 删除 test_team.py\n3. 删除 assign_tasks.py\n4. 删除 start_team.py\n5. 删除 fix_tests.py\n6. 删除 optimize.py\n7. 删除 code_quality_check.py\n8. 清理 .pytest_cache",
+          "priority": 3,
+          "dependencies": [
+            "OPT-5",
+            "OPT-9"
+          ],
+          "timeout": 300
         }
       ]
     ],
     "current_group_index": 0
   },
   "metrics": {
-    "start_time": 1772667096.6863997,
-    "end_time": 1772667098.687689,
-    "total_duration_ms": 2001.2893676757812
+    "start_time": 1772674901.855998,
+    "end_time": 1772674906.858069,
+    "total_duration_ms": 5002.070903778076
   },
-  "last_update": 1772667098.6876917
+  "last_update": 1772674906.858073
 }
