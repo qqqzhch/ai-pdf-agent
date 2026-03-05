@@ -36,7 +36,7 @@ class TestToImagePlugin(unittest.TestCase):
 
     def test_converter_initialization(self):
         """测试转换器初始化"""
-        self.assertEqual(self.converter.name, "image_converter")
+        self.assertEqual(self.converter.name, "to_image")
         self.assertEqual(self.converter.version, "1.0.0")
         self.assertEqual(self.converter.author, "李开发")
         self.assertEqual(self.converter.license, "MIT")
@@ -45,11 +45,11 @@ class TestToImagePlugin(unittest.TestCase):
         """测试转换器元数据"""
         metadata = self.converter.get_metadata()
 
-        self.assertEqual(metadata["name"], "image_converter")
+        self.assertEqual(metadata["name"], "to_image")
         self.assertEqual(metadata["version"], "1.0.0")
         self.assertEqual(
             metadata["description"],
-            "将 PDF 页面转换为图片格式（PNG, JPEG, WEBP 等），支持 DPI 和分辨率设置"
+            "将 PDF 页面转换为图片格式（PNG, JPEG, WEBP 等）"
         )
         self.assertEqual(metadata["plugin_type"], "converter")
         self.assertIn("pymupdf>=1.23.0", metadata["dependencies"])
@@ -538,7 +538,7 @@ class TestToImagePlugin(unittest.TestCase):
         help_text = self.converter.get_help()
 
         self.assertIsInstance(help_text, str)
-        self.assertIn("image_converter", help_text)
+        self.assertIn("to_image", help_text)
         self.assertIn("使用方法", help_text)
         self.assertIn("支持的参数", help_text)
         self.assertIn("支持的格式", help_text)

@@ -21,7 +21,7 @@ class TestToCsvPluginInitialization(unittest.TestCase):
         """测试默认初始化"""
         converter = ToCsvPlugin()
 
-        self.assertEqual(converter.name, "csv_converter")
+        self.assertEqual(converter.name, "to_csv")
         self.assertEqual(converter.version, "1.0.0")
         self.assertEqual(converter.author, "李开发")
         self.assertEqual(converter.license, "MIT")
@@ -54,7 +54,7 @@ class TestToCsvPluginInitialization(unittest.TestCase):
         converter = ToCsvPlugin()
         metadata = converter.get_metadata()
 
-        self.assertEqual(metadata["name"], "csv_converter")
+        self.assertEqual(metadata["name"], "to_csv")
         self.assertEqual(metadata["version"], "1.0.0")
         self.assertEqual(metadata["plugin_type"], "converter")
         self.assertIn("pymupdf>=1.23.0", metadata["dependencies"])
@@ -839,7 +839,7 @@ class TestToCsvPluginHelperMethods(unittest.TestCase):
         help_text = self.converter.get_help()
 
         self.assertIsInstance(help_text, str)
-        self.assertIn("csv_converter", help_text)
+        self.assertIn("to_csv", help_text)
         self.assertIn("使用方法", help_text)
         self.assertIn("支持的参数", help_text)
         self.assertIn("multi_table_mode", help_text)
