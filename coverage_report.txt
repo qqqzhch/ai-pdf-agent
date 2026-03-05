@@ -1,0 +1,141 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /root/data/disk/workspace/ai-pdf-agent
+configfile: pytest.ini (WARNING: ignoring pytest config in setup.cfg!)
+plugins: cov-7.0.0, anyio-4.12.1
+collected 1101 items
+
+tests/converters/test_csv.py ..F.FF.........F...FssssssssssssssssFFFFFFF [  3%]
+FFFsss.FFF                                                               [  4%]
+tests/converters/test_epub.py ....ssssssssss.s........FFFFF..........Fs. [  8%]
+ss...sss                                                                 [  9%]
+tests/converters/test_html.py ....ssssssss.s........................s.   [ 12%]
+tests/converters/test_image.py ....................................s.... [ 16%]
+....s                                                                    [ 17%]
+tests/converters/test_json.py .......................................... [ 20%]
+............                                                             [ 22%]
+tests/test_base_plugin.py ........                                       [ 22%]
+tests/test_cli.py .........................................sss           [ 26%]
+tests/test_cli_commands.py .....FF....FF.FF...FFF......FFFFF...FFFFFF... [ 30%]
+.........F.....                                                          [ 32%]
+tests/test_cli_convert.py ....F.........................                 [ 34%]
+tests/test_cli_error_handling.py ....................................... [ 38%]
+......                                                                   [ 39%]
+tests/test_cli_main.py ................................................. [ 43%]
+...........                                                              [ 44%]
+tests/test_cli_main_coverage.py ..........................               [ 46%]
+tests/test_cli_plugin.py .F....F.F......F.F.....................FF....   [ 50%]
+tests/test_image_reader.py ....................................          [ 54%]
+tests/test_metadata_reader.py ........................................   [ 57%]
+tests/test_performance.py ..............s.                               [ 59%]
+tests/test_plugin_system_integration.py ...........FFFFFF.F.FF...FF.F... [ 62%]
+......FFF....F.F.F......                                                 [ 64%]
+tests/test_plugins/test_ocr_reader.py ....................ssssssssss.ss  [ 67%]
+tests/test_structure_reader.py ......................................... [ 71%]
+......                                                                   [ 71%]
+tests/test_table_reader.py ............................................  [ 75%]
+tests/test_text_reader.py .............................                  [ 78%]
+tests/test_to_csv.py .......ss..ss..ssssssssss.......................... [ 82%]
+.ss                                                                      [ 83%]
+tests/test_to_epub.py ..................................s......ss        [ 87%]
+tests/test_to_html.py ..sssss.s.....................s....                [ 90%]
+tests/test_to_image.py ...........................................       [ 94%]
+tests/test_to_json.py ..................................                 [ 97%]
+tests/test_to_markdown.py ..............................                 [100%]
+
+=============================== warnings summary ===============================
+tests/test_performance.py:397
+  /root/data/disk/workspace/ai-pdf-agent/tests/test_performance.py:397: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests/test_plugin_system_integration.py:35
+  /root/data/disk/workspace/ai-pdf-agent/tests/test_plugin_system_integration.py:35: PytestCollectionWarning: cannot collect test class 'TestReaderPluginFixtureFixture' because it has a __init__ constructor (from: tests/test_plugin_system_integration.py)
+    class TestReaderPluginFixtureFixture(BasePlugin):
+
+tests/test_plugin_system_integration.py:59
+  /root/data/disk/workspace/ai-pdf-agent/tests/test_plugin_system_integration.py:59: PytestCollectionWarning: cannot collect test class 'TestConverterPluginFixtureFixture' because it has a __init__ constructor (from: tests/test_plugin_system_integration.py)
+    class TestConverterPluginFixtureFixture(BasePlugin):
+
+tests/test_plugin_system_integration.py:75
+  /root/data/disk/workspace/ai-pdf-agent/tests/test_plugin_system_integration.py:75: PytestCollectionWarning: cannot collect test class 'TestOCRPluginFixtureFixture' because it has a __init__ constructor (from: tests/test_plugin_system_integration.py)
+    class TestOCRPluginFixtureFixture(BasePlugin):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Coverage HTML written to dir htmlcov
+Coverage JSON written to file coverage.json
+=========================== short test summary info ============================
+FAILED tests/converters/test_csv.py::TestToCsvPluginInitialization::test_initialization_with_table_reader
+FAILED tests/converters/test_csv.py::TestToCsvPluginValidation::test_validate_input_invalid_delimiter
+FAILED tests/converters/test_csv.py::TestToCsvPluginValidation::test_validate_input_invalid_multi_table_mode
+FAILED tests/converters/test_csv.py::TestToCsvPluginValidation::test_validate_output_valid
+FAILED tests/converters/test_csv.py::TestToCsvPluginConversion::test_convert_success
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_convert_table_to_csv
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_determine_pages_to_extract_all_pages
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_determine_pages_to_extract_page_range
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_determine_pages_to_extract_pages_list
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_determine_pages_to_extract_single_page
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_get_help
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_merge_tables_to_csv
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_save_csv_file
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_save_csv_file_custom_encoding
+FAILED tests/converters/test_csv.py::TestToCsvPluginHelperMethods::test_save_csv_file_with_directory
+FAILED tests/converters/test_csv.py::TestToCsvPluginEdgeCases::test_convert_table_with_empty_rows
+FAILED tests/converters/test_csv.py::TestToCsvPluginEdgeCases::test_merge_empty_tables_list
+FAILED tests/converters/test_csv.py::TestToCsvPluginEdgeCases::test_save_empty_content
+FAILED tests/converters/test_epub.py::TestTextConversion::test_convert_text_to_epub
+FAILED tests/converters/test_epub.py::TestTextConversion::test_convert_empty_text
+FAILED tests/converters/test_epub.py::TestTextConversion::test_convert_text_with_special_chars
+FAILED tests/converters/test_epub.py::TestTextConversion::test_convert_text_long_paragraphs
+FAILED tests/converters/test_epub.py::TestTextConversion::test_convert_text_without_title_author
+FAILED tests/converters/test_epub.py::TestHelperMethods::test_convert_image_block_to_html
+FAILED tests/test_cli_commands.py::TestTextCommand::test_text_json_format - j...
+FAILED tests/test_cli_commands.py::TestTextCommand::test_text_json_with_structured
+FAILED tests/test_cli_commands.py::TestTablesCommand::test_tables_extract - j...
+FAILED tests/test_cli_commands.py::TestTablesCommand::test_tables_json_format
+FAILED tests/test_cli_commands.py::TestTablesCommand::test_tables_list_format
+FAILED tests/test_cli_commands.py::TestTablesCommand::test_tables_with_page_range
+FAILED tests/test_cli_commands.py::TestImagesCommand::test_images_extract - j...
+FAILED tests/test_cli_commands.py::TestImagesCommand::test_images_metadata_only
+FAILED tests/test_cli_commands.py::TestImagesCommand::test_images_with_page_range
+FAILED tests/test_cli_commands.py::TestMetadataCommand::test_metadata_basic
+FAILED tests/test_cli_commands.py::TestMetadataCommand::test_metadata_full - ...
+FAILED tests/test_cli_commands.py::TestMetadataCommand::test_metadata_stats_only
+FAILED tests/test_cli_commands.py::TestMetadataCommand::test_metadata_properties_only
+FAILED tests/test_cli_commands.py::TestMetadataCommand::test_metadata_raw - j...
+FAILED tests/test_cli_commands.py::TestStructureCommand::test_structure_basic
+FAILED tests/test_cli_commands.py::TestStructureCommand::test_structure_outline_only
+FAILED tests/test_cli_commands.py::TestStructureCommand::test_structure_blocks_only
+FAILED tests/test_cli_commands.py::TestStructureCommand::test_structure_logical_only
+FAILED tests/test_cli_commands.py::TestStructureCommand::test_structure_tree
+FAILED tests/test_cli_commands.py::TestStructureCommand::test_structure_with_page_range
+FAILED tests/test_cli_commands.py::TestCLICommandsIntegration::test_commands_with_json_output
+FAILED tests/test_cli_convert.py::TestCLIToMarkdownCommand::test_to_markdown_json_output
+FAILED tests/test_cli_plugin.py::TestPluginListCommand::test_list_with_json_output
+FAILED tests/test_cli_plugin.py::TestPluginListCommand::test_list_with_json_and_all
+FAILED tests/test_cli_plugin.py::TestPluginInfoCommand::test_info_with_json_output
+FAILED tests/test_cli_plugin.py::TestPluginCheckCommand::test_check_with_json_output
+FAILED tests/test_cli_plugin.py::TestPluginCheckCommand::test_check_with_name_and_json
+FAILED tests/test_cli_plugin.py::TestPluginCommandsIntegration::test_list_all_json_workflow
+FAILED tests/test_cli_plugin.py::TestPluginCommandsIntegration::test_check_all_json_workflow
+FAILED tests/test_plugin_system_integration.py::TestPluginRegistration::test_register_multiple_plugins
+FAILED tests/test_plugin_system_integration.py::TestPluginRegistration::test_plugin_type_filtering
+FAILED tests/test_plugin_system_integration.py::TestPluginRegistration::test_list_plugin_names
+FAILED tests/test_plugin_system_integration.py::TestPluginExecution::test_plugin_instantiation
+FAILED tests/test_plugin_system_integration.py::TestPluginExecution::test_execute_plugin_success
+FAILED tests/test_plugin_system_integration.py::TestPluginExecution::test_execute_plugin_with_params
+FAILED tests/test_plugin_system_integration.py::TestPluginExecution::test_execute_plugin_with_kwargs
+FAILED tests/test_plugin_system_integration.py::TestPluginDependencies::test_check_dependencies_no_deps
+FAILED tests/test_plugin_system_integration.py::TestPluginDependencies::test_check_dependencies_with_deps
+FAILED tests/test_plugin_system_integration.py::TestPluginLifecycle::test_plugin_on_load_hook
+FAILED tests/test_plugin_system_integration.py::TestPluginLifecycle::test_plugin_on_unload_hook
+FAILED tests/test_plugin_system_integration.py::TestPluginLifecycle::test_unload_plugin_success
+FAILED tests/test_plugin_system_integration.py::TestConfiguration::test_set_plugin_config
+FAILED tests/test_plugin_system_integration.py::TestConfiguration::test_get_plugin_config
+FAILED tests/test_plugin_system_integration.py::TestConfiguration::test_config_update_hook
+FAILED tests/test_plugin_system_integration.py::TestPluginInfo::test_get_plugin_info
+FAILED tests/test_plugin_system_integration.py::TestPluginInfo::test_get_all_plugin_info
+FAILED tests/test_plugin_system_integration.py::TestPerformance::test_plugin_execution_performance
+=========== 71 failed, 940 passed, 90 skipped, 4 warnings in 57.23s ============

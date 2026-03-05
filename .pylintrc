@@ -1,11 +1,38 @@
+# AI PDF Agent - 代码质量检查工具配置
+
+## Pylint 配置
+
+[MASTER]
+disable=C0111,R0901,R0903,R0911,R0912,R0913,R091udi,C0103,W0212,W0122,W0213,W023,E0401,E0601,E0602,E1101,E1102,E1103,E1106,E1120,E1121,E1201,E1301
+max-line-length=120
+ignore-imports=yes
+load-plugins=pylint.extensions.mccabe
+
+[tool.pylint.messages_control]
+disable=C0326
+check=maybe-no-member
+
+## MyPy 配置
+
 [mypy]
 python_version = 3.12
-warn_return_any = False
+warn_return_any = True
 warn_unused_ignores = True
+warn_redundant_cotainer = True
+warn_unused_configs = True
 
-[tool:pytest-warnings]
-disable=[]
+ignore-missing-imports = True
+no_implicit_optional = True
+check_strict_order = True
 
-[tool.pylint]
-max_line_length = 120
-disable = C0111
+[[tool.mypy]]
+check_untyped_defs = True
+warn_return_any = True
+warn_redundant_cotainer = True
+warn_unused_ignores = True
+warn_unused_configs = True
+
+## 额外检查
+
+# Type stub 文件
+mypy_path = ./stubs/mypy-stubs
