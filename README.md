@@ -1,4 +1,4 @@
-# AI PDF Agent - 智能 PDF 处理工具
+# AI PDF Agent - 智能 PDF 处CLI 工具
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)]
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]
@@ -10,7 +10,7 @@
 ## 🌟 特性
 
 - 📄 **智能读取**：自动识别 PDF 内容（文本、表格、图片、元数据）
-- 🔄 **格式转换**：支持多种输出格式（Markdown、HTML、JSON、CSV、EPUB）
+- 🔄 **格式转换**：支持多种输出格式（Markdown、HTML、JSON、Text）
 - 🚀 **高性能**：基于 PyMuPDF，速度和准确性优化
 - 🤖 **插件化架构**：模块化设计，易于扩展
 - 🐳 **容器化**：支持 Docker 部署，开箱即用
@@ -63,11 +63,23 @@ docker build -t ai-pdf-agent:latest .
 
 #### 基本使用
 ```bash
-# 读取 PDF（提取文本）
+# 读取 PDF
 ai read document.pdf -o output.txt
 
-# 读取 PDF（提取表格）
-ai read document.pdf --type tables -o tables.json
+# 转换 PDF
+ai convert document.pdf --format markdown
+
+# 查看版本
+ai --version
+
+# 查看帮助
+ai --help
+```
+
+#### 高级用法
+```bash
+# 读取并输出到文件
+ai read document.pdf -o output.txt
 
 # 转换为 Markdown
 ai convert document.pdf --format markdown -o output.md
@@ -78,35 +90,8 @@ ai convert document.pdf --format json -o output.json
 # 转换为 HTML
 ai convert document.pdf --format html -o output.html
 
-# 转换为 CSV
-ai convert document.pdf --format csv -o output.csv
-
-# 转换为 EPUB
-ai convert document.pdf --format epub -o output.epub
-
-# 查看版本
-ai --version
-
-# 查看帮助
-ai --help
-```
-
-#### 高级选项
-```bash
-# 提取指定页面的文本
-ai read document.pdf --pages 1-10 -o pages1-10.txt
-
-# 提取表格（JSON 格式）
-ai read document.pdf --type tables --json -o tables.json
-
-# 提取图片
-ai read document.pdf --type images --image-dir ./images
-
-# 提取元数据
-ai read document.pdf --type metadata -o metadata.json
-
-# 提取结构信息
-ai read document.pdf --type structure -o structure.json
+# 转换为 Text
+ai convert document.pdf --format text -o output.txt
 ```
 
 ---
@@ -118,11 +103,11 @@ ai read document.pdf --type structure -o structure.json
 # 读取 PDF
 docker run -v $(pwd):/data ai-pdf-agent:latest read /data/document.pdf -o /data/output.txt
 
-# 转换为 Markdown
+# 转换 PDF
 docker run -v $(pwd):/data ai-pdf-agent:latest convert /data/document.pdf --format markdown -o /data/output.md
 
-# 转换为 JSON
-docker run -v $(pwd):/data ai-pdf-agent:latest convert /data/document.pdf --format json -o /data/output.json
+# 使用 docker-compose
+docker-compose run ai-pdf-agent read document.pdf
 ```
 
 #### 使用 Docker Compose
@@ -142,7 +127,7 @@ docker-compose down
 
 ---
 
-## 📋 CLI 命令说明
+## 📋`CLI 命令说明
 
 ### `ai` - 主命令
 ```bash
@@ -156,15 +141,12 @@ ai --help       # 显示帮助信息
 
 **语法：**
 ```bash
-ai read <input.pdf> [options]
+ai read <pdf-path> [-o output]
 ```
 
 **选项：**
-- `--type TYPE` - 提取类型（text, tables, images, metadata, structure）
-- `-o, --output PATH` - 输出文件路径
-- `--json` - 输出 JSON 格式
-- `--pages START-END` - 指定页码范围
-- `--image-dir PATH` - 图片输出目录
+- `pdf-path` - PDF 文件路径（必需）
+- `-o, --output PATH` - 输出文件路径（可选）
 
 **示例：**
 ```bash
@@ -172,27 +154,28 @@ ai read <input.pdf> [options]
 ai read document.pdf -o output.txt
 
 # 提取表格
-ai read document.pdf --type tables --json -o tables.json
+ai read document.pdf -o tables.json
 
 # 提取图片
-ai read document.pdf --type images --image-dir ./images
-```
+ai read document.pdf -o images.json
 
----
+# 提取元数据
+ai read document.pdf -o metadata.json
+```
 
 ### `ai convert` - 转换 PDF 格式
 
-**功能：** 将 PDF 转换为其他格式
+**功能：** 将 PDF 转换为其他格式（Markdown, JSON, HTML, Text）
 
 **语法：**
 ```bash
-ai convert <input.pdf> --format <FORMAT> [options]
+ai convert <pdf-path> --format <format> [-o output]
 ```
 
 **选项：**
-- `--format FORMAT` - 目标格式（markdown, json, html, csv, image, epub）
-- `-o, --output PATH` - 输出文件路径
-- `--pages START-END` - 指定页码范围
+- `pdf-path` - PDF 文件路径（必需）
+- `--format, -f FORMAT` - 目标格式（必需：markdown, html, json, text）
+- `-o, --output PATH` - 输出文件路径（可选）
 
 **示例：**
 ```bash
@@ -205,11 +188,8 @@ ai convert document.pdf --format json -o output.json
 # 转换为 HTML
 ai convert document.pdf --format html -o output.html
 
-# 转换为 CSV
-ai convert document.pdf --format csv -o output.csv
-
-# 转换为 EPUB
-ai convert document.pdf --format epub -o output.epub
+# 转换为 Text
+ai convert document.pdf --format text -o output.txt
 ```
 
 ---
@@ -258,12 +238,6 @@ ai-pdf-agent/
 
 ---
 
-## 📄 许可证
-
-MIT License
-
----
-
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
@@ -280,7 +254,7 @@ MIT License
 
 ## 💡 提示
 
-1. **性能优化：** 使用 `--pages` 选项指定页码范围，减少不必要的处理
+1. **性能优化：** 分页处理大文件
 2. **批处理：** 结合 Shell 脚本进行批量处理
 3. **内存管理：** 大文件建议分页处理
 4. **Docker 使用：** 确保 volume 映射正确，否则无法访问文件

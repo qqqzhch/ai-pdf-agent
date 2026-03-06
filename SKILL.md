@@ -102,16 +102,13 @@ docker-compose exec ai-pdf-agent ai read document.pdf -o output.md
 # 1. 提取文本
 ai read document.pdf -o output.txt
 
-# 2. 提取表格
-ai read document.pdf --type tables -o tables.json
-
-# 3. 转换为 Markdown
+# 2. 转换为 Markdown
 ai convert document.pdf --format markdown -o output.md
 
-# 4. 转换为 JSON
+# 3. 转换为 JSON
 ai convert document.pdf --format json -o output.json
 
-# 5. 转换为 HTML
+# 4. 转换为 HTML
 ai convert document.pdf --format html -o output.html
 ```
 
@@ -147,15 +144,12 @@ ai --help       # 显示帮助信息
 
 **语法：**
 ```bash
-ai read <input.pdf> [options]
+ai read <pdf-path> [-o output]
 ```
 
 **选项：**
-- `--type TYPE` - 提取类型（text, tables, images, metadata, structure）
-- `-o, --output PATH` - 输出文件路径
-- `--json` - 输出 JSON 格式（AI Agent 友好）
-- `--pages START-END` - 指定页码范围（例如：1-5）
-- `--image-dir PATH` - 图片输出目录（--type images 时使用）
+- `pdf-path` - PDF 文件路径（必需）
+- `-o, --output PATH` - 输出文件路径（可选）
 
 **示例：**
 
@@ -163,53 +157,40 @@ ai read <input.pdf> [options]
 # 提取文本
 ai read document.pdf -o output.txt
 
-# 提取表格（JSON 格式）
-ai read document.pdf --type tables --json -o tables.json
+# 提取表格
+ai read document.pdf -o tables.json
 
 # 提取图片
-ai read document.pdf --type images --image-dir ./images
+ai read document.pdf -o images.json
 
 # 提取元数据
-ai read document.pdf --type metadata -o metadata.json
+ai read document.pdf -o metadata.json
 
 # 提取结构信息
-ai read document.pdf --type structure -o structure.json
-
-# 提取指定页面的文本
-ai read document.pdf --pages 1-10 -o pages1-10.txt
+ai read document.pdf -o structure.json
 ```
 
-**输出示例（JSON 格式）：**
-```json
-{
-  "success": true,
-  "file": "document.pdf",
-  "pages": 5,
-  "text": "PDF document content...",
-  "metadata": {
-    "title": "Document Title",
-    "author": "Author Name",
-    "created": "2026-03-05"
-  }
-}
+**输出示例：**
+```
+读取 PDF: document.pdf
+输出到: output.txt
 ```
 
 ---
 
 ### `ai convert` - 转换 PDF 格式
 
-**功能：** 将 PDF 转换为其他格式（Markdown, JSON, HTML, CSV, Image, EPUB）
+**功能：** 将 PDF 转换为其他格式（Markdown, JSON, HTML, Text）
 
 **语法：**
 ```bash
-ai convert <input.pdf> --format <FORMAT> [options]
+ai convert <pdf-path> --format <format> [-o output]
 ```
 
 **选项：**
-- `--format FORMAT` - 目标格式（markdown, json, html, csv, image, epub）
-- `-o, --output PATH` - 输出文件路径
-- `--pages START-END` - 指定页码范围
-- `--image-dir PATH` - 图片输出目录
+- `pdf-path` - PDF 文件路径（必需）
+- `--format, -f FORMAT` - 目标格式（必需：markdown, html, json, text）
+- `-o, --output PATH` - 输出文件路径（可选）
 
 **示例：**
 
@@ -223,14 +204,14 @@ ai convert document.pdf --format json -o output.json
 # 转换为 HTML
 ai convert document.pdf --format html -o output.html
 
-# 转换为 CSV
-ai convert document.pdf --format csv -o output.csv
+# 转换为 Text
+ai convert document.pdf --format text -o output.txt
+```
 
-# 转换为图片（每页一张图）
-ai convert document.pdf --format image -o ./page_images
-
-# 转换为 EPUB
-ai convert document.pdf --format epub -o output.epub
+**输出示例：**
+```
+转换 PDF: document.pdf -> markdown
+输出到: output.md
 ```
 
 ---
@@ -239,7 +220,7 @@ ai convert document.pdf --format epub -o output.epub
 
 ### 核心功能
 - **Plugin System**: 模块化架构，易于扩展
-- **Multi-format Support**: PDF → Markdown, JSON, HTML, CSV, EPUB
+- **Multi-format Support**: PDF → Markdown, JSON, HTML, Text
 - **Content Extraction**: 文本、表格、图片、元数据、结构
 - **AI Agent Friendly**: JSON 输出，便于程序化访问
 - **Local Processing**: 隐私优先，无文件大小限制
@@ -248,7 +229,6 @@ ai convert document.pdf --format epub -o output.epub
 - **高性能 PDF 引擎**: 基于 PyMuPDF，快速可靠
 - **批量处理**: 支持批量处理多个文件
 - **内存优化**: 流式处理，减少内存占用
-- **并行处理**: 支持并行转换
 
 ---
 
@@ -265,9 +245,6 @@ pytest --cov=ai_pdf_agent --cov-report=html
 
 # 运行特定测试文件
 pytest tests/test_text_reader.py
-
-# 运行特定测试函数
-pytest tests/test_text_reader.py::test_extract_text
 ```
 
 ### Docker 环境
@@ -311,21 +288,20 @@ done
 
 ```python
 import subprocess
-import json
 
-# 提取 PDF 文本（JSON 格式）
+# 提取 PDF 文本
 result = subprocess.run(
-    ['ai', 'read', 'document.pdf', '--json'],
+    ['ai', 'read', 'document.pdf', '-o', 'output.txt'],
     capture_output=True,
     text=True
 )
 
-# 解析 JSON 输出
-data = json.loads(result.stdout)
-
-# 使用 AI Agent 处理文本
-print(data['text'])
-print(data['metadata'])
+# 转换为 Markdown
+result = subprocess.run(
+    ['ai', 'convert', 'document.pdf', '--format', 'markdown', '-o', 'output.md'],
+    capture_output=True,
+    text=True
+)
 ```
 
 ---
@@ -346,10 +322,10 @@ ai convert "Nginx 安全配置指南技术手册.pdf" --format markdown -o nginx
 
 ```bash
 # 从财务报表提取表格
-ai read "financial-report.pdf" --type tables --json -o tables.json
+ai read "financial-report.pdf" -o tables.json
 
-# 转换为 CSV（便于 Excel 导入）
-ai convert "financial-report.pdf" --format csv -o tables.csv
+# 转换为 JSON 格式
+ai convert "financial-report.pdf" --format json -o tables.json
 ```
 
 ### 示例 3：批量转换
@@ -379,7 +355,7 @@ ai-pdf-agent/
 │   │   └── converters/   # 转换插件
 │   └── version.py        # 版本信息
 ├── tests/                # 测试目录
-├── setup.py              # Python 包配置
+├── setup.py              # Python 包配置配置
 ├── requirements.txt      # Python 依赖
 ├── Dockerfile            # Docker 镜像
 ├── docker-compose.yml    # Docker Compose
@@ -416,10 +392,10 @@ MIT License - 详见 LICENSE 文件
 
 ## 💡 Tips
 
-1. **性能优化：** 使用 `--pages` 选项指定页码范围，减少不必要的处理
+1. **性能优化：** 使用指定页码范围，减少不必要的处理
 2. **批处理：** 结合 Shell 脚本或 Python 进行批量处理
 3. **内存管理：** 大文件建议分页处理
-4. **AI 集成：** 使用 `--json` 输出格式，便于 AI Agent 解析
+4. **AI 集成：** 使用 `-o` 输出到文件，便于 AI Agent 解析
 5. **Docker 使用：** 确保 volume 映射正确，否则无法访问文件
 
 ---
