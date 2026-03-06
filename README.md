@@ -1,4 +1,4 @@
-# AI PDF Agent - 智能 PDF 处CLI 工具
+# AI PDF Agent - 智能 PDF 处理工具
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)]
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]
@@ -36,7 +36,7 @@ pip install -e .
 
 #### 验证安装
 ```bash
-ai --version
+ai-pdf --version
 ```
 
 ---
@@ -51,7 +51,7 @@ docker pull qqqzhch/ai-pdf-agent:latest
 #### 从源码构建
 ```bash
 git clone https://github.com/qqqzhch/ai-pdf-agent.git
-cd ai-pdf-agent
+cd ai-pdf-agentRENAME
 docker build -t ai-pdf-agent:latest .
 ```
 
@@ -64,34 +64,34 @@ docker build -t ai-pdf-agent:latest .
 #### 基本使用
 ```bash
 # 读取 PDF
-ai read document.pdf -o output.txt
+ai-pdf read document.pdf -o output.txt
 
 # 转换 PDF
-ai convert document.pdf --format markdown
+ai-pdf convert document.pdf --format markdown
 
 # 查看版本
-ai --version
+ai-pdf --version
 
 # 查看帮助
-ai --help
+ai-pdf --help
 ```
 
 #### 高级用法
 ```bash
 # 读取并输出到文件
-ai read document.pdf -o output.txt
+ai-pdf read document.pdf -o output.txt
 
 # 转换为 Markdown
-ai convert document.pdf --format markdown -o output.md
+ai-pdf convert document.pdf --format markdown -o output.md
 
 # 转换为 JSON
-ai convert document.pdf --format json -o output.json
+ai-pdf convert document.pdf --format json -o output.json
 
 # 转换为 HTML
-ai convert document.pdf --format html -o output.html
+ai-pdf convert document.pdf --format html -o output.html
 
 # 转换为 Text
-ai convert document.pdf --format text -o output.txt
+ai-pdf convert document.pdf --format text -o output.txt
 ```
 
 ---
@@ -127,21 +127,21 @@ docker-compose down
 
 ---
 
-## 📋`CLI 命令说明
+## 📋 CLI 命令说明
 
-### `ai` - 主命令
+### `ai-pdf` - 主命令
 ```bash
-ai --version    # 显示版本信息
-ai --help       # 显示帮助信息
+ai-pdf --version    # 显示版本信息
+ai-pdf --help       # 显示帮助信息
 ```
 
-### `ai read` - 读取 PDF 内容
+### `ai-pdf read` - 读取 PDF 内容
 
 **功能：** 从 PDF 提取文本、表格、图片、元数据或结构信息
 
 **语法：**
 ```bash
-ai read <pdf-path> [-o output]
+ai-pdf read <pdf-path> [-o output]
 ```
 
 **选项：**
@@ -151,25 +151,25 @@ ai read <pdf-path> [-o output]
 **示例：**
 ```bash
 # 提取文本
-ai read document.pdf -o output.txt
+ai-pdf read document.pdf -o output.txt
 
 # 提取表格
-ai read document.pdf -o tables.json
+ai-pdf read document.pdf -o tables.json
 
 # 提取图片
-ai read document.pdf -o images.json
+ai-pdf read document.pdf -o images.json
 
 # 提取元数据
-ai read document.pdf -o metadata.json
+ai-pdf read document.pdf -o metadata.json
 ```
 
-### `ai convert` - 转换 PDF 格式
+### `ai-pdf convert` - 转换 PDF 格式
 
 **功能：** 将 PDF 转换为其他格式（Markdown, JSON, HTML, Text）
 
 **语法：**
 ```bash
-ai convert <pdf-path> --format <format> [-o output]
+ai-pdf convert <pdf-path> --format <format> [-o output]
 ```
 
 **选项：**
@@ -180,16 +180,16 @@ ai convert <pdf-path> --format <format> [-o output]
 **示例：**
 ```bash
 # 转换为 Markdown
-ai convert document.pdf --format markdown -o output.md
+ai-pdf convert document.pdf --format markdown -o output.md
 
 # 转换为 JSON
-ai convert document.pdf --format json -o output.json
+ai-pdf convert document.pdf --format json -o output.json
 
 # 转换为 HTML
-ai convert document.pdf --format html -o output.html
+ai-pdf convert document.pdf --format html -o output.html
 
 # 转换为 Text
-ai convert document.pdf --format text -o output.txt
+ai-pdf convert document.pdf --format text -o output.txt
 ```
 
 ---
@@ -197,7 +197,6 @@ ai convert document.pdf --format text -o output.txt
 ## 🔧 开发
 
 ### 安装开发依赖
-
 ```bash
 # 安装开发依赖
 pip install -e .[dev]
@@ -266,7 +265,7 @@ ai-pdf-agent/
 **当前版本：** v1.0.0
 
 **更新内容：**
-- ✅ 完整的 CLI 工具
+- ✅ 完整的 CLI 工具（命令：ai-pdf）
 - ✅ Docker 支持（开箱即用）
 - ✅ 多格式转换支持
 - ✅ 插件化架构

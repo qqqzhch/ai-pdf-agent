@@ -1,52 +1,62 @@
-#!/usr/bin/env python3
-"""AI PDF Agent - Setup Script"""
+"""
+AI PDF Agent - 安装配置
+"""
 
 from setuptools import setup, find_packages
 
+# 读取 README
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
+# 读取版本
+with open("VERSION", "r", encoding="utf-8") as fh:
+    version = fh.read().strip()
+
 setup(
     name="ai-pdf-agent",
-    version="0.1.0",
-    description="AI Agent-friendly PDF processing tool with plugin system",
-    long_description=open("README.md").read(),
+    version=version,
+    author="AI Team",
+    author_email="team@example.com",
+    description="AI PDF Agent - 智能 PDF 处理工具",
+    long_description=long_description,
     long_description_content_type="text/markdown",
-    author="AI PDF Agent Team",
-    author_email="team@ai-pdf-agent.com",
-    url="https://github.com/ai-pdf-agent/ai-pdf-agent",
-    packages=find_packages(),
-    include_package_data=True,
+    url="https://github.com/qqqzhch/ai-pdf-agent",
+    project_urls={
+        "Bug Tracker": "https://github.com/qqqzhch/ai-pdf-agent/issues",
+        "Documentation": "https://github.com/qqqzhch/ai-pdf-agent#readme",
+        "Source Code": "https://github.com/qqqzhch/ai-pdf-agent",
+    },
+    packages=find_packages(exclude=["tests*", "docs*"]),
+    python_requires=">=3.8",
     install_requires=[
-        "click>=8.1.0",
-        "pymupdf>=1.24.0",
-        "pdfplumber>=0.10.0",
-        "Pillow>=10.0.0",
-        "pdf2image>=1.16.0",
-        "ebooklib>=0.18",
+        "click>=8.0.0",
+        "pymupdf>=1.23.0",
+        "pydantic>=2.0.0",
     ],
     extras_require={
         "dev": [
             "pytest>=7.0.0",
             "pytest-cov>=4.0.0",
             "black>=23.0.0",
-            "flake8>=6.0.0",
+            "mypy>=1.0.0",
         ],
     },
     entry_points={
         "console_scripts": [
-            "ai-pdf=cli.main:cli",
+            "ai-pdf=ai_pdf_agent.cli.main:cli",
         ],
     },
-    python_requires=">=3.8",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
+        "Topic :: Software Development :: Libraries :: Python Modules",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Text Processing :: Filters",
-        "Topic :: Utilities",
+        "Operating System :: OS Independent",
     ],
+    keywords=["pdf", "ai", "document", "converter", "pymupdf"],
 )
