@@ -3,7 +3,7 @@
 ## Description
 AI Agent 友好的 PDF 处理工具，专为 AI Agent 设计的 CLI 工具，通过插件化架构提供灵活的 PDF 处理能力。
 
-**最新版本：** v1.0.0（V2 团队部署版）
+**最新版本：** v1.0.0
 
 ---
 
@@ -244,13 +244,11 @@ ai convert document.pdf --format epub -o output.epub
 - **AI Agent Friendly**: JSON 输出，便于程序化访问
 - **Local Processing**: 隐私优先，无文件大小限制
 
-### V2 团队特性（v1.0.0 新增）
-- **100% 自动化**: 自动任务拆分、估算、分配
-- **完美依赖管理**: 智能依赖检查和并行执行
-- **30 分钟监控**: 自动状态检查和异常报告
-- **技能集成**: task-planning, task-estimation, team-communication-protocols
-- **Docker 支持**: 开箱即用，无需 Python 环境
-- **Git Hooks**: 自动测试和文档更新
+### 性能优化
+- **高性能 PDF 引擎**: 基于 PyMuPDF，快速可靠
+- **批量处理**: 支持批量处理多个文件
+- **内存优化**: 流式处理，减少内存占用
+- **并行处理**: 支持并行转换
 
 ---
 
@@ -294,13 +292,7 @@ docker run ai-pdf-agent:latest pytest
 - **QUICKSTART.md**: 5 分钟快速入门
 - **COMMANDS.md**: 命令参考手册
 - **EXAMPLES.md**: 使用示例
-- **PLUGIN_DEV.md**: 插件开发指南
-
-### V2 团队文档
-- **TEAM_V2.md**: V2 团队设计文档
-- **TEAM_V2_SUMMARY.md**: V2 团队实施总结
-- **DEPLOYMENT_PLAN.md**: 部署方案
-- **DEPLOYMENT_COMPLETE.md**: 部署完成总结
+- **PLUGIN.md**: 插件开发指南
 
 ---
 
@@ -334,19 +326,6 @@ data = json.loads(result.stdout)
 # 使用 AI Agent 处理文本
 print(data['text'])
 print(data['metadata'])
-```
-
-### V2 团队监控
-
-```bash
-# 启动 V2 团队监控
-python3 v2_team_monitor.py
-
-# 查看团队状态
-cat TEAM_STATE_V2.json
-
-# 查看报告历史
-cat team_reports_v2.json
 ```
 
 ---
@@ -450,10 +429,9 @@ MIT License - 详见 LICENSE 文件
 **当前版本：** v1.0.0
 
 **更新内容：**
-- ✅ V2 团队系统（100% 自动化）
+- ✅ 完整的 CLI 工具
 - ✅ Docker 支持（开箱即用）
-- ✅ CLI 工具完整实现
-- ✅ 30 分钟自动监控
+- ✅ 多格式转换支持
 - ✅ 完善的文档和测试
 
 ---
