@@ -5,6 +5,7 @@
 
 **最新版本：** v1.0.0
 **CLI 命令：** simple-pdf
+**平台支持：** Windows、Linux、macOS
 
 ---
 
@@ -20,130 +21,197 @@ Use this skill when:
 
 ## 🚀 Installation
 
-### 方案 A：Python 环境（推荐）
+### Windows
 
-#### 1. Clone 仓库
-```bash
+#### 方案 A：使用 pip 安装（推荐）
+
+```powershell
+# 使用 PowerShell
+pip install simple-pdf
+
+# 或使用 CMD
+pip install simple-pdf
+
+# 验证安装
+simple-pdf --version
+```
+
+#### 方案 B：从源码安装（推荐）
+
+```powershell
+# 1. Clone 仓库
 git clone https://github.com/qqqzhch/ai-pdf-agent.git
 cd ai-pdf-agent
-```
 
-#### 2. 安装依赖
-```bash
-# 使用可编辑模式安装（推荐）
+# 2. 创建虚拟环境（推荐）
+python -m venv venv
+
+# 3. 激活虚拟环境（PowerShell）
+.\venv\Scripts\Activate.ps1
+
+# 或使用 CMD
+venv\Scripts\activate.bat
+
+# 4. 升级 pip
+pip install --upgrade pip
+
+# 5. 安装包
 pip install -e .
 
-# 或从 requirements.txt 安装
-pip install -r requirements.txt
-```
-
-#### 3. 验证安装
-```bash
-# 检查版本
+# 6. 验证安装
 simple-pdf --version
-
-# 查看帮助
 simple-pdf --help
-
-# 找到命令
-which simple-pdf
 ```
 
-#### 4. 如果命令找不到
+#### 方案 C：使用安装脚本（推荐）
+
+```powershell
+# 下载并运行安装脚本
+.\install.ps1
+
+# 或使用参数
+.\install.ps1 -Reinstall  # 重新安装
+.\install.ps1 -Test     # 安装并测试
+```
+
+**安装脚本功能：**
+- ✅ 自动检测 Python 和 pip
+- ✅ 创建虚拟环境
+- ✅ 安装包
+- ✅ 验证安装
+- ✅ 支持多镜像源（默认、清华、阿里云等）
+- ✅ 彩色输出和进度显示
+
+---
+
+### Linux / macOS
+
+#### 方案 A：使用 pip 安装
 
 ```bash
-# 方法 1：使用虚拟环境（推荐）
-python3 -m venv venv
-source venv/bin/activate
+pip install simple-pdf
+```
+
+#### 方案 B：从源码安装
+
+```bash
+# 1. Clone 仓库
+git clone https://github.com/qqqzhch/ai-pdf-agent.git
+cd ai-pdf-agent
+
+# 2. 安装依赖
+pip install -r requirements.txt
+
+# 或使用可编辑模式安装（推荐）
 pip install -e .
+
+# 3. 验证安装
 simple-pdf --version
+```
 
-# 方法 2：检查 PATH
-echo $PATH | grep -i local
+#### 方案 C：使用虚拟环境（推荐）
 
-# 方法 3：直接使用模块
-python3 -m ai_pdf_agent.cli.cli --version
+```bash
+# 1. Clone 仓库
+git clone https://github.com/qqqzhch/ai-pdf-agent.git
+cd ai-pdf-agent
+
+# 2. 创建虚拟环境
+python3 -m venv venv
+
+# 3. 激活虚拟环境
+source venv/bin/activate  # Linux/macOS
+
+# 4. 安装包
+pip install -e .
+
+# 5. 验证安装
+simple-pdf --version
+simple-pdf --help
+```
+
+#### 方案 D：使用安装脚本（推荐）
+
+```bash
+# 添加执行权限
+chmod +x install.sh
+
+# 运行安装脚本
+./install.sh
+
+# 或使用参数
+./install.sh --reinstall  # 重新安装
+./install.sh --test      # 安装并测试
+
+# 指定镜像源
+./install.sh --mirror tuna           # 使用清华大学镜像
+./install.sh --mirror tsinghua       # 使用清华大学镜像（备用）
+./install.sh --mirror aliyun         # 使用阿里云镜像
 ```
 
 ---
 
-### 方案 B：Docker 环境（无需 Python）
+### Docker（跨平台）
 
-#### 1. Clone 仓库
+#### 方案 A：拉取镜像
+
+```bash
+docker pull simple-pdf:latest
+```
+
+#### 方案 B：从源码构建
+
 ```bash
 git clone https://github.com/qqqzhch/ai-pdf-agent.git
 cd ai-pdf-agent
-```
-
-#### 2. 构建 Docker 镜像
-```bash
 docker build -t simple-pdf:latest .
-```
-
-#### 3. 使用 Docker 容器
-```bash
-# 提取文本
-docker run -v $(pwd)/data:/app/data simple-pdf:latest read /app/data/document.pdf -o /app/data/output.txt
-
-# 转换为 Markdown
-docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document.pdf --format markdown -o /app/data/output.md
-```
-
----
-
-### 方案 C：Docker Compose（推荐生产环境）
-
-#### 1. Clone 仓库
-```bash
-git clone https://github.com/qqqzhch/ai-pdf-agent.git
-cd ai-pdf-agent
-```
-
-#### 2. 启动服务
-```bash
-docker-compose up -d
-```
-
-#### 3. 使用服务
-```bash
-# 进入容器
-docker-compose exec simple-pdf bash
-
-# 或者直接执行
-docker-compose exec simple-pdf simple-pdf read document.pdf -o output.md
 ```
 
 ---
 
 ## 🎯 Quick Start
 
-### Python 环境
+### Windows
 
-```bash
-# 1. 提取文本
+#### PowerShell
+
+```powershell
+# 读取 PDF
 simple-pdf read document.pdf -o output.txt
 
-# 2. 转换为 Markdown
-simple-pdf convert document.pdf --format markdown -o output.md
+# 转换 PDF
+simple-pdf convert document.pdf --format markdown
 
-# 3. 转换为 JSON
-simple-pdf convert document.pdf --format json -o output.json
+# 查看版本
+simple-pdf --version
 
-# 4. 转换为 HTML
-simple-pdf convert document.pdf --format html -o output.html
+# 查看帮助
+simple-pdf --help
 ```
 
-### Docker 环境
+#### CMD
+
+```cmd
+simple-pdf read document.pdf -o output.txt
+simple-pdf convert document.pdf --format markdown
+```
+
+---
+
+### Linux / macOS
 
 ```bash
-# 1. 提取文本
-docker run -v $(pwd)/data:/app/data simple-pdf:latest read /app/data/document.pdf -o /app/data/output.txt
+# 读取 PDF
+simple-pdf read document.pdf -o output.txt
 
-# 2. 转换为 Markdown
-docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document.pdf --format markdown -o /app/data/output.md
+# 转换为 Markdown
+simple-pdf convert document.pdf --format markdown -o output.md
 
-# 3. 转换为 JSON
-docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document.pdf --format json -o /app/data/output.json
+# 转换为 JSON
+simple-pdf convert document.pdf --format json -o output.json
+
+# 转换为 HTML
+simple-pdf convert document.pdf --format html -o output.html
 ```
 
 ---
@@ -152,7 +220,12 @@ docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document
 
 ### `simple-pdf` - 主命令
 
-```bash
+```powershell
+# PowerShell / CMD
+simple-pdf --version    # 显示版本信息
+simple-pdf --help       # 显示帮助信息
+
+# Linux / macOS
 simple-pdf --version    # 显示版本信息
 simple-pdf --help       # 显示帮助信息
 ```
@@ -164,7 +237,11 @@ simple-pdf --help       # 显示帮助信息
 **功能：** 从 PDF 提取文本、表格、图片、元数据或结构信息
 
 **语法：**
-```bash
+```powershell
+# Windows (PowerShell / CMD)
+simple-pdf read <pdf-path> [-o output]
+
+# Linux / macOS
 simple-pdf read <pdf-path> [-o output]
 ```
 
@@ -174,7 +251,7 @@ simple-pdf read <pdf-path> [-o output]
 
 **示例：**
 
-```bash
+```powershell
 # 提取文本
 simple-pdf read document.pdf -o output.txt
 
@@ -204,18 +281,22 @@ simple-pdf read document.pdf -o structure.json
 **功能：** 将 PDF 转换为其他格式（Markdown, JSON, HTML, Text）
 
 **语法：**
-```bash
+```powershell
+# Windows (PowerShell / CMD)
+simple-pdf convert <pdf-path> --format <format> [-o output]
+
+# Linux / macOS
 simple-pdf convert <pdf-path> --format <format> [-o output]
 ```
 
 **选项：**
-**pdf-path` - PDF 文件路径（必需）
+- `pdf-path` - PDF 文件路径（必需）
 - `--format, -f FORMAT` - 目标格式（必需：markdown, html, json, text）
 - `-o, --output PATH` - 输出文件路径（可选）
 
 **示例：**
 
-```bash
+```powershell
 # 转换为 Markdown
 simple-pdf convert document.pdf --format markdown -o output.md
 
@@ -251,53 +332,184 @@ simple-pdf convert document.pdf --format text -o output.txt
 - **批量处理**: 支持批量处理多个文件
 - **内存优化**: 流式处理，减少内存占用
 
+### 跨平台支持
+- **Windows**: 支持 PowerShell 和 CMD
+- **Linux**: 支持 Bash 和 Zsh
+- **macOS**: 支持 Bash 和 Zsh
+- **Docker**: 跨平台容器化部署
+
 ---
 
-## 🧪 Testing
+## � Installation Scripts
 
-### Python 环境
+### Windows (install.ps1)
 
-```bash
-# 运行所有测试
-pytest
+**功能：**
+- ✅ 自动检测 Python 和 pip
+- ✅ 创建虚拟环境
+- ✅ 支持多镜像源（默认、清华、阿里云等）
+- ✅ 自动镜像切换（默认失败时切换清华）
+- ✅ 彩色输出和进度显示
 
-# 运行测试并生成覆盖率报告
-pytest --cov=ai_pdf_agent --cov-report=html
+**使用方法：**
+```powershell
+# 基本安装
+.\install.ps1
 
-# 运行特定测试文件
-pytest tests/test_text_reader.py
+# 重新安装
+.\install.ps1 -Reinstall
+
+# 安装并测试
+.\install.ps1 -Test
+
+# 使用清华大学镜像
+.\install.ps1 -PipMirror tuna
+
+# 查看帮助
+.\install.ps1 -Help
+
+# 使用自定义镜像
+.\install.ps1 -PipIndex https://pypi.mirrors.china.edu/simple
 ```
 
-### Docker 环境
+**支持的镜像源：**
+- `default` - PyPI 官方镜像
+- `tuna` - 清华大学镜像（https://pypi.tuna.tsinghua.edu.cn/simple）
+- `aliyun` - 阿里云镜像（https://mirrors.aliyun.com/pypi/simple）
+- `pypi` - PyPI 官方镜像（备用）
 
+---
+
+### Linux/macOS (install.sh)
+
+**功能：**
+- ✅ 自动检测 Python 和 pip
+- ✅ 创建虚拟环境
+- ✅ 支持多镜像源（默认、清华、阿里云等）
+- ✅ 环境变量支持（PIP_INDEX_URL）
+- ✅ 彩色输出和进度显示
+
+**使用方法：**
 ```bash
-# 进入测试容器
-docker run -it simple-pdf:latest bash
+# 添加执行权限
+chmod +x install.sh
 
-# 在容器内运行测试
-pytest
+# 基本安装
+./install.sh
 
-# 或者直接运行测试
-docker run simple-pdf:latest pytest
+# 重新安装
+./install.sh --reinstall
+
+# 安装并测试
+./install.sh --test
+
+# 指定镜像源
+./install.sh --mirror tuna        # 清华大学镜像
+./install.sh --mirror aliyun       # 阿里云镜像
+./install.sh --mirror tsinghua    # 清华大学镜像（备用）
+
+# 指定自定义镜像 URL
+./install.sh --mirror-index https://pypi.mirrors.china.edu/simple
+
+# 查看帮助
+./install.sh --help
+```
+
+**支持的镜像源：**
+- `default` - PyPI 官方镜像
+- `tuna` - 清华大学镜像
+- `tsinghua` - 清华大学镜像（备用）
+- `aliyun` - 阿里云镜像
+- `ustc` - 中科大镜像
+- `chima` - 中国科大镜像
+- `pypi` - PyPI 官方镜像（备用）
+
+---
+
+## � Troubleshooting
+
+### 常见问题
+
+#### Q1: 命令不存在？
+
+**Windows:**
+```powershell
+# 检查是否在虚拟环境中
+where simple-pdf
+
+# 或使用模块直接运行
+python -m ai_pdf_agent.cli.cli --version
+
+# 查找安装位置
+Get-ChildItem $HOME -Recurse -ErrorAction SilentlyContinue -Include simple-pdf.exe
+```
+
+**Linux/macOS:**
+```bash
+# 检查是否在虚拟环境中
+which simple-pdf
+
+# 或使用模块直接运行
+python3 -m ai_pdf_agent.cli.cli --version
+
+# 查找安装位置
+find ~/.local -name "simple-pdf" 2>/dev/null
+```
+
+#### Q2: pip 默认源无法访问？
+
+**Windows:**
+```powershell
+# 使用安装脚本（自动切换到清华镜像）
+.\install.ps1 -PipMirror tuna
+
+# 手动设置镜像
+$env:PIP_INDEX_URL="https://pypi.tuna.tsinghua.edu.cn/simple"
+pip install simple-pdf
+```
+
+**Linux/macOS:**
+```bash
+# 使用安装脚本（自动切换到清华镜像）
+./install.sh --mirror tuna
+
+# 手动设置镜像
+export PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+pip install simple-pdf
+```
+
+#### Q3: 需要激活虚拟环境？
+
+**Windows PowerShell:**
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+**Windows CMD:**
+```cmd
+venv\Scripts\activate.bat
+```
+
+**Linux/macOS:**
+```bash
+source venv/bin/activate
 ```
 
 ---
 
-## 📚 Documentation
-
-### 项目文档
-- **README.md**: 完整项目文档
-- **QUICKSTART.md**: 5 分钟快速入门
-- **COMMANDS.md**: 命令参考手册
-- **EXAMPLES.md**: 使用示例
-- **PLUGIN.md**: 插件开发指南
-
----
-
-## 🔧 Advanced Usage
+## � Advanced Usage
 
 ### 批量处理
 
+**Windows:**
+```powershell
+# 批量提取文本
+Get-ChildItem . -Filter *.pdf | ForEach-Object {
+    simple-pdf read $_.FullName -o "$($_.BaseName).txt"
+}
+```
+
+**Linux/macOS:**
 ```bash
 # 批量提取文本
 for file in *.pdf; do
@@ -331,6 +543,16 @@ result = subprocess.run(
 
 ### 示例 1：技术手册转换为 Markdown
 
+**Windows:**
+```powershell
+# 读取 Nginx 安全配置指南
+simple-pdf read "Nginx 安全配置指南技术手册.pdf" -o nginx-guide.txt
+
+# 转换为 Markdown（保留格式）
+simple-pdf convert "Nginx 安全配置指南技术手册.pdf" --format markdown -o nginx-guide.md
+```
+
+**Linux/macOS:**
 ```bash
 # 读取 Nginx 安全配置指南
 simple-pdf read "Nginx 安全配置指南技术手册.pdf" -o nginx-guide.txt
@@ -341,6 +563,16 @@ simple-pdf convert "Nginx 安全配置指南技术手册.pdf" --format markdown 
 
 ### 示例 2：提取表格数据
 
+**Windows:**
+```powershell
+# 从财务报表提取表格
+simple-pdf read "financial-report.pdf" -o tables.json
+
+# 转换为 JSON 格式
+simple-pdf convert "financial-report.pdf" --format json -o tables.json
+```
+
+**Linux/macOS:**
 ```bash
 # 从财务报表提取表格
 simple-pdf read "financial-report.pdf" -o tables.json
@@ -351,6 +583,16 @@ simple-pdf convert "financial-report.pdf" --format json -o tables.json
 
 ### 示例 3：批量转换
 
+**Windows:**
+```powershell
+# 转换目录下所有 PDF 为 Markdown
+Get-ChildItem reports -Filter *.pdf | ForEach-Object {
+    $mdName = "$($_.BaseName).md"
+    simple-pdf convert $_.FullName --format markdown -o $mdName
+}
+```
+
+**Linux/macOS:**
 ```bash
 # 转换目录下所有 PDF 为 Markdown
 for pdf in reports/*.pdf; do
@@ -371,21 +613,23 @@ ai-pdf-agent/
 │   │   └── cli.py       # CLI 主入口
 │   ├── core/             # 核心模块
 │   │   ├── __init__.py
-│   │   ├── pdf_engine.py # PDF 引擎
 │   │   └── ...
 │   ├── plugins/          # 插件目录
 │   │   ├── __init__.py
 │   │   ├── readers/      # 读取插件
+│   │   │   └── ...
 │   │   └── converters/   # 转换插件
 │   └── version.py        # 版本信息
 ├── tests/                # 测试目录
-├── setup.py              # Python 包配置
-├── requirements.txt      # Python 依赖
-├── Dockerfile            # Docker 镜像
-├── docker-compose.yml    # Docker Compose
-├── install.sh            # 自动安装脚本
-├── diagnose.sh           # 诊断脚本
-└── README.md             # 项目文档
+├── install.ps1            # Windows 安装脚本（PowerShell）
+├── install.sh              # Linux/macOS 安装脚本（Bash）
+├── simple-pdf.sh           # 快速启动脚本（Linux/macOS）
+├── simple-pdf.bat          # 快速启动脚本（Windows）
+├── requirements.txt        # Python 依赖
+├── setup.py                # Python 包配置
+├── Dockerfile               # Docker 镜像
+├── docker-compose.yml         # Docker Compose
+└── README.md              # 项目文档
 ```
 
 ---
@@ -418,12 +662,12 @@ MIT License - 详见 LICENSE 文件
 
 ## 💡 Tips
 
-1. **安装方法：** 推荐使用虚拟环境安装
-2. **性能优化：** 分页处理大文件
-3. **批处理：** 结合 Shell 脚本进行批量处理
-4. **内存管理：** 大文件建议分页处理
-5. **AI 集成：** 使用 `-o` 输出到文件，便于 AI Agent 解析
-6. **Docker 使用：** 确保 volume 映射正确，否则无法访问文件
+1. **跨平台：** 推荐使用安装脚本自动处理平台差异
+2. **镜像源：** 默认源无法访问时，使用清华或阿里云镜像
+3. **虚拟环境：** 推荐使用虚拟环境隔离项目依赖
+4. **批处理：** 结合 Shell 脚本进行批量处理
+5. **内存管理：** 大文件建议分页处理
+6. **AI 集成：** 使用 `-o` 输出到文件，便于 AI Agent 解析
 
 ---
 
@@ -433,7 +677,10 @@ MIT License - 详见 LICENSE 文件
 
 **更新内容：**
 - ✅ 完整的 CLI 工具（命令：simple-pdf）
-- ✅ 虚拟环境支持
+- ✅ 跨平台支持（Windows、Linux、macOS）
+- ✅ 安装脚本（PowerShell + Bash）
+- ✅ 多镜像源支持（默认、清华、阿里云）
+- ✅ 自动镜像切换功能
 - ✅ Docker 支持（开箱即用）
 - ✅ 多格式转换支持
 - ✅ 插件化架构
