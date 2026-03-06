@@ -3,7 +3,7 @@
 Simple PDF - CLI 主入口
 """
 
-import SimplePDF
+import click
 
 @click.group()
 @click.version_option(version="1.0.0", prog_name="simple-pdf")
