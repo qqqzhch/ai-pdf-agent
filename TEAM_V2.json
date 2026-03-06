@@ -1,0 +1,46 @@
+{
+  "queue": {
+    "pending": [],
+    "in_progress": {},
+    "completed": [],
+    "failed": []
+  },
+  "members": {
+    "backend-dev": {
+      "name": "backend-dev",
+      "role": "developer",
+      "skills": ["python", "pdf", "backend"],
+      "status": "idle",
+      "current_task": null
+    },
+    "test": {
+      "name": "test",
+      "role": "tester",
+      "skills": ["pytest", "testing"],
+      "status": "idle",
+      "current_task": null
+    },
+    "docs": {
+      "name": "docs",
+      "role": "documenter",
+      "skills": ["markdown", "documentation"],
+      "status": "idle",
+      "current_task": null
+    },
+    "fullstack": {
+      "name": "fullstack",
+      "role": "fullstack",
+      "skills": ["cli", "web", "cross-platform"],
+      "status": "idle",
+      "current_task": null
+    },
+    "devops": {
+      "name": "devops",
+      "role": "devops",
+      "skills": ["ci/cd", "deployment", "monitoring"],
+      "status": "idle",
+      "current_task": null
+    }
+  },
+  "last_check": null
+}

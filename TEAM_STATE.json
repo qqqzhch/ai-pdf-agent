@@ -1,0 +1,41 @@
+{
+  "queue": {
+    "pending": [],
+    "in_progress": {},
+    "completed": [],
+    "failed": []
+  },
+  "members": {
+    "backend-dev": {
+      "name": "backend-dev",
+      "role": "developer",
+      "status": "idle",
+      "current_task": null
+    },
+    "test": {
+      "name": "test",
+      "role": "tester",
+      "status": "idle",
+      "current_task": null
+    },
+    "docs": {
+      "name": "docs",
+      "role": "documenter",
+      "status": "idle",
+      "current_task": null
+    },
+    "fullstack": {
+      "name": "fullstack",
+      "role": "fullstack",
+      "status": "idle",
+      "current_task": null
+    },
+    "devops": {
+      "name": "devops",
+      "role": "devops",
+      "status": "idle",
+      "current_task": null
+    }
+  },
+  "last_check": "2026-03-06T08:48:48.683228"
+}

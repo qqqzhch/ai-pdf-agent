@@ -1,374 +1,377 @@
-# 安装和部署指南
+# AI PDF Agent - 安装指南
 
-> AI PDF Agent 完整的安装、配置和使用说明
-
----
-
-## 📦 安装方式
-
-### 前置要求
-
-- Python 3.8 或更高版本
-- pip (Python 包管理器)
-- 网络连接（用于下载依赖）
+> **版本：** 1.0.0
+> **支持平台：** Linux, macOS, Windows
+> **Python 版本：** 3.8+
 
 ---
 
-### 方式 1：从 PyPI 安装（推荐）
+## 📋 安装前要求
+
+### 方案 A：Python 环境安装
+
+**要求：**
+- Python 3.8+
+- pip（Python 包管理器）
+- git（可选，用于克隆源码）
+
+### 方案 B：Docker 部署
+
+**要求：**
+- Docker 20.10+
+- Docker Compose 1.29+（可选）
+
+---
+
+## 🚀 安装方法
+
+### 方法 1：使用 pip 安装（推荐）
 
 ```bash
-# 安装到系统
+# 安装 AI PDF Agent
 pip install ai-pdf-agent
 
-# 或使用 pip3
-pip3 install ai-pdf-agent
+# 验证安装
+ai --version
 ```
 
-**验证安装：**
-```bash
-ai-pdf --version
-ai-pdf --help
-```
-
----
-
-### 方式 2：从源码安装
+### 方法 2：从源码安装
 
 ```bash
-# 1. 克隆项目
+# 克隆源码
 git clone https://github.com/qqqzhch/ai-pdf-agent.git
 cd ai-pdf-agent
 
-# 2. 创建虚拟环境（推荐）
-python3 -m venv venv
-source venv/bin/activate  # Linux/macOS
-# 或
-venv\Scripts\activate  # Windows
-
-# 3. 安装到系统
+# 安装
 pip install -e .
 
-# 4. 验证安装
-ai-pdf --version
-ai-pdf --help
+# 验证安装
+ai --version
+```
+
+### 方法 3：使用 Docker
+
+```bash
+# 拉取镜像
+docker pull qqqzhch/ai-pdf-agent:latest
+
+# 验证安装
+docker run --rm qqqzhch/ai-pdf-agent:latest --version
 ```
 
 ---
 
-### 方式 3：开发模式（仅开发使用）
+## 🔧 验证安装
+
+### Python 环境
 
 ```bash
-# 1. 克隆项目
-git clone https://github.com/qqqzhch/ai-pdf-agent.git
-cd ai-pdf-agent
-
-# 2. 创建虚拟环境
-python3 -m venv venv
-source venv/bin/activate
-
-# 3. 安装依赖
-pip install -r requirements.txt
-
-# 4. 使用 Python 直接运行
-python3 -m cli.main --help
-```
-
----
-
-## 🚀 安装后使用
-
-### 全局命令方式（推荐）
-
-安装完成后，可以使用全局命令：
-
-```bash
-# 查看帮助
-ai-pdf --help
-
 # 查看版本
-ai-pdf --version
+ai --version
 
-# 查看所有命令
-ai-pdf --help
+# 查看帮助
+ai --help
+
+# 测试读取功能
+ai read /path/to/document.pdf
+```
+
+### Docker 环境
+
+```bash
+# 测试运行
+docker run -v $(pwd):/app/data qqqzhch/ai-pdf-agent:latest read /app/data/document.pdf
+
+# 使用 docker-compose
+docker-compose run ai-pdf-agent read /app/data/document.pdf
 ```
 
 ---
 
-### 常用命令示例
+## 📝 使用示例
 
-#### 1. 提取文本
+### 读取 PDF
 
 ```bash
-# 提取整个文档的文本
-ai-pdf text document.pdf -o output.txt
+# Python 环境
+ai read document.pdf
 
-# 指定页面范围
-ai-pdf text document.pdf --pages 1-5 -o output.txt
+# 输出到文件
+ai read document.pdf -o output.md
 
-# 指定特定页面
-ai-pdf text document.pdf --pages 1,3,5 -o output.txt
+# Docker 环境
+docker run -v $(pwd):/app/data qqqzhch/ai-pdf-agent:latest read /app/data/document.pdf -o /app/data/output.md
 ```
 
-#### 2. 转换格式
+### 转换 PDF
 
 ```bash
-# PDF → Markdown
-ai-pdf to-markdown document.pdf -o output.md
+# 转换为 Markdown
+ai convert document.pdf --format markdown
 
-# PDF → HTML
-ai-pdf to-html document.pdf -o output.html
+# 转换为 HTML
+ai convert document.pdf --format html
 
-# PDF → JSON
-ai-pdf to-json document.pdf -o output.json
+# 转换为 JSON
+ai convert document.pdf --format json
 
-# PDF → CSV（表格）
-ai-pdf to-csv report.pdf -o tables.csv
+# 输出到文件
+ai convert document.pdf --format markdown -o output.md
 
-# PDF → EPUB（电子书）
-ai-pdf to-epub book.pdf -o book.epub
-
-# PDF → 图片
-ai-pdf to-image document.pdf --output-dir ./images
+# Docker 环境
+docker run -v $(pwd):/app/data qqqzhch/ai-pdf-agent:latest convert /app/data/document.pdf --format markdown
 ```
 
-#### 3. 提取内容
+### 批量处理
 
 ```bash
-# 提取表格
-ai-pdf tables report.pdf -o tables.json
+# Python 环境
+for file in *.pdf; do
+    ai convert "$file" --format markdown -o "${file%.pdf}.md"
+done
 
-# 提取图片
-ai-pdf images document.pdf --extract-dir ./images
-
-# 提取元数据
-ai-pdf metadata document.pdf -o metadata.json
-
-# 提取结构（目录、书签）
-ai-pdf structure document.pdf -o structure.json
-```
-
-#### 4. 插件管理
-
-```bash
-# 列出所有插件
-ai-pdf plugin list
-
-# 查看插件信息
-ai-pdf plugin info text_reader
-
-# 检查插件依赖
-ai-pdf plugin check text_reader
+# Docker 环境
+docker run -v $(pwd):/app/data qqqzhch/ai-pdf-agent:latest bash -c \
+    'for file in /app/data/*.pdf; do ai convert "$file" --format markdown -o "${file%.pdf}.md"; done'
 ```
 
 ---
 
-## 🔧 配置选项
+## 🐳 Docker 使用
 
-### 查看命令帮助
-
-每个命令都有详细的帮助信息：
+### 基本用法
 
 ```bash
-# 查看主帮助
-ai-pdf --help
-
-# 查看特定命令帮助
-ai-pdf text --help
-ai-pdf to-markdown --help
-ai-pdf plugin --help
-```
-
-### 常用选项
-
-| 选项 | 说明 | 示例 |
-|------|------|------|
-| `-o, --output` | 输出文件路径 | `-o output.txt` |
-| `--pages` | 页面范围 | `--pages 1-5` |
-| `--format` | 输出格式 | `--format json` |
-| `--extract-dir` | 提取目录 | `--extract-dir ./images` |
-| `--structured` | 结构化输出 | `--structured` |
-
----
-
-## 📊 完整命令列表
-
-### 读取命令
-
-```bash
-ai-pdf text <pdf_path> [OPTIONS]          # 提取文本
-ai-pdf tables <pdf_path> [OPTIONS]        # 提取表格
-ai-pdf images <pdf_path> [OPTIONS]        # 提取图片
-ai-pdf metadata <pdf_path> [OPTIONS]      # 提取元数据
-ai-pdf structure <pdf_path> [OPTIONS]     # 提取结构
-```
-
-### 转换命令
-
-```bash
-ai-pdf to-markdown <pdf_path> [OPTIONS]  # PDF → Markdown
-ai-pdf to-html <pdf_path> [OPTIONS]     # PDF → HTML
-ai-pdf to-json <pdf_path> [OPTIONS]      # PDF → JSON
-ai-pdf to-c-csv <pdf_path> [OPTIONS]     # PDF → CSV
-ai-pdf to-image <pdf_path> [OPTIONS]     # PDF → 图片
-ai-pdf to-epub <pdf_path> [OPTIONS]      # PDF → EPUB
-```
-
-### 管理命令
-
-```bash
-ai-pdf plugin [COMMAND] [OPTIONS]        # 插件管理
-```
-
----
-
-## 🌐 部署到生产环境
-
-### 使用 Docker 部署
-
-**创建 Dockerfile：**
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# 安装依赖
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 复制代码
-COPY . .
-
-# 安装工具
-RUN pip install -e .
-
-# 设置工作目录
-WORKDIR /data
-
-# 默认命令
-CMD ["ai-pdf", "--help"]
-```
-
-**构建和运行：**
-```bash
-# 构建镜像
-docker build -t ai-pdf-agent .
-
 # 运行容器
-docker run -v $(pwd)/data:/data ai-pdf-agent ai-pdf text /data/document.pdf -o /data/output.txt
+docker run qqqzhch/ai-pdf-agent:latest read document.pdf
+
+# 交互式运行
+docker run -it qqqzhch/ai-pdf-agent:latest bash
+
+# 挂载目录
+docker run -v $(pwd):/app/data qqqzhch/ai-pdf-agent:latest read /app/data/document.pdf
+
+# 指定工作目录
+docker run -w /app/data qqqzhch/ai-pdf-agent:latest read document.pdf
 ```
 
----
+### Docker Compose
 
-### 使用 systemd 部署（Linux）
-
-**创建服务文件：**
-```ini
-[Unit]
-Description=AI PDF Agent Service
-After=network.target
-
-[Service]
-Type=simple
-User=pdfagent
-WorkingDirectory=/opt/ai-pdf-agent
-ExecStart=/usr/local/bin/ai-pdf --help
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-```
-
-**启用服务：**
 ```bash
-# 复制服务文件
-sudo cp ai-pdf-agent.service /etc/systemd/system/
-
-# 重载 systemd
-sudo systemctl daemon-reload
-
-# 启用服务
-sudo systemctl enable ai-pdf-agent
-
 # 启动服务
-sudo systemctl start ai-pdf-agent
+docker-compose up -d
+
+# 停止服务
+docker-compose down
+
+# 查看日志
+docker-compose logs -f
+
+# 执行命令
+docker-compose run ai-pdf-agent read document.pdf
 ```
 
----
+### 数据卷
 
-## 🔍 故障排除
-
-### 问题 1：命令未找到
-
-**错误：**
-```
-bash: ai-pdf: command not found
-```
-
-**解决方案：**
 ```bash
-# 确保已安装
-pip list | grep ai-pdf-agent
+# 创建数据卷
+docker volume create ai-pdf-agent-data
 
-# 使用完整路径
-~/.local/bin/ai-pdf --help
+# 使用数据卷
+docker run -v ai-pdf-agent-data:/app/data qqqzhch/ai-pdf-agent:latest read /app/data/document.pdf
 
-# 或重新安装
-pip install --user ai-pdf-agent
+# 查看数据卷
+docker volume inspect ai-pdf-agent-data
 ```
 
 ---
+
+## 🔍 故障排查
+
+### 问题 1：安装失败
+
+**错误：** `ModuleNotFoundError: No module named 'click'`
+
+**解决：**
+```bash
+pip install click>=8.0.0
+```
 
 ### 问题 2：权限错误
 
-**错误：**
-```
-Permission denied: 'output.txt'
-```
+**错误：** `Permission denied`
 
-**解决方案：**
-```bash
-# 检查输出目录权限
-ls -ra
-
-# 使用有写权限的目录
-ai-pdf text document.pdf -o /tmp/output.txt
-```
-
----
-
-### 问题 3：依赖冲突
-
-**错误：**
-```
-ERROR: pip's dependency resolver does not currently take into account...
-```
-
-**解决方案：**
+**解决：**
 ```bash
 # 使用虚拟环境
-python3 -m venv venv
+python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install ai-pdf-agent
+```
+
+### 问题 3：Docker 构建失败
+
+**错误：** `Failed to build image`
+
+**解决：**
+```bash
+# 清理缓存
+docker system prune -a
+
+# 重新构建
+docker build --no-cache -t ai-pdf-agent .
+```
+
+### 问题 4：Python 版本不兼容
+
+**错误：** `Python 3.7 is not supported`
+
+**解决：**
+```bash
+# 升级 Python 到 3.8+
+python3.8 -m pip install ai-pdf-agent
 ```
 
 ---
 
-## 📚 更多文档
+## 📚 卸级安装
 
-- **快速开始：** [QUICKSTART.md](QUICKSTART.md)
-- **命令参考：** [COMMANDS.md](COMMANDS.md)
-- **使用示例：** [CLI_EXAMPLES.md](CLI_EXAMPLES.md)
-- **插件开发：** [PLUGIN_DEV.md](PLUGIN_DEV.md)
+### 开发环境
+
+```bash
+# 克隆源码
+git clone https://github.com/qqqzhch/ai-pdf-agent.git
+cd ai-pdf-agent
+
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 安装开发依赖
+pip install -e .[dev]
+
+# 运行测试
+pytest
+
+# 代码格式化
+black .
+
+# 类型检查
+mypy .
+```
+
+### 生产环境
+
+```bash
+# 使用虚拟环境
+python -m venv venv
+source venv/bin/activate
+
+# 安装
+pip install ai-pdf-agent
+
+# 验证
+ai --version
+```
 
 ---
 
-## 🤝 获取帮助
+## 🎯 配置选项
 
-- **GitHub：** https://github.com/qqqzhch/ai-pdf-agent
-- **Issues：** https://github.com/qqqzhch/ai-pdf-agent/issues
-- **文档：** https://docs.ai-pdf-agent.com
+### 环境变量
+
+```bash
+# 日志级别
+export AI_PDF_LOG_LEVEL=DEBUG
+
+# 缓存目录
+export AI_PDF_CACHE_DIR=/path/to/cache
+
+# 最大并行任务
+export AI_PDF_MAX_PARALLEL=3
+
+# Docker 环境
+docker run -e AI_PDF_LOG_LEVEL=DEBUG qqqzhch/ai-pdf-agent:latest read document.pdf
+```
+
+### 配置文件
+
+```bash
+# 创建配置文件
+mkdir -p ~/.config/ai-pdf-agent
+
+# 配置示例
+cat > ~/.config/ai-pdf-agent/config.json << EOF
+{
+  "log_level": "INFO",
+  "cache_dir": "/tmp/ai-pdf-cache",
+  "max_parallel_tasks": 3,
+  "default_format": Markdown"
+}
+EOF
+```
 
 ---
 
-**生成时间：** 2026-03-04 17:40
-**项目版本：** v0.1.0
+## 📚 更新和卸载
+
+### 更新
+
+```bash
+# 检查更新
+pip list --outdated | grep ai-pdf-agent
+
+# 更新到最新版本
+pip install --upgrade ai-pdf-agent
+
+# Docker 更新
+docker pull qqqzhch/ai-pdf-agent:latest
+```
+
+### 卸载
+
+```bash
+# 卸载
+pip uninstall ai-pdf-agent
+
+# 删除虚拟环境
+rm -rf venv
+
+# Docker 清理
+docker rmi qqqzhch/ai-pdf-agent:latest
+docker volume rm ai-pdf-agent-data
+```
+
+---
+
+## 📞 获取帮助
+
+### 命令行帮助
+
+```bash
+# 查看所有命令
+ai --help
+
+# 查看具体命令帮助
+ai read --help
+ai convert --help
+```
+
+### 文档
+
+- **在线文档：** https://github.com/qqqzhch/ai-pdf-agent#readme
+- **API 文档：** https://github.com/qqqzhch/ai-pdf-agent/docs
+- **示例代码：** https://github.com/qqqzhch/ai-pdf-agent/examples
+
+---
+
+## 🎉 下一步
+
+- 查看 [使用示例](USAGE.md)
+- 了解 [开发指南](DEVELOPMENT.md)
+- 加入 [社区讨论](https://github.com/qqqzhch/ai-pdf-agent/discussions)
+
+---
+
+**创建日期：** 2026-03-06
+**版本：** 1.0.0

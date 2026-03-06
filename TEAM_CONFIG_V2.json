@@ -1,0 +1,71 @@
+{
+  "team": {
+    "team_leader": {
+      "role": "coordinator",
+      "responsibilities": [
+        "receive_user_requests",
+        "task_breakdown",
+        "task_estimation",
+        "task_dispatch",
+        "result_aggregation"
+      ]
+    },
+    "members": {
+      "backend-dev": {
+        "name": "backend-dev",
+        "role": "developer",
+        "skills": ["python", "pdf", "backend"],
+        "auto_mode": true,
+        "task_types": ["backend", "core"]
+      },
+      "test": {
+        "name": "test",
+        "role": "tester",
+        "skills": ["pytest", "testing"],
+        "auto_mode": true,
+        "task_types": ["test", "quality"]
+      },
+      "docs": {
+        "name": "docs",
+        "role": "documenter",
+        "skills": ["markdown", "documentation"],
+        "auto_mode": true,
+        "task_types": ["docs"]
+      },
+      "fullstack": {
+        "name": "fullstack",
+        "role": "fullstack",
+        "skills": ["cli", "web", "cross-platform"],
+        "auto_mode": true,
+        "task_types": ["cli", "ui"]
+      },
+      "devops": {
+        "name": "devops",
+        "role": "devops",
+        "skills": ["ci/cd", "deployment", "monitoring"],
+        "auto_mode": true,
+        "task_types": ["deployment", "monitoring"]
+      }
+    }
+  },
+  "automation": {
+    "task_queue": {
+      "max_parallel_tasks": 3,
+      "priority_levels": ["P0", "P1", "P2"]
+    },
+    "status_monitor": {
+      "check_interval": 1800000,
+      "stuck_threshold": 7200000,
+      "max_retries": 3
+    },
+    "communication": {
+      "protocol": "team-communication-protocols",
+      "message_types": ["message", "broadcast", "shutdown_request"]
+    }
+  },
+  "skills": {
+    "task_planning": "/root/.openclaw/skills/task-planning",
+    "task_estimation": "/root/.openclaw/skills/task-estimation",
+    "team_communication": "/root/.openclaw/skills/team-communication-protocols"
+  }
+}

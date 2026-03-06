@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  ai-pdf-agent:
+    build: .
+    container_name: ai-pdf-agent
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    environment:
+      - PYTHONUNBUFFERED=1
+      - AI_PDF_LOG_LEVEL=INFO
+    ports:
+      - "8000:8000"  # API 端口
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import ai_pdf_agent; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
