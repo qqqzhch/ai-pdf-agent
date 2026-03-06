@@ -1,5 +1,5 @@
 """
-Simple PDF - 安装配置
+Simple PDF - 安装配置（修复版）
 """
 
 from setuptools import setup, find_packages
@@ -43,7 +43,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "simple-pdf=ai_pdf_agent.cli.main:cli",
+            # 修复：使用 ai_pdf_agent.cli.cli:main 而不是 ai_pdf_agent.cli.main:cli
+            "simple-pdf=ai_pdf_agent.cli.cli:main",
         ],
     },
     classifiers=[

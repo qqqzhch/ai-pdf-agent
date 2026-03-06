@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Simple PDF - CLI 主入口
+Simple PDF - CLI 主入口（修复版）
 """
 
 import click
 
 @click.group()
 @click.version_option(version="1.0.0", prog_name="simple-pdf")
-def cli():
+def main():
     """Simple PDF - 简单易用的 PDF 处理工具
 
     使用方法：
@@ -17,7 +17,7 @@ def cli():
     pass
 
 
-@cli.command()
+@main.command()
 @click.argument('pdf_path', type=click.Path(exists=True))
 @click.option('--output', '-o', type=click.Path(), help='输出文件路径')
 def read(pdf_path, output):
@@ -28,7 +28,7 @@ def read(pdf_path, output):
         click.echo(f"输出到: {output}")
 
 
-@cli.command()
+@main.command()
 @click.argument('pdf_path', type=click.Path(exists=True))
 @click.option('--format', '-f', type=click.Choice(['markdown', 'html', 'json', 'text']), required=True, help='输出格式')
 @click.option('--output', '-o', type=click.Path(), help='输出文件路径')
@@ -41,4 +41,4 @@ def convert(pdf_path, format, output):
 
 
 if __name__ == '__main__':
-    cli()
+    main()
