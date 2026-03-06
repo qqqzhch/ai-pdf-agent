@@ -4,6 +4,7 @@
 简单易用的 PDF 处理工具，通过插件化架构提供灵活的 PDF 处理能力。
 
 **最新版本：** v1.0.0
+**CLI 命令：** simple-pdf
 
 ---
 
@@ -19,7 +20,7 @@ Use this skill when:
 
 ## 🚀 Installation
 
-### 方案 A：从源码安装（Python 环境）
+### 方案 A：Python 环境（推荐）
 
 #### 1. Clone 仓库
 ```bash
@@ -29,10 +30,11 @@ cd ai-pdf-agent
 
 #### 2. 安装依赖
 ```bash
-pip install -r requirements.txt
-
-# 或者使用 setup.py 开发模式安装
+# 使用可编辑模式安装（推荐）
 pip install -e .
+
+# 或从 requirements.txt 安装
+pip install -r requirements.txt
 ```
 
 #### 3. 验证安装
@@ -42,11 +44,30 @@ simple-pdf --version
 
 # 查看帮助
 simple-pdf --help
+
+# 找到命令
+which simple-pdf
+```
+
+#### 4. 如果命令找不到
+
+```bash
+# 方法 1：使用虚拟环境（推荐）
+python3 -m venv venv
+source venv/bin/activate
+pip install -e .
+simple-pdf --version
+
+# 方法 2：检查 PATH
+echo $PATH | grep -i local
+
+# 方法 3：直接使用模块
+python3 -m ai_pdf_agent.cli.cli --version
 ```
 
 ---
 
-### 方案 B：使用 Docker（无需 Python 环境）
+### 方案 B：Docker 环境（无需 Python）
 
 #### 1. Clone 仓库
 ```bash
@@ -70,7 +91,7 @@ docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document
 
 ---
 
-### 方案 C：使用 Docker Compose（推荐生产环境）
+### 方案 C：Docker Compose（推荐生产环境）
 
 #### 1. Clone 仓库
 ```bash
@@ -188,7 +209,7 @@ simple-pdf convert <pdf-path> --format <format> [-o output]
 ```
 
 **选项：**
-- `pdf-path` - PDF 文件路径（必需）
+**pdf-path` - PDF 文件路径（必需）
 - `--format, -f FORMAT` - 目标格式（必需：markdown, html, json, text）
 - `-o, --output PATH` - 输出文件路径（可选）
 
@@ -243,7 +264,7 @@ pytest
 # 运行测试并生成覆盖率报告
 pytest --cov=ai_pdf_agent --cov-report=html
 
-# 运行特定特定测试文件
+# 运行特定测试文件
 pytest tests/test_text_reader.py
 ```
 
@@ -344,13 +365,16 @@ done
 ```
 ai-pdf-agent/
 ├── ai_pdf_agent/          # 包根目录
+│   ├── __init__.py        # 包初始化
 │   ├── cli/              # CLI 模块
 │   │   ├── __init__.py
-│   │   └── main.py      # CLI 主入口
+│   │   └── cli.py       # CLI 主入口
 │   ├── core/             # 核心模块
+│   │   ├── __init__.py
 │   │   ├── pdf_engine.py # PDF 引擎
-│   │   └── plugin_manager.py # 插件管理器
+│   │   └── ...
 │   ├── plugins/          # 插件目录
+│   │   ├── __init__.py
 │   │   ├── readers/      # 读取插件
 │   │   └── converters/   # 转换插件
 │   └── version.py        # 版本信息
@@ -359,6 +383,8 @@ ai-pdf-agent/
 ├── requirements.txt      # Python 依赖
 ├── Dockerfile            # Docker 镜像
 ├── docker-compose.yml    # Docker Compose
+├── install.sh            # 自动安装脚本
+├── diagnose.sh           # 诊断脚本
 └── README.md             # 项目文档
 ```
 
@@ -392,11 +418,12 @@ MIT License - 详见 LICENSE 文件
 
 ## 💡 Tips
 
-1. **性能优化：** 分页处理大文件
-2. **批处理：** 结合 Shell 脚本或 Python 进行批量处理
-3. **内存管理：** 大文件建议分页处理
-4. **AI 集成：** 使用 `-o` 输出到文件，便于 AI Agent 解析
-5. **Docker 使用：** 确保 volume 映射正确，否则无法访问文件
+1. **安装方法：** 推荐使用虚拟环境安装
+2. **性能优化：** 分页处理大文件
+3. **批处理：** 结合 Shell 脚本进行批量处理
+4. **内存管理：** 大文件建议分页处理
+5. **AI 集成：** 使用 `-o` 输出到文件，便于 AI Agent 解析
+6. **Docker 使用：** 确保 volume 映射正确，否则无法访问文件
 
 ---
 
@@ -406,8 +433,10 @@ MIT License - 详见 LICENSE 文件
 
 **更新内容：**
 - ✅ 完整的 CLI 工具（命令：simple-pdf）
+- ✅ 虚拟环境支持
 - ✅ Docker 支持（开箱即用）
 - ✅ 多格式转换支持
+- ✅ 插件化架构
 - ✅ 完善的文档和测试
 
 ---

@@ -20,7 +20,7 @@
 
 ## 🚀 安装
 
-### 方案 A：Python 环境
+### 方案 A：Python 环境（推荐）
 
 #### 使用 pip 安装
 ```bash
@@ -39,9 +39,26 @@ pip install -e .
 simple-pdf --version
 ```
 
+#### 如果命令找不到
+```bash
+# 方法 1：使用虚拟环境（推荐）
+python3 -m venv venv
+source venv/bin
+activate
+pip install -e .
+simple-pdf --version
+
+# 方法 2：直接使用模块
+python3 -m ai_pdf_agent.cli.cli --version
+
+# 方法 3：检查 PATH
+which simple-pdf
+find ~/.local -name "simple-pdf" 2>/dev/null
+```
+
 ---
 
-### 方案 B：Docker 环境
+### 方案 B：Docker 环境（无需 Python）
 
 #### 拉取镜像
 ```bash
@@ -154,7 +171,7 @@ simple-pdf read <pdf-path> [-o output]
 simple-pdf read document.pdf -o output.txt
 
 # 提取表格
-simple-pdf read document.pdf -o tables.json
+simple-pdfPDF read document.pdf -o tables.json
 
 # 提取图片
 simple-pdf read document.pdf -o images.json
@@ -221,13 +238,19 @@ mypy .
 ```
 ai-pdf-agent/
 ├── ai_pdf_agent/       # 核心包
+│   ├── __init__.py
 │   ├── cli/            # CLI 工具
+│   │   ├── __init__.py
+│   │   └── cli.py       # CLI 主入口
 │   ├── core/           # 核心功能
 │   ├── plugins/        # 插件系统
 │   │   ├── readers/    # 读取插件
 │   │   └── converters/ # 转换插件
 │   └── version.py      # 版本信息
 ├── tests/              # 测试
+├── install.sh          # 自动安装脚本
+├── diagnose.sh         # 诊断脚本
+├── simple-pdf.sh       # 快速启动脚本
 ├── requirements.txt    # 依赖
 ├── setup.py            # Python 包配置
 ├── Dockerfile         # Docker 镜像
@@ -253,10 +276,11 @@ ai-pdf-agent/
 
 ## 💡 提示
 
-1. **性能优化：** 分页处理大文件
-2. **批处理：** 结合 Shell 脚本进行批量处理
-3. **内存管理：** 大文件建议分页处理
-4. **Docker 使用：** 确保 volume 映射正确，否则无法访问文件
+1. **安装方法：** 推荐使用虚拟环境安装
+2. **性能优化：** 分页处理大文件
+3. **批处理：** 结合 Shell 脚本进行批量处理
+4. **内存管理：** 大文件建议分页处理
+5. **Docker 使用：** 确保 volume 映射正确，否则无法访问文件
 
 ---
 
@@ -266,6 +290,7 @@ ai-pdf-agent/
 
 **更新内容：**
 - ✅ 完整的 CLI 工具（命令：simple-pdf）
+- ✅ 虚拟环境支持
 - ✅ Docker 支持（开箱即用）
 - ✅ 多格式转换支持
 - ✅ 插件化架构
