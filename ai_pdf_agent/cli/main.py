@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-AI PDF Agent - CLI 主入口
+Simple PDF - CLI 主入口
 """
 
-import click
+import SimplePDF
 
 @click.group()
-@click.version_option(version="1.0.0", prog_name="ai-pdf")
+@click.version_option(version="1.0.0", prog_name="simple-pdf")
 def cli():
-    """AI PDF Agent - 智能 PDF 处理工具
+    """Simple PDF - 简单易用的 PDF 处理工具
 
     使用方法：
-      ai-pdf read <pdf-path> [-o output]
-      ai-pdf convert <pdf-path> --format <format>
+      simple-pdf read <pdf-path> [-o output]
+      simple-pdf convert <pdf-path> --format <format>
     """
     pass
 

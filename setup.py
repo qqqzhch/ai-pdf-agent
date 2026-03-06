@@ -1,5 +1,5 @@
 """
-AI PDF Agent - 安装配置
+Simple PDF - 安装配置
 """
 
 from setuptools import setup, find_packages
@@ -13,11 +13,11 @@ with open("VERSION", "r", encoding="utf-8") as fh:
     version = fh.read().strip()
 
 setup(
-    name="ai-pdf-agent",
+    name="simple-pdf",
     version=version,
-    author="AI Team",
-    author_email="team@example.com",
-    description="AI PDF Agent - 智能 PDF 处理工具",
+    author="Simple PDF Team",
+    author_email="simplepdf@example.com",
+    description="Simple PDF - 简单易用的 PDF 处理工具",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/qqqzhch/ai-pdf-agent",
@@ -43,7 +43,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "ai-pdf=ai_pdf_agent.cli.main:cli",
+            "simple-pdf=ai_pdf_agent.cli.main:cli",
         ],
     },
     classifiers=[
@@ -58,5 +58,5 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Operating System :: OS Independent",
     ],
-    keywords=["pdf", "ai", "document", "converter", "pymupdf"],
+    keywords=["pdf", "simple", "document", "converter", "pymupdf"],
 )

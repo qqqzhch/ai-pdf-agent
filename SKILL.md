@@ -1,7 +1,7 @@
-# AI PDF Agent Skill
+# Simple PDF Skill
 
 ## Description
-AI Agent 友好的 PDF 处理工具，专为 AI Agent 设计的 CLI 工具，通过插件化架构提供灵活的 PDF 处理能力。
+简单易用的 PDF 处理工具，通过插件化架构提供灵活的 PDF 处理能力。
 
 **最新版本：** v1.0.0
 
@@ -38,10 +38,10 @@ pip install -e .
 #### 3. 验证安装
 ```bash
 # 检查版本
-ai-pdf --version
+simple-pdf --version
 
 # 查看帮助
-ai-pdf --help
+simple-pdf --help
 ```
 
 ---
@@ -56,16 +56,16 @@ cd ai-pdf-agent
 
 #### 2. 构建 Docker 镜像
 ```bash
-docker build -t ai-pdf-agent:latest .
+docker build -t simple-pdf:latest .
 ```
 
 #### 3. 使用 Docker 容器
 ```bash
 # 提取文本
-docker run -v $(pwd)/data:/app/data ai-pdf-agent:latest read /app/data/document.pdf -o /app/data/output.txt
+docker run -v $(pwd)/data:/app/data simple-pdf:latest read /app/data/document.pdf -o /app/data/output.txt
 
 # 转换为 Markdown
-docker run -v $(pwd)/data:/app/data ai-pdf-agent:latest convert /app/data/document.pdf --format markdown -o /app/data/output.md
+docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document.pdf --format markdown -o /app/data/output.md
 ```
 
 ---
@@ -86,10 +86,10 @@ docker-compose up -d
 #### 3. 使用服务
 ```bash
 # 进入容器
-docker-compose exec ai-pdf-agent bash
+docker-compose exec simple-pdf bash
 
 # 或者直接执行
-docker-compose exec ai-pdf-agent ai-pdf read document.pdf -o output.md
+docker-compose exec simple-pdf simple-pdf read document.pdf -o output.md
 ```
 
 ---
@@ -100,51 +100,51 @@ docker-compose exec ai-pdf-agent ai-pdf read document.pdf -o output.md
 
 ```bash
 # 1. 提取文本
-ai-pdf read document.pdf -o output.txt
+simple-pdf read document.pdf -o output.txt
 
 # 2. 转换为 Markdown
-ai-pdf convert document.pdf --format markdown -o output.md
+simple-pdf convert document.pdf --format markdown -o output.md
 
 # 3. 转换为 JSON
-ai-pdf convert document.pdf --format json -o output.json
+simple-pdf convert document.pdf --format json -o output.json
 
 # 4. 转换为 HTML
-ai-pdf convert document.pdf --format html -o output.html
+simple-pdf convert document.pdf --format html -o output.html
 ```
 
 ### Docker 环境
 
 ```bash
 # 1. 提取文本
-docker run -v $(pwd)/data:/app/data ai-pdf-agent:latest read /app/data/document.pdf -o /app/data/output.txt
+docker run -v $(pwd)/data:/app/data simple-pdf:latest read /app/data/document.pdf -o /app/data/output.txt
 
 # 2. 转换为 Markdown
-docker run -v $(pwd)/data:/app/data ai-pdf-agent:latest convert /app/data/document.pdf --format markdown -o /app/data/output.md
+docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document.pdf --format markdown -o /app/data/output.md
 
 # 3. 转换为 JSON
-docker run -v $(pwd)/data:/app/data ai-pdf-agent:latest convert /app/data/document.pdf --format json -o /app/data/output.json
+docker run -v $(pwd)/data:/app/data simple-pdf:latest convert /app/data/document.pdf --format json -o /app/data/output.json
 ```
 
 ---
 
 ## 📋 CLI 命令完整指南
 
-### `ai-pdf` - 主命令
+### `simple-pdf` - 主命令
 
 ```bash
-ai-pdf --version    # 显示版本信息
-ai-pdf --help       # 显示帮助信息
+simple-pdf --version    # 显示版本信息
+simple-pdf --help       # 显示帮助信息
 ```
 
 ---
 
-### `ai-pdf read` - 读取 PDF 内容
+### `simple-pdf read` - 读取 PDF 内容
 
 **功能：** 从 PDF 提取文本、表格、图片、元数据或结构信息
 
 **语法：**
 ```bash
-ai-pdf read <pdf-path> [-o output]
+simple-pdf read <pdf-path> [-o output]
 ```
 
 **选项：**
@@ -155,19 +155,19 @@ ai-pdf read <pdf-path> [-o output]
 
 ```bash
 # 提取文本
-ai-pdf read document.pdf -o output.txt
+simple-pdf read document.pdf -o output.txt
 
 # 提取表格
-ai-pdf read document.pdf -o tables.json
+simple-pdf read document.pdf -o tables.json
 
 # 提取图片
-ai-pdf read document.pdf -o images.json
+simple-pdf read document.pdf -o images.json
 
 # 提取元数据
-ai-pdf read document.pdf -o metadata.json
+simple-pdf read document.pdf -o metadata.json
 
 # 提取结构信息
-ai-pdf read document.pdf -o structure.json
+simple-pdf read document.pdf -o structure.json
 ```
 
 **输出示例：**
@@ -178,13 +178,13 @@ ai-pdf read document.pdf -o structure.json
 
 ---
 
-### `ai-pdf convert` - 转换 PDF 格式
+### `simple-pdf convert` - 转换 PDF 格式
 
 **功能：** 将 PDF 转换为其他格式（Markdown, JSON, HTML, Text）
 
 **语法：**
 ```bash
-ai-pdf convert <pdf-path> --format <format> [-o output]
+simple-pdf convert <pdf-path> --format <format> [-o output]
 ```
 
 **选项：**
@@ -196,16 +196,16 @@ ai-pdf convert <pdf-path> --format <format> [-o output]
 
 ```bash
 # 转换为 Markdown
-ai-pdf convert document.pdf --format markdown -o output.md
+simple-pdf convert document.pdf --format markdown -o output.md
 
 # 转换为 JSON
-ai-pdf convert document.pdf --format json -o output.json
+simple-pdf convert document.pdf --format json -o output.json
 
 # 转换为 HTML
-ai-pdf convert document.pdf --format html -o output.html
+simple-pdf convert document.pdf --format html -o output.html
 
 # 转换为 Text
-ai-pdf convert document.pdf --format text -o output.txt
+simple-pdf convert document.pdf --format text -o output.txt
 ```
 
 **输出示例：**
@@ -222,7 +222,7 @@ ai-pdf convert document.pdf --format text -o output.txt
 - **Plugin System**: 模块化架构，易于扩展
 - **Multi-format Support**: PDF → Markdown, JSON, HTML, Text
 - **Content Extraction**: 文本、表格、图片、元数据、结构
-- **AI Agent Friendly**: JSON 输出，便于程序化访问
+- **Simple to Use**: 简单易用的命令行接口
 - **Local Processing**: 隐私优先，无文件大小限制
 
 ### 性能优化
@@ -251,13 +251,13 @@ pytest tests/test_text_reader.py
 
 ```bash
 # 进入测试容器
-docker run -it ai-pdf-agent:latest bash
+docker run -it simple-pdf:latest bash
 
 # 在容器内运行测试
 pytest
 
 # 或者直接运行测试
-docker run ai-pdf-agent:latest pytest
+docker run simple-pdf:latest pytest
 ```
 
 ---
@@ -280,7 +280,7 @@ docker run ai-pdf-agent:latest pytest
 ```bash
 # 批量提取文本
 for file in *.pdf; do
-    ai-pdf read "$file" -o "${file%.pdf}.txt"
+    simple-pdf read "$file" -o "${file%.pdf}.txt"
 done
 ```
 
@@ -291,14 +291,14 @@ import subprocess
 
 # 提取 PDF 文本
 result = subprocess.run(
-    ['ai-pdf', 'read', 'document.pdf', '-o', 'output.txt'],
+    ['simple-pdf', 'read', 'document.pdf', '-o', 'output.txt'],
     capture_output=True,
     text=True
 )
 
 # 转换为 Markdown
 result = subprocess.run(
-    ['ai-pdf', 'convert', 'document.pdf', '--format', 'markdown', '-o', 'output.md'],
+    ['simple-pdf', 'convert', 'document.pdf', '--format', 'markdown', '-o', 'output.md'],
     capture_output=True,
     text=True
 )
@@ -312,20 +312,20 @@ result = subprocess.run(
 
 ```bash
 # 读取 Nginx 安全配置指南
-ai-pdf read "Nginx 安全配置指南技术手册.pdf" -o nginx-guide.txt
+simple-pdf read "Nginx 安全配置指南技术手册.pdf" -o nginx-guide.txt
 
 # 转换为 Markdown（保留格式）
-ai-pdf convert "Nginx 安全配置指南技术手册.pdf" --format markdown -o nginx-guide.md
+simple-pdf convert "Nginx 安全配置指南技术手册.pdf" --format markdown -o nginx-guide.md
 ```
 
 ### 示例 2：提取表格数据
 
 ```bash
 # 从财务报表提取表格
-ai-pdf read "financial-report.pdf" -o tables.json
+simple-pdf read "financial-report.pdf" -o tables.json
 
 # 转换为 JSON 格式
-ai-pdf convert "financial-report.pdf" --format json -o tables.json
+simple-pdf convert "financial-report.pdf" --format json -o tables.json
 ```
 
 ### 示例 3：批量转换
@@ -333,7 +333,7 @@ ai-pdf convert "financial-report.pdf" --format json -o tables.json
 ```bash
 # 转换目录下所有 PDF 为 Markdown
 for pdf in reports/*.pdf; do
-    ai-pdf convert "$pdf" --format markdown -o "markdown/$(basename "$pdf" .pdf).md"
+    simple-pdf convert "$pdf" --format markdown -o "markdown/$(basename "$pdf" .pdf).md"
 done
 ```
 
@@ -405,7 +405,7 @@ MIT License - 详见 LICENSE 文件
 **当前版本：** v1.0.0
 
 **更新内容：**
-- ✅ 完整的 CLI 工具（命令：ai-pdf）
+- ✅ 完整的 CLI 工具（命令：simple-pdf）
 - ✅ Docker 支持（开箱即用）
 - ✅ 多格式转换支持
 - ✅ 完善的文档和测试
